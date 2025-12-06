@@ -8,5 +8,5 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(OpenMP REQUIRED)
 include_directories(/usr/include/eigen3)  # 若系統路徑不同，請改為 Eigen 安裝路徑
 
-add_executable(main src/main.cpp src/Particle.cpp src/UniformGrid.cpp)
+add_executable(main src/main.cpp src/Particle.cpp src/UniformGrid.cpp src/algorithm.cpp)
 target_link_libraries(main PUBLIC OpenMP::OpenMP_CXX)

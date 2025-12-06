@@ -2,27 +2,63 @@
 #include <Eigen/Dense>
 #include <omp.h>
 #include <fstream>
+#include <random>
 #include "Particle.h"
 #include "UniformGrid.h"
+#include "algorithm.h"
+
+// 產生銀河分佈的隨機粒子
+void initGalaxyParticles(std::vector<Particle> &particles) {
+    std::mt19937 rng(42);
+    std::uniform_real_distribution<double> uni(0.0, 1.0);
+    std::normal_distribution<double> gauss(0.0, 1.0);
+
+    const double diskRadius = 5.0;
+    const double diskHeight = 0.1;
+    const double bulgeRadius = 1.0;
+
+    for (Particle &p : particles) {
+        double choose = uni(rng);
+
+        // 80% 的粒子在盤面
+        if (choose < 0.8) {
+            // radius 取指數衰減：r = -R * log(U)
+            double R = diskRadius * (-std::log(uni(rng)));
+            double theta = uni(rng) * 2.0 * M_PI;
+
+            double x = R * std::cos(theta);
+            double y = R * std::sin(theta);
+            double z = gauss(rng) * diskHeight;
+
+            p.setState(Eigen::Vector3d(x, y, z), Eigen::Vector3d(0,0,0));
+        }
+        // 20% 的粒子在核球
+        else {
+            // 核球：近似三維高斯
+            double x = gauss(rng) * bulgeRadius * 0.5;
+            double y = gauss(rng) * bulgeRadius * 0.5;
+            double z = gauss(rng) * bulgeRadius * 0.5;
+
+            p.setState(Eigen::Vector3d(x, y, z), Eigen::Vector3d(0,0,0));
+        }
+    }
+}
 
 int main() {
-
+    Algorithm algo;
     // 建立粒子資料
-    std::vector<Particle> particles(6);
+    std::vector<Particle> particles(10000);
 
-    particles[0].setState(Eigen::Vector3d(0.1, 0.1, 0.1), Eigen::Vector3d(0,0,0));
-    particles[1].setState(Eigen::Vector3d(0.2, 0.1, 0.1), Eigen::Vector3d(0,0,0));
-    particles[2].setState(Eigen::Vector3d(1.5, 0.1, 0.1), Eigen::Vector3d(0,0,0));
-    particles[3].setState(Eigen::Vector3d(0.4, 0.1, 0.1), Eigen::Vector3d(0,0,0));
-    particles[4].setState(Eigen::Vector3d(0.1, 0.5, 0.1), Eigen::Vector3d(0,0,0));
-    particles[5].setState(Eigen::Vector3d(0.1, 0.1, 0.6), Eigen::Vector3d(0,0,0));
+
+    algo.initGalaxyParticles(particles);
+    //-----------------------------------------------------------------
     // 設定 uniform grid 配置
     GridConfig cfg;
-    cfg.cell_size = 0.5;  
+    cfg.cellSideLength = 5;  
     cfg.origin = Eigen::Vector3d(0, 0, 0);
-    cfg.nx = 10;
-    cfg.ny = 10;
-    cfg.ncdz = 10;
+    cfg.nx = 100;
+    cfg.ny = 100;
+    cfg.nz = 100;
 
     // 建立 Grid
     UniformGrid grid(cfg);
@@ -49,7 +85,7 @@ int main() {
     }
 
 
-
+    //-----------------------------------------------------------------
     std::ofstream fout("particles.csv");
     fout << "x,y,z\n";
     for (auto &p : particles) {

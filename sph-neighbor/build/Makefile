@@ -177,6 +177,30 @@ src/UniformGrid.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/UniformGrid.cpp.s
 .PHONY : src/UniformGrid.cpp.s
 
+src/algorithm.o: src/algorithm.cpp.o
+.PHONY : src/algorithm.o
+
+# target to build an object file
+src/algorithm.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/algorithm.cpp.o
+.PHONY : src/algorithm.cpp.o
+
+src/algorithm.i: src/algorithm.cpp.i
+.PHONY : src/algorithm.i
+
+# target to preprocess a source file
+src/algorithm.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/algorithm.cpp.i
+.PHONY : src/algorithm.cpp.i
+
+src/algorithm.s: src/algorithm.cpp.s
+.PHONY : src/algorithm.s
+
+# target to generate assembly for a file
+src/algorithm.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/algorithm.cpp.s
+.PHONY : src/algorithm.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -216,6 +240,9 @@ help:
 	@echo "... src/UniformGrid.o"
 	@echo "... src/UniformGrid.i"
 	@echo "... src/UniformGrid.s"
+	@echo "... src/algorithm.o"
+	@echo "... src/algorithm.i"
+	@echo "... src/algorithm.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
