@@ -1,0 +1,3 @@
+/home/jason/astroProject/sph-neighbor/build/CMakeFiles/main.dir
+/home/jason/astroProject/sph-neighbor/build/CMakeFiles/edit_cache.dir
+/home/jason/astroProject/sph-neighbor/build/CMakeFiles/rebuild_cache.dir
