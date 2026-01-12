@@ -9,8 +9,6 @@ UniformGrid::UniformGrid(const GridConfig &cfg)
 // private function
 CellId UniformGrid::cellIdFromCoord(int ix, int iy, int iz) const {
     // 將 (ix, iy, iz) 轉成 64-bit key
-    // 注意：此轉換需要保證不溢位且唯一
-    // 常用方式：使用固定 multiplier（足夠大）
     const long long p1 = 73856093LL;
     const long long p2 = 19349663LL;
     const long long p3 = 83492791LL;
