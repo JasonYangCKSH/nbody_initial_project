@@ -1,9 +1,8 @@
 build/
 *.csv
 *.png
-build/
-*.csv
-*.png
-build/
-*.csv
-*.png
+*.o
+*.out
+*.exe
+*.log
+.vscode/

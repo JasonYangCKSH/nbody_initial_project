@@ -8,7 +8,7 @@ void Algorithm::initGalaxyParticles(std::vector<Particle> &particles) {
     const double diskRadius = 5.0;
     const double diskHeight = 0.1;
     const double bulgeRadius = 1.0;
-
+    
     for (Particle &p : particles) {
         double choose = uni(rng);
 

@@ -2,6 +2,7 @@
 #define UNIFORMGRID_H
 #include <vector>
 #include <unordered_map>
+#include <Eigen/Dense>
 #include "Particle.h"
 
 using CellId = long long;  // 64-bit cell identifier

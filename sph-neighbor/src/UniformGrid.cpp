@@ -1,12 +1,12 @@
 #include "UniformGrid.h"
 #include <cmath>
-// 1
+// Constructor
 UniformGrid::UniformGrid(const GridConfig &cfg)
     : cfg_(cfg)
 {
     cell_map_.reserve(cfg.nx * cfg.ny * cfg.nz);
 }
-// 2
+// private function
 CellId UniformGrid::cellIdFromCoord(int ix, int iy, int iz) const {
     // 將 (ix, iy, iz) 轉成 64-bit key
     // 注意：此轉換需要保證不溢位且唯一
@@ -16,7 +16,7 @@ CellId UniformGrid::cellIdFromCoord(int ix, int iy, int iz) const {
     const long long p3 = 83492791LL;
     return ix * p1 ^ iy * p2 ^ iz * p3;
 }
-// 3
+// private function
 CellId UniformGrid::cellIdFromPos(const Eigen::Vector3d &p) const {
     Eigen::Vector3d rel = p - cfg_.origin;
 
@@ -26,7 +26,7 @@ CellId UniformGrid::cellIdFromPos(const Eigen::Vector3d &p) const {
 
     return cellIdFromCoord(ix, iy, iz);
 }
-// 4
+// public function
 void UniformGrid::rebuildIndex(const std::vector<Particle> &particles)
 {
     cell_map_.clear();
@@ -37,7 +37,7 @@ void UniformGrid::rebuildIndex(const std::vector<Particle> &particles)
     }
 }
 
-// 5
+// public function
 void UniformGrid::findNeighbors(const std::vector<Particle> &particles,
                                 std::vector<std::vector<int>> &neighbors,
                                 double search_radius) const {
