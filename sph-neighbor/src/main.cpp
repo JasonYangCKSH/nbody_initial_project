@@ -44,7 +44,7 @@ int main() {
     UniformGrid grid(cfg);
 
 
-    OctTree tree(cfg.origin);
+    OctTree tree;
     
     // 建立空間索引
     grid.rebuildIndex(particles);

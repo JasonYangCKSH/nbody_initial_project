@@ -1,10 +1,10 @@
 #include "OctTree.h"
 #include <Eigen/Dense>
 #include <iostream>
-OctTree::OctTree(const Eigen::Vector3d &origin) {
+OctTree::OctTree() {
     root = new OctTreeNode();
-    root->particle = origin;
-    std::cout << root->particle <<"\n";
+   
+
 }
 OctTree::~OctTree() {
 
