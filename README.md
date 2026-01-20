@@ -3,19 +3,7 @@
 * 每週固定時段舉行小組討論。時段：14:00-15:00
 > 小組討論必須全員到齊...
 * 每週在此倉庫紀錄專題進度。
-
-> 平台能透過點擊能設定每個星球的 質量 密度 大小
-> 改 m → 反算 ρ
-> 改 r 或 ρ → 算 m
-
-> 每一幀更新完速度後，乘上阻尼
-damping = 1：完全不減速，越跑越快（引力加速度）
-damping = 0.997：每一幀把速度變成原本的 99.7%
-
-
 * 可事先規劃每週的預期項目。
->了解如何把 2D→3D 
-
 Google Meet連結:
   https://meet.google.com/ubr-ifti-mfi
 ---
@@ -38,4 +26,14 @@ Barnes-Hut Algorithm:
 "A hierarchical O(N log N) force-calculation algorithm":
 https://www.nature.com/articles/324446a0
 
+
+> 平台能透過點擊能設定每個星球的 質量 密度 大小
+> 改 m → 反算 ρ
+> 改 r 或 ρ → 算 m
+
+> 每一幀更新完速度後，乘上阻尼
+damping = 1：完全不減速，越跑越快（引力加速度）
+damping = 0.997：每一幀把速度變成原本的 99.7%
+> 
+>預期項目:了解如何把 2D→3D 
 1/21-1/27
