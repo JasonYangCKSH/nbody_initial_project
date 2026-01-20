@@ -20,6 +20,8 @@ Google Meet連結:
   https://meet.google.com/ubr-ifti-mfi
 ---
 ---
+1/14-1/20
+
 Matthias Müller SPH 2003(SPH論文，這篇第 4.2 節詳細講 Spatial Hashing):
 https://matthias-research.github.io/pages/publications/sca03.pdf
 
@@ -35,3 +37,5 @@ https://ieeexplore.ieee.org/document/10070940
 Barnes-Hut Algorithm:
 "A hierarchical O(N log N) force-calculation algorithm":
 https://www.nature.com/articles/324446a0
+
+1/21-1/27
