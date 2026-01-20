@@ -5,6 +5,10 @@
 * 每週在此倉庫紀錄專題進度。
 > 沒更新就是沒進度...
 * 可事先規劃每週的預期項目。
+
+
+Google Meet連結:
+  https://meet.google.com/ubr-ifti-mfi
 ---
 ---
 Matthias Müller SPH 2003(SPH論文，這篇第 4.2 節詳細講 Spatial Hashing):
