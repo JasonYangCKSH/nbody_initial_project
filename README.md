@@ -14,7 +14,7 @@ damping = 0.997：每一幀把速度變成原本的 99.7%
 
 
 * 可事先規劃每週的預期項目。
-了解如何把 2D→3D 
+>了解如何把 2D→3D 
 
 Google Meet連結:
   https://meet.google.com/ubr-ifti-mfi
