@@ -10,26 +10,26 @@ Google Meet連結:
 * 建立這棵樹後就固定存在、物件移動時就reinsert（或 loose 容忍）、只更新受影響路徑摘要
 ### 專題方向
 1. 無人機群（UAV Swarm，3D 空域）
-- 更新需求（局部更新）
--- 觸發條件：單台 UAV 位置/高度變動，跨越 leaf 邊界（或超出 loose cell 容忍範圍)、UAV 狀態改變：進入/離開編隊、任務模式切換、通信品質變化
--- 更新物件（每台 UAV）：id, pos(xyz), vel, heading, radius(安全距離), class/role, timestamp
--- 節點摘要（沿著舊 leaf→LCA→新 leaf 的路徑）：count（此區域 UAV 數量）、COM/centroid（群集中心）、avg_vel 或 vel_sum（群集平均速度/動量近似）、max_radius（用於碰撞/近鄰剪枝）
--- 範例：UAV #17 從高度 30m 升到 45m，位置跨出原leaf：
---- 從原 leaf 的 object list 移除 #17
---- 在新 leaf 插入 #17
---- 只沿兩邊路徑更新 count/COM/vel_sum/max_radius（不重建整棵樹）
---- 若新 leaf 物件數超過容量才 split；原 leaf 過空才 merge（都屬局部結構調整）
-- 查詢需求（即時查詢）
--- 局部避碰/鄰居查詢：找距離 r 內的 UAV（或最近 k 台）
--- 空域擁擠度：某航道/高度層是否過密
--- 編隊控制近似互動：對每台 UAV 計算「遠處群集的影響」（吸引/排斥/隊形保持）──這非常像 BH 的力計算
--- BH-Octree功能
---- 近鄰/避碰：走訪時若某 cell 的 bounding cube 與 UAV 的查詢球不相交直接剪枝；cell 太大/太近就下探
---- 群集影響：遠處 cell 直接用 COM + count + avg_vel 當成「一個群」近似（θ 控制精度/速度）
--- 範例：每 20ms 對每台 UAV 做一次：
---- r=10m 半徑內鄰居列表（嚴格）
---- 10m 以外用 BH 接受準則把遠處 cell 當群集，估算「整體排斥勢」避免往密集區鑽
---- 模擬展示：操作調整θ，看避碰安全性 vs 計算量的 trade-off
+* 更新需求（局部更新）
+- 觸發條件：單台 UAV 位置/高度變動，跨越 leaf 邊界（或超出 loose cell 容忍範圍)、UAV 狀態改變：進入/離開編隊、任務模式切換、通信品質變化
+- 更新物件（每台 UAV）：id, pos(xyz), vel, heading, radius(安全距離), class/role, timestamp
+- 節點摘要（沿著舊 leaf→LCA→新 leaf 的路徑）：count（此區域 UAV 數量）、COM/centroid（群集中心）、avg_vel 或 vel_sum（群集平均速度/動量近似）、max_radius（用於碰撞/近鄰剪枝）
+- 範例：UAV #17 從高度 30m 升到 45m，位置跨出原leaf：
+-- 從原 leaf 的 object list 移除 #17
+-- 在新 leaf 插入 #17
+-- 只沿兩邊路徑更新 count/COM/vel_sum/max_radius（不重建整棵樹）
+-- 若新 leaf 物件數超過容量才 split；原 leaf 過空才 merge（都屬局部結構調整）
+* 查詢需求（即時查詢）
+- 局部避碰/鄰居查詢：找距離 r 內的 UAV（或最近 k 台）
+- 空域擁擠度：某航道/高度層是否過密
+- 編隊控制近似互動：對每台 UAV 計算「遠處群集的影響」（吸引/排斥/隊形保持）──這非常像 BH 的力計算
+- BH-Octree功能
+-- 近鄰/避碰：走訪時若某 cell 的 bounding cube 與 UAV 的查詢球不相交直接剪枝；cell 太大/太近就下探
+-- 群集影響：遠處 cell 直接用 COM + count + avg_vel 當成「一個群」近似（θ 控制精度/速度）
+- 範例：每 20ms 對每台 UAV 做一次：
+-- r=10m 半徑內鄰居列表（嚴格）
+-- 10m 以外用 BH 接受準則把遠處 cell 當群集，估算「整體排斥勢」避免往密集區鑽
+-- 模擬展示：操作調整θ，看避碰安全性 vs 計算量的 trade-off
 2. 賣場人潮（3D：含樓層/扶梯/高度，但本質是「3D 位置的移動體」）
 - 更新需求（局部更新）
 -- 觸發條件：來客每秒位置更新（手機藍牙 beacon、UWB、視覺追蹤），跨 leaf、上下樓/搭扶梯造成 z 變化明顯、顧客狀態改變：停留、排隊、群聚、快速移動（可能是異常）
