@@ -38,4 +38,12 @@ damping = 0.997：每一幀把速度變成原本的 99.7%
 > 
 >預期項目:了解如何把 2D→3D
 
->1/21-1/27
+1/21-1/27
+
+本次預計先收斂閱讀範圍，由於上周的Spatial Hashing相對太過簡單，而tree系列感覺比較好發揮，因此本周進度會先著重吸收以下論文：
+
+Finding Neighbors in a Forest: A
+b-tree for
+Smoothed Particle Hydrodynamics Simulations: https://arxiv.org/pdf/1910.02639
+
+
