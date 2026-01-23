@@ -15,10 +15,10 @@ Google Meet連結:
 * 更新物件（每台 UAV）：id, pos(xyz), vel, heading, radius(安全距離), class/role, timestamp
 * 節點摘要（沿著舊 leaf→LCA→新 leaf 的路徑）：count（此區域 UAV 數量）、COM/centroid（群集中心）、avg_vel 或 vel_sum（群集平均速度/動量近似）、max_radius（用於碰撞/近鄰剪枝）
 * 範例：UAV #17 從高度 30m 升到 45m，位置跨出原leaf：
-(1) 從原 leaf 的 object list 移除 #17
-(2) 在新 leaf 插入 #17
-(3) 只沿兩邊路徑更新 count/COM/vel_sum/max_radius（不重建整棵樹）
-(4) 若新 leaf 物件數超過容量才 split；原 leaf 過空才 merge（都屬局部結構調整）
+- (1) 從原 leaf 的 object list 移除 #17
+- (2) 在新 leaf 插入 #17
+- (3) 只沿兩邊路徑更新 count/COM/vel_sum/max_radius（不重建整棵樹）
+- (4) 若新 leaf 物件數超過容量才 split；原 leaf 過空才 merge（都屬局部結構調整）
 * 查詢需求（即時查詢）
 (1) 局部避碰/鄰居查詢：找距離 r 內的 UAV（或最近 k 台）
 (2) 空域擁擠度：某航道/高度層是否過密
