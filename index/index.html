@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Arial; margin: 0; }
+    .wrap { display: grid; grid-template-columns: 340px 1fr; height: 100vh; }
+    .panel { padding: 16px; border-right: 1px solid #ddd; background: #fafafa; overflow:auto; }
+    .panel h2 { margin: 0 0 12px; font-size: 18px; }
+    .row { margin: 10px 0; }
+    label { display: block; margin-bottom: 6px; font-size: 14px; }
+    input[type="range"] { width: 100%; }
+    select, button, input[type="number"] { width: 100%; padding: 10px; box-sizing: border-box; }
+    .btnRow { display:flex; gap:10px; }
+    .btnRow button { width: 100%; }
+    .stat { background:#fff; padding: 10px; border-radius: 12px; margin-top: 10px; border:1px solid #eee; }
+    .statLine { display:flex; justify-content:space-between; margin: 6px 0; font-size: 14px; }
+    .hint { color:#555; font-size: 13px; line-height: 1.5; margin-top: 10px; }
+    canvas { width: 100%; height: 100%; display: block; background: #fff; }
+    .small { font-size: 12px; color:#666; }
+    .divider { height:1px; background:#e9e9e9; margin: 12px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h2>N-body：Naive vs Uniform Grid</h2>
+
+      <div class="row">
+        <label>模式 Mode</label>
+        <select id="mode">
+          <option value="naive">Naive（兩兩全算）</option>
+          <option value="grid">Grid（Uniform Grid）</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>粒子數 N：<b id="nLabel">100</b></label>
+        <input id="nRange" type="range" min="2" max="600" step="1" value="120" />
+        <div class="small">N 越大，Naive 會爆炸慢；Grid 會比較撐得住。</div>
+      </div>
+
+      <div class="row">
+        <label>格子大小 cellSize：<b id="cellLabel">40</b></label>
+        <input id="cellRange" type="range" min="10" max="120" step="5" value="40" />
+      </div>
+
+      <div class="btnRow">
+        <button id="resetBtn">重設（同 seed）</button>
+        <button id="pauseBtn">暫停</button>
+      </div>
+
+      <div class="stat">
+        <b>效能指標</b>
+        <div class="statLine"><span>單步耗時 (ms)</span><span id="ms">-</span></div>
+        <div class="statLine"><span>力計算次數 (ops)</span><span id="ops">-</span></div>
+        <div class="statLine"><span>Energy Index</span><span id="ei">-</span></div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- 星球設定（點選後才顯示） -->
+      <div class="stat" id="editorBox" style="display:none;">
+        <b>星球設定</b>
+        <div class="small">點一下畫面上的星球，這裡就會出現它的資料。</div>
+
+        <div class="row" style="margin-top:10px;">
+          <label>選到的星球：<b id="selName">#-</b></label>
+        </div>
+
+        <div class="row">
+          <label>半徑 r（大小）：<b id="rVal">-</b></label>
+          <input id="rInput" type="range" min="1" max="30" step="0.5" value="5" />
+        </div>
+
+        <div class="row">
+          <label>密度 ρ：<b id="rhoVal">-</b></label>
+          <input id="rhoInput" type="range" min="0.1" max="10" step="0.1" value="1" />
+        </div>
+
+        <div class="row">
+          <label>重量 m：<b id="mVal">-</b></label>
+          <input id="mInput" type="number" step="0.1" value="1" />
+        </div>
+
+  
+      </div>
+
+      <div class="hint">
+        操作：<br/>
+        1) 點星球 → 出現設定<br/>
+        2) 拉半徑/密度 → 星球立即變大、也更「重」<br/>
+        3) 改重量 → 會自動反算密度
+      </div>
+    </div>
+
+    <canvas id="c"></canvas>
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>
