@@ -45,5 +45,12 @@ damping = 0.997：每一幀把速度變成原本的 99.7%
 Finding Neighbors in a Forest: A
 b-tree for
 Smoothed Particle Hydrodynamics Simulations: https://arxiv.org/pdf/1910.02639
+---
+---
+YH: 
+1. 看一下Issues老師的留言，要切換分支branch: main --> YH，裡面有二位要研究及討論的內容。
+2. 蒐集及篩選論文是重要的研究能力，別仰賴Google就可以輕易取得的arXiv論文，那是未經同儕審查的預印本，大海撈針可能會徒勞無功。
+---
+---
 
 
