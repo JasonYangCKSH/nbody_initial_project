@@ -43,11 +43,7 @@ damping = 0.997：每一幀把速度變成原本的 99.7%
 
 1/21-1/27
 
-本次預計先收斂閱讀範圍，由於上周的Spatial Hashing相對太過簡單，而tree系列感覺比較好發揮，因此本周進度會先著重吸收以下論文：
-
-Finding Neighbors in a Forest: A
-b-tree for
-Smoothed Particle Hydrodynamics Simulations: https://arxiv.org/pdf/1910.02639
+1. 經典奠基（必讀，了解 $O(N \log N)$ 的由來）Barnes, J., & Hut, P. (1986). "A hierarchical $O(N \log N)$ force-calculation algorithm." Nature.重點： 這是鼻祖論文，搞懂「接受準則 ($\theta$)」和節點摘要的定義。2. 動態更新與效能優化（專題核心參考）Dubinski, J. (1996). "A Parallel Tree Code." New Astronomy.重點： 雖然是講並行，但裡面討論了如何有效率地維護樹結構。Warren, M. S., & Salmon, J. K. (1993). "A parallel hashed octree N-body algorithm."重點： 討論了 Hash-based Octree，這對於「固定存在、物件移動」的索引優化很有啟發。3. 技術部落格與實作指南（快速上手用）"The Barnes-Hut Algorithm" by Tom Ventimiglia and Kevin Wayne (Princeton University).重點： 這份講義非常有系統地解釋了實作細節，是很多現成專案的理論來源。
 ---
 ---
 YH: 
