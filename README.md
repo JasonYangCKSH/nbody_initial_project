@@ -43,8 +43,37 @@ damping = 0.997：每一幀把速度變成原本的 99.7%
 
 1/21-1/27
 
-1. 經典奠基（必讀，了解 $O(N \log N)$ 的由來）Barnes, J., & Hut, P. (1986). "A hierarchical $O(N \log N)$ force-calculation algorithm." Nature.重點： 這是鼻祖論文，搞懂「接受準則 ($\theta$)」和節點摘要的定義。2. 動態更新與效能優化（專題核心參考）Dubinski, J. (1996). "A Parallel Tree Code." New Astronomy.重點： 雖然是講並行，但裡面討論了如何有效率地維護樹結構。Warren, M. S., & Salmon, J. K. (1993). "A parallel hashed octree N-body algorithm."重點： 討論了 Hash-based Octree，這對於「固定存在、物件移動」的索引優化很有啟發。3. 技術部落格與實作指南（快速上手用）"The Barnes-Hut Algorithm" by Tom Ventimiglia and Kevin Wayne (Princeton University).重點： 這份講義非常有系統地解釋了實作細節，是很多現成專案的理論來源。
----
+本次暫時規劃：
+
+
+1. 經典奠基理論
+
+* **文獻名稱：** Barnes, J., & Hut, P. (1986). "A hierarchical O(N log N) force-calculation algorithm." Nature.
+* **研究重點：** * 了解 Barnes-Hut 演算法的鼻祖理論。
+* 深入研究「接受準則 (Multipole Acceptance Criterion, θ)」的數學定義。
+* 理解節點摘要（Node Summary）如何簡化遠程力計算，將複雜度從 O(N^2) 降至 O(N log N)。
+
+
+2. 動態更新與效能優化
+
+* **文獻名稱：** Dubinski, J. (1996). "A Parallel Tree Code." New Astronomy.
+* **研究重點：** * 雖然主軸為並行運算，但其對樹結構維護（Tree Maintenance）的效率討論極具參考價值。
+* 學習如何在物件位移時，最小化樹的重建開銷。
+
+* **文獻名稱：** Warren, M. S., & Salmon, J. K. (1993). "A parallel hashed octree N-body algorithm."
+* **研究重點：** * 探討「Hash-based Octree」的實作方法。
+* 對於「物件頻繁移動但樹結構相對固定」的索引優化具有啟發性，有助於實作局部更新邏輯。
+
+3. 技術實作指南與教學資源
+
+* **資源名稱：** "The Barnes-Hut Algorithm" by Tom Ventimiglia and Kevin Wayne (Princeton University).
+* **研究重點：** * 普林斯頓大學的經典講義，系統性地解釋了演算法的實作細節。
+* 作為開源專案實作邏輯的主要參考來源，有助於將理論轉化為程式碼。
+
+4. 網站開源資源(包含github)
+
+https://medium.com/@hsinhungw/optimizing-n-body-simulation-with-barnes-hut-algorithm-and-cuda-c76e78228c28
+
 ---
 YH: 
 1. 看一下Issues老師的留言，要切換分支branch: main --> YH，裡面有二位要研究及討論的內容。
