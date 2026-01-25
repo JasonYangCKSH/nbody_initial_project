@@ -74,6 +74,8 @@ damping = 0.997：每一幀把速度變成原本的 99.7%
 
 https://medium.com/@hsinhungw/optimizing-n-body-simulation-with-barnes-hut-algorithm-and-cuda-c76e78228c28
 
+5. Hackmd統整重點區：
+https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 ---
 YH: 
 1. 看一下Issues老師的留言，要切換分支branch: main --> YH，裡面有二位要研究及討論的內容。
