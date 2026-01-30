@@ -76,6 +76,9 @@ https://medium.com/@hsinhungw/optimizing-n-body-simulation-with-barnes-hut-algor
 
 5. Hackmd統整重點區(目前已經先對內部三篇文章進行初步的知識吸收，暫時有一些初步的想法)：
 https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
+1/28 - 2/2
+
+
 ---
 YH: 
 1. 看一下Issues老師的留言，要切換分支branch: main --> YH，裡面有二位要研究及討論的內容。
