@@ -81,15 +81,7 @@ https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 1/28 - 2/2
 
 
----
-YH: 
-1. 看一下Issues老師的留言，要切換分支branch: main --> YH，裡面有二位要研究及討論的內容。
-2. 蒐集及篩選論文是重要的研究能力，別仰賴Google就可以輕易取得的arXiv論文，那是未經同儕審查的預印本，大海撈針可能會徒勞無功。
----
----
 
-JasonYang:
-已看到老師的留言，謝謝老師。
 
 使用base44 來協助製作3d版本的星球模擬器https://celestial-dynamics-simulator-b0221e1b.base44.app/
 
