@@ -10,6 +10,9 @@ we## Start at 2026 January
 
 Google Meet連結:
   https://meet.google.com/ubr-ifti-mfi
+
+PPT連結：
+https://www.canva.com/design/DAG-MFxhIL4/L786ypSan6urp5cNlIpC0A/edit
 ---
 ---
 1/14-1/20
@@ -80,7 +83,10 @@ https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 
 1/28 - 2/2
 
-
+1.針對Barnes-hut 演算法原理進行深度了解，理解其如何影響finding neighbor的時間複雜度。
+2.閱讀https://dl.acm.org/doi/epdf/10.1145/3550454.3555523論文，從中找到相關finding neighbor的方法，熟悉其原理。
+3.稍微理解使用B-tree優化finding neighbor效率的arXiv論文。
+4.思考如何將Barnes-hut演算法運用於finding neighbor 以及研究方向。
 
 
 使用base44 來協助製作3d版本的星球模擬器https://celestial-dynamics-simulator-b0221e1b.base44.app/
