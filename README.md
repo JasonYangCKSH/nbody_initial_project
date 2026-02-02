@@ -87,7 +87,7 @@ https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 
 2.閱讀https://dl.acm.org/doi/epdf/10.1145/3550454.3555523 論文，從中找到相關finding neighbor的方法，熟悉其原理。
 
-3.稍微理解使用B-tree優化finding neighbor效率的arXiv論文。
+3.稍微理解使用B-tree優化finding neighbor效率的arXiv論文 https://arxiv.org/abs/1910.02639 。
 
 4.思考如何將Barnes-hut演算法運用於finding neighbor 以及研究方向。
 
