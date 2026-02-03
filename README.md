@@ -9,7 +9,7 @@ we## Start at 2026 January
 * 可事先規劃每週的預期項目。
 
 Google Meet連結:
-  https://meet.google.com/ubr-ifti-mfi
+https://meet.google.com/kcz-wwxd-mxw
 
 PPT連結：
 https://www.canva.com/design/DAG-MFxhIL4/L786ypSan6urp5cNlIpC0A/edit
