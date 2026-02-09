@@ -91,6 +91,12 @@ https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 
 4.思考如何將Barnes-hut演算法運用於finding neighbor 以及研究方向。
 
+2/3 - 2/9
+
+
+2/9 - 2/15
+
+
 ---
 
 使用base44 來協助製作3d版本的星球模擬器https://celestial-dynamics-simulator-b0221e1b.base44.app/
