@@ -98,6 +98,12 @@ https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 
 2/9 - 2/15
 
+1. https://github.com/DeadlockCode/barnes-hut/tree/improved  本project為barnes-hut演算法實作，將此open source載下來，理解barnes-hut具體實作方法(本project使用Rust撰寫)
+
+2. Load Balancing N-Body Simulations with Highly Non-Uniform Density(解決極端body分布時可能造成的效能瓶頸)  https://dl.acm.org/doi/10.1145/2597652.2597659
+
+3. RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware  https://dl.acm.org/doi/10.1145/3710848.3710885
+
 (預計於2月底前先定義好問題，設計baseline)
 
 ---
