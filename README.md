@@ -98,6 +98,7 @@ https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 
 2/9 - 2/15
 
+(預計於2月底前先定義好問題，設計baseline)
 
 ---
 
