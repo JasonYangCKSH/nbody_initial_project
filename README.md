@@ -104,6 +104,8 @@ https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 
 3. RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware  https://dl.acm.org/doi/10.1145/3710848.3710885
 
+4. 網路開源barnes-hut project: https://github.com/DeadlockCode/barnes-hut
+
 (預計於2月底前先定義好問題，設計baseline)
 
 ---
