@@ -1,2 +1,11 @@
+src/
 *.exe
 *.csv
+build/
+*.csv
+*.png
+*.o
+*.out
+*.exe
+*.log
+.vscode/
