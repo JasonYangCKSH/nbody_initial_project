@@ -18,16 +18,20 @@ public:
         this->attract(); // calculate gravitational forces and update accelerations
         frame++;
     }
-
+    
 private:
     void iterate() {
         for (Body& body : bodies) 
             body.update(dt);
     }
+    void attract() {
+        
+    }
     void collide() {
 
     }
-    void attract() {
+
+    void resolve(int i, int j) {
 
     }
 };

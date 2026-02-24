@@ -11,7 +11,7 @@ public:
     glm::vec3 center;
     float size;
 
-    void new_containing(const std::vector<Body>& bodies) {
+    Oct new_containing(const std::vector<Body>& bodies) {
         float min_x = std::numeric_limits<float>::max();
         float min_y = std::numeric_limits<float>::max();
         float min_z = std::numeric_limits<float>::max();
@@ -30,7 +30,9 @@ public:
         
         center = glm::vec3(min_x + max_x, min_y + max_y, min_z + max_z) * 0.5f;
         size = std::max({max_x - min_x, max_y - min_y, max_z - min_z});
-
+    
+        return *this;
+    
     }
 
 
