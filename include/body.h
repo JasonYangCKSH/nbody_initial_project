@@ -17,7 +17,7 @@ public:
         mass = _mass;
         radius = _radius;
     }
-    void Update(float dt) {
+    void update(float dt) {
         vel += acc * dt; // v0 = v0 + a*t
         pos += vel * dt; // r0 = r0 + v*t
     }
