@@ -20,17 +20,34 @@ public:
     }
     
 private:
+    // Kinematics "Update"
     void iterate() {
         for (Body& body : bodies) 
             body.update(dt);
     }
+    // Barnes-Hut Logic
     void attract() {
+        // 1.set up octree boundary
+        Oct boundary = Oct().new_containing(bodies);
+
+        // 2.clear and rebuild octree ==> BOTTLENECK
+        octree.clear(boundary);
+        for (Body& body : bodies)
+            octree.insert(body.pos, body.mass);
+
+        // 3.propagate mass and center of mass up the tree
+        octree.propagate();
+
+        // 4.calculate acceleration for each body
+        for (Body& body : bodies)
+            body.acc = octree.calculate_acc(body.pos);
         
     }
+    // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
 
     }
-
+    // Resolve collision between body i and body j
     void resolve(int i, int j) {
 
     }
