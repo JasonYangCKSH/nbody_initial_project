@@ -46,8 +46,8 @@ private:
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
         // temporarily use O(n^2) to find the neighbor body
-        for (int i = 0; i < i < bodies.size(); i++) {
-            for (int j = i + 1; j < bodies.size(); j++) {
+        for (int i = 0;  i < (int)bodies.size(); i++) {
+            for (int j = i + 1; j < (int)bodies.size(); j++) {
                 
                 float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
                 float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
