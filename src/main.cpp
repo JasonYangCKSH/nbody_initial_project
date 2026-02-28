@@ -1,54 +1,58 @@
 #include <iostream>
 #include <vector>
-#include <random>
-#include <iomanip>
-#include <chrono>
-#include "octree.h"
+#include <glm/glm.hpp>
+#include "simulation.h"
+#include "body.h"
+
 int main() {
-    
-    const int N = 1000000, STEPS = 100; 
-    const float DT = 0.01f, THETA = 1.0f, EPSILON = 0.01f;
-    const float G = 1.0f;
-    // bodies list
-    std::vector<Body> bodies;
-    bodies.resize(N);
+    // 1. Initialize Simulation Parameters
+    // dt = 0.01s, theta = 0.5 (accuracy), epsilon = 0.1 (softening)
+    float dt = 0.01f;
+    float theta = 0.5f;
+    float epsilon = 0.1f;
+    Simulation sim(dt, theta, epsilon);
 
-    std::mt19937 gen(42);
-    std::uniform_real_distribution<float> dist(-100.f, 100.f);
-    
-    for (auto& b : bodies) {
-        b.pos = {dist(gen), dist(gen), dist(gen)};
-        b.mass = 1.0f; b.vel = {0.f, 0.f, 0.f};
-    
+    // 2. Create some initial bodies
+    // Example: Two bodies attracting each other
+    Body sun(
+        glm::vec3(0.0f, 0.0f, 0.0f),    // Position
+        glm::vec3(0.0f, 0.0f, 0.0f),    // Velocity
+        glm::vec3(0.0f, 0.0f, 0.0f),    // Acceleration
+        1000.0f,                        // Mass
+        1.0f                            // Radius
+    );
+
+    Body planet(
+        glm::vec3(10.0f, 0.0f, 0.0f),   // Position
+        glm::vec3(0.0f, 5.0f, 0.0f),    // Velocity (Orbiting speed)
+        glm::vec3(0.0f, 0.0f, 0.0f),    // Acceleration
+        1.0f,                           // Mass
+        0.2f                            // Radius
+    );
+
+    sim.bodies.push_back(sun);
+    sim.bodies.push_back(planet);
+
+    std::cout << "Starting Simulation with " << sim.bodies.size() << " bodies..." << std::endl;
+    std::cout << "----------------------------------------------" << std::endl;
+
+    // 3. Run Simulation Loop
+    int total_steps = 100;
+    for (int i = 0; i < total_steps; ++i) {
+        sim.step();
+
+        // Print progress every 10 steps
+        if (i % 10 == 0) {
+            std::cout << "Frame: " << sim.frame << std::endl;
+            for (size_t b = 0; b < sim.bodies.size(); ++b) {
+                const auto& p = sim.bodies[b].pos;
+                std::cout << "  Body " << b << " Pos: (" << p.x << ", " << p.y << ", " << p.z << ")" << std::endl;
+            }
+            std::cout << "-----------------------" << std::endl;
+        }
     }
 
-    // initialize an octree
-    Octree tree(THETA, EPSILON);
-    Oct boundary;
-    boundary.new_containing(bodies);
+    std::cout << "Simulation finished." << std::endl;
 
-    auto start = std::chrono::high_resolution_clock::now();
-    
-    // ----build the octree----
-    tree.clear(boundary);
-    for (const auto& b: bodies){
-        tree.insert(b.pos, b.mass);
-    }
-    tree.propagate();
-    // ------------------------
-
-
-    for (auto& b : bodies) {
-        glm::vec3 acc = tree.calculate_acc(b.pos) * G;
-        b.vel += acc * DT;
-        b.pos += b.vel * DT;
-    }
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed = end - start;
-
-    std::cout << "Particles: " << N << "\nNodes: " << tree.nodes.size() << "\n";
-    std::cout << "Root Mass: " << tree.nodes[0].total_mass << " (Check sum)\n";
-    std::cout << "Execution Time: " << elapsed.count() << " ms\n";
     return 0;
 }
