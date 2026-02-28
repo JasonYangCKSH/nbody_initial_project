@@ -37,7 +37,7 @@ int main() {
     std::cout << "----------------------------------------------" << std::endl;
 
     // 3. Run Simulation Loop
-    int total_steps = 100;
+    int total_steps = 1000000;
     for (int i = 0; i < total_steps; ++i) {
         sim.step();
 
