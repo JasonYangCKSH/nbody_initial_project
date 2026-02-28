@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include <glm/glm.hpp>
 #include "simulation.h"
 #include "body.h"
@@ -10,6 +11,7 @@ int main() {
     float dt = 0.01f;
     float theta = 0.5f;
     float epsilon = 0.1f;
+    std::ofstream fout("output.csv");
     Simulation sim(dt, theta, epsilon);
 
     // 2. Create some initial bodies
@@ -40,7 +42,12 @@ int main() {
     int total_steps = 1000000;
     for (int i = 0; i < total_steps; ++i) {
         sim.step();
-
+        for (size_t b = 0; b < sim.bodies.size(); b++) {
+            glm::vec3 position = sim.bodies[b].pos;
+            fout << position.x << " " << position.y << " " << position.z << "\t"; 
+        } 
+        fout << "\n";
+        /*
         // Print progress every 10 steps
         if (i % 10 == 0) {
             std::cout << "Frame: " << sim.frame << std::endl;
@@ -49,9 +56,9 @@ int main() {
                 std::cout << "  Body " << b << " Pos: (" << p.x << ", " << p.y << ", " << p.z << ")" << std::endl;
             }
             std::cout << "-----------------------" << std::endl;
-        }
+        }*/
     }
-
+    fout.close();
     std::cout << "Simulation finished." << std::endl;
 
     return 0;
