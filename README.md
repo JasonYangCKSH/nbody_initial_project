@@ -108,6 +108,8 @@ https://hackmd.io/aaZ9QlPsTau3RrRKIMhVOw
 
 (預計於2月底前先定義好問題，設計baseline)
 
+**baseline 暫存於JasonYangCKSH-patch-1**
+
 ---
 
 使用base44 來協助製作3d版本的星球模擬器https://celestial-dynamics-simulator-b0221e1b.base44.app/
