@@ -220,7 +220,7 @@ public:
         }
     }
 
-    // 計算給定位置受到的加速度 (Barnes-Hut 核心遍歷)
+    // 5.calculate_acc():計算給定位置受到的加速度 (Barnes-Hut 核心遍歷)
     glm::vec3 calculate_acc(glm::vec3 target_pos) const {
         glm::vec3 acceleration(0.0f);
         int node_idx = ROOT;
@@ -228,6 +228,7 @@ public:
         while (true) {
             const Node& n = nodes[node_idx];
             glm::vec3 d = n.com_pos - target_pos;
+            //計算內積
             float d_sq = glm::dot(d, d);
 
             // Barnes-Hut 判斷公式: s / d < theta
