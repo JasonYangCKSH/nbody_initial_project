@@ -72,8 +72,11 @@ public:
 };
 class Node {
 public:
+    // --------------這些都是index-----------------
     int first_child;  // first child node's index
     int next_sibling;  // next sibling
+    // -------------------------------------------
+    
     glm::vec3 com_pos;  // position of "center of mass"
     float total_mass;  // total mass of all the particles in the node
     Oct boundary;
@@ -115,15 +118,15 @@ public:
         nodes.emplace_back(0, rootBoundary);
     }
 
-    // 細分節點 (3D 版會產生 8 個孩子)
+    // 2.subdivide(): 細分節點 (3D 版會產生 8 個孩子)，與Oct的subdivide()不同
     int subdivide(int node_idx) {
         parents.push_back(node_idx);  // 記錄有子節點的父節點索引
         int first_child_idx = nodes.size();  // new children will be added at the end of the nodes vector
         nodes[node_idx].first_child = first_child_idx;
 
-        // --recursively subdivide the boundary into 8 octants--
+        // 同時利用Oct的subdivide來劃分boundary
         std::array<Oct, 8> sub_boundaries = nodes[node_idx].boundary.subdivide();
-        // -----------------------------------------------------
+        
 
         // 設定 8 個孩子的 next 指標
         // 前 7 個孩子指向下一個兄弟，最後一個孩子指向父節點的下一個兄弟
