@@ -76,7 +76,7 @@ public:
     int first_child;  // first child node's index
     int next_sibling;  // next sibling
     // -------------------------------------------
-    
+
     glm::vec3 com_pos;  // position of "center of mass"
     float total_mass;  // total mass of all the particles in the node
     Oct boundary;
@@ -129,7 +129,7 @@ public:
         
 
         // 設定 8 個孩子的 next 指標
-        // 前 7 個孩子指向下一個兄弟，最後一個孩子指向父節點的下一個兄弟
+        // 前 7 個孩子指向下一個sibling，最後一個child指向父節點的下一個兄弟
         for (int i = 0; i < 8; ++i) {
             int next_val = (i < 7) ? (first_child_idx + i + 1) : nodes[node_idx].next_sibling;
             nodes.emplace_back(next_val, sub_boundaries[i]);
@@ -138,7 +138,7 @@ public:
         return first_child_idx;
     }
 
-    // 插入粒子
+    // 3.insert():插入body
     void insert(glm::vec3 pos, float mass) {
         int node_idx = ROOT;
 
