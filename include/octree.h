@@ -1,3 +1,9 @@
+// ***************************************************
+// octree.h: 
+// 此資料結構針對三維空間進行切割，並且
+// 記錄各個切分的空間的質量(mass)與質心(center of mass)，
+// 不存放body本身。
+// ***************************************************
 #ifndef OCTREE_H
 #define OCTREE_H
 #include <glm/glm.hpp>
@@ -122,7 +128,10 @@ public:
     int subdivide(int node_idx) {
         parents.push_back(node_idx);  // 記錄有子節點的父節點索引
         int first_child_idx = nodes.size();  // new children will be added at the end of the nodes vector
+        
+        //藉由first_child來記錄其子節點位於vector的哪裡，故不須重新排列vector
         nodes[node_idx].first_child = first_child_idx;
+        
 
         // 同時利用Oct的subdivide來劃分boundary
         std::array<Oct, 8> sub_boundaries = nodes[node_idx].boundary.subdivide();
@@ -147,6 +156,7 @@ public:
             int octant = nodes[node_idx].boundary.findOctant(pos);
             node_idx = nodes[node_idx].first_child + octant;
         }
+        
 
         // 2. 如果是空葉子，直接放入
         if (nodes[node_idx].isEmpty()) {
@@ -165,9 +175,9 @@ public:
 
         // 4. 衝突衝突！開始細分直到兩個粒子分開
         while (true) {
-            // --recursively subdivide--
+            
             int children_idx = subdivide(node_idx);
-            // -------------------------
+            
 
             int q1 = nodes[node_idx].boundary.findOctant(p);
             int q2 = nodes[node_idx].boundary.findOctant(pos);
@@ -187,7 +197,7 @@ public:
         }
     }
 
-    // 從葉子向上傳遞，計算各節點的重心與總質量
+    // 4.propagate():從葉子向上傳遞，計算各節點的重心與總質量
     void propagate() {
         // 從最後建立的父節點開始反向遍歷 (即從底向上)
         for (auto it = parents.rbegin(); it != parents.rend(); ++it) {
