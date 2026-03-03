@@ -21,6 +21,7 @@ public:
 private:
     // Kinematics "Update"
     void iterate() {
+        // 如果粒子數目巨大，可能造成效能瓶頸
         for (Body& body : bodies) 
             body.update(dt);
     }
@@ -30,6 +31,7 @@ private:
         Oct boundary = Oct().new_containing(bodies);
 
         // 2.clear and rebuild octree ==> BOTTLENECK
+        // 每次都要重建一棵樹，造成效能瓶頸
         octree.clear(boundary);
         for (Body& body : bodies)
             octree.insert(body.pos, body.mass);
