@@ -6,11 +6,13 @@
 #include <algorithm>
 #include "body.h"
 // boundary class for octree node
+// *****"class Oct" 即為boundary，起初沒有命名完善*****
 class Oct {
 public:
     glm::vec3 center;
     float size;
 
+    // 1.new_containing():回傳該Node的boundary
     Oct new_containing(const std::vector<Body>& bodies) {
         float min_x = std::numeric_limits<float>::max();
         float min_y = std::numeric_limits<float>::max();
@@ -33,9 +35,9 @@ public:
     
         return *this;
     
-    }
+    } // end function
 
-
+    // 2.findOctant():找到該pos(position)位於哪個index
     int findOctant(glm::vec3 pos) const {
         int index = 0;
         if (pos.x > center.x) index |= 1;
@@ -43,8 +45,9 @@ public:
         if (pos.z > center.z) index |= 4;
         
         return index;
-    }
-
+    } // end function
+    
+    // 3.get_octant_boundary():取得該index的Oct資訊(center、size)
     Oct get_octant_boundary(int index) const {
         Oct sub;
         sub.size = size * 0.5f; 
@@ -55,14 +58,17 @@ public:
 
         sub.center = center + glm::vec3(offsetX, offsetY, offsetZ);
         return sub;
-    }
+    } // end function
 
+
+    // 4.subdivide():基於當前的boundary進行劃分，回傳8個子boundary的Oct
     std::array<Oct, 8> subdivide() const {
+        // 
         std::array<Oct, 8> children;
         for (int i = 0; i < 8; ++i)
             children[i] = get_octant_boundary(i);
         return children;
-    }
+    } // end function
 };
 class Node {
 public:
@@ -88,18 +94,21 @@ public:
 };
 class Octree {
 public:
+    // ------使用平方來節省根號時間開銷------
     float t_sq;  // theta squared
     float e_sq;  // epsilon squared
-    std::vector<Node> nodes;
-    std::vector<int> parents; // index of the nodes with children
+    // ------------------------------------
+    std::vector<Node> nodes; // Octree 資料結構本體，採取vector形式存放
+    std::vector<int> parents; // index of the nodes with children 
+                              // (額外做一個vector來存放parents' index，方便cache)
 
-    static const int ROOT = 0;
+    static const int ROOT = 0;  // ROOT's index = 0
 
     Octree(float theta, float epsilon) {
         t_sq = theta * theta;
         e_sq = epsilon * epsilon;
     }
-
+    // 1. clear(): reset or initialize the Octree
     void clear(Oct rootBoundary) {
         nodes.clear();
         parents.clear();
@@ -113,7 +122,7 @@ public:
         nodes[node_idx].first_child = first_child_idx;
 
         // --recursively subdivide the boundary into 8 octants--
-        auto sub_boundaries = nodes[node_idx].boundary.subdivide();
+        std::array<Oct, 8> sub_boundaries = nodes[node_idx].boundary.subdivide();
         // -----------------------------------------------------
 
         // 設定 8 個孩子的 next 指標
