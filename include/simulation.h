@@ -2,8 +2,7 @@
 #define SIMULATION_H
 #include <vector>
 #include <glm/glm.hpp>
-#include "octree.h"
-#include "body.h"
+#include "octree.h" 
 class Simulation {
 public:
     float dt;  // time step
