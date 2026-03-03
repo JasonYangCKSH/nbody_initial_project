@@ -1,8 +1,10 @@
 #include <iostream>
 #include <vector>
+#include <array>
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <random>
 #include <SFML/Graphics.hpp>
 #include "simulation.h"
 #include "body.h"
@@ -53,14 +55,32 @@ void simulation_thread(Simulation& sim) {
 
 int main() {
     // 初始化物理引擎
-    float dt = 0.01f;
-    float theta = 0.5f;
-    float epsilon = 0.1f;
-    Simulation sim(dt, theta, epsilon);
+    /*float dt = 0.01f;
+    float theta = 0.0f;
+    float epsilon = 0.1f;*/
+    std::array<float, 3> datas;
+    for (int i = 0; i < 3; i++) {
+        if (i == 0) std::cout << "please input dt: ";
+        if (i == 1) std::cout << "please input theta: ";
+        if (i == 2) std::cout << "please input epsilon: ";
+        std::cin >> datas[i];
+    }
+    Simulation sim(datas[0], datas[1], datas[2]);
 
     // 隨機初始化一些粒子 (與你之前的 main 相同)
     // sim.bodies.push_back(...)
+    std::mt19937 gen(42);
+    std::uniform_real_distribution<float> disPos(-50.0f, 50.0f);
+    size_t bodyNum = 10000;
+    for (size_t i = 0; i < bodyNum; i++) {
 
+        Body b;
+        b.pos = glm::vec3(disPos(gen), disPos(gen), disPos(gen));
+        b.vel = glm::vec3(0.0f); 
+        b.mass = 5.0f;
+        b.radius = 0.2f;
+        sim.bodies.push_back(b);
+    }
     // --- 啟動物理執行緒 (std::thread::spawn) ---
     std::thread physics_thread(simulation_thread, std::ref(sim));
     physics_thread.detach(); // 讓他在背景跑
