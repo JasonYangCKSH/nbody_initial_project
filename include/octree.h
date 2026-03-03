@@ -168,12 +168,13 @@ public:
         // 3. 如果已有粒子且位置相同，累加質量 (避免無限細分)
         glm::vec3 p = nodes[node_idx].com_pos;
         float m = nodes[node_idx].total_mass;
+        // 位置(index)相同就不必繼續細分
         if (pos == p) {
             nodes[node_idx].total_mass += mass;
             return;
         }
 
-        // 4. 衝突衝突！開始細分直到兩個粒子分開
+        // 4. 衝突！開始細分直到兩個粒子分開
         while (true) {
             
             int children_idx = subdivide(node_idx);
