@@ -6,6 +6,8 @@
 #include <atomic>
 #include <random>
 #include <SFML/Graphics.hpp>
+
+#include <glm/gtc/constants.hpp>
 #include "simulation.h"
 #include "body.h"
 
@@ -13,7 +15,7 @@
 namespace Renderer {
     std::atomic<bool> PAUSED(false);
     std::mutex BODIES_LOCK;
-    std::mutex QUADTREE_LOCK;
+    std::mutex OCTREE_LOCK;
     std::mutex UPDATE_LOCK;
     
     std::vector<Body> SHARED_BODIES;    // 渲染用的 Body 拷貝
@@ -42,9 +44,9 @@ void simulation_thread(Simulation& sim) {
                 Renderer::SHARED_BODIES = sim.bodies; // C++ vector 的賦值是深拷貝
             }
 
-            // 同步 Quadtree (如果有需要畫出樹狀結構的話)
+            // 同步 Octree (如果有需要畫出樹狀結構的話)
             {
-                std::lock_guard<std::mutex> lock_tree(Renderer::QUADTREE_LOCK);
+                std::lock_guard<std::mutex> lock_tree(Renderer::OCTREE_LOCK);
                 // Renderer::SHARED_NODES = sim.octree.nodes; 
             }
 
@@ -70,15 +72,42 @@ int main() {
     // 隨機初始化一些粒子 (與你之前的 main 相同)
     // sim.bodies.push_back(...)
     std::mt19937 gen(42);
-    std::uniform_real_distribution<float> disPos(-50.0f, 50.0f);
-    size_t bodyNum = 10000;
-    for (size_t i = 0; i < bodyNum; i++) {
+    // 讓粒子分佈在一個圓盤上，而不是正立方體
+    std::uniform_real_distribution<float> disRadius(10.0f, 50.0f); // 距離中心的距離
+    std::uniform_real_distribution<float> disAngle(0.0f, 2.0f * 3.14159f);
+    std::uniform_real_distribution<float> disZ(-1.0f, 1.0f); // 讓星系扁平化
 
+    size_t bodyNum = 10000;
+
+    // --- A. 先建立中心黑洞 ---
+    Body blackHole;
+    blackHole.pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    blackHole.vel = glm::vec3(0.0f, 0.0f, 0.0f);
+    blackHole.mass = 100000.0f; // 質量設定為普通粒子的 20,000 倍
+    blackHole.radius = 1.0f;    // 視覺上大一點點
+    sim.bodies.push_back(blackHole);
+
+    // --- B. 建立環繞粒子 ---
+    for (size_t i = 0; i < bodyNum; i++) {
+        float r = disRadius(gen);
+        float theta = disAngle(gen);
+        
         Body b;
-        b.pos = glm::vec3(disPos(gen), disPos(gen), disPos(gen));
-        b.vel = glm::vec3(0.0f); 
-        b.mass = 5.0f;
-        b.radius = 0.2f;
+        // 極坐標轉直角坐標 (建立圓盤分佈)
+        b.pos.x = r * cos(theta);
+        b.pos.y = r * sin(theta);
+        b.pos.z = disZ(gen);
+
+        // 計算切線速度：為了讓粒子繞著中心轉，不直接掉進去
+        // 軌道速度公式近似：v = sqrt(G * M_central / r)
+        // 這裡我們手動給一個合適的比例即可
+        float orbitalSpeed = sqrt(1.0f * blackHole.mass / r) * 0.8f; 
+        b.vel.x = -sin(theta) * orbitalSpeed;
+        b.vel.y = cos(theta) * orbitalSpeed;
+        b.vel.z = 0.0f;
+
+        b.mass = 1.0f;
+        b.radius = 0.1f;
         sim.bodies.push_back(b);
     }
     // --- 啟動物理執行緒 (std::thread::spawn) ---
