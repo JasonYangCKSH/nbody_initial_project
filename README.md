@@ -5,7 +5,7 @@
 * 每週在此倉庫紀錄專題進度。
 * 可事先規劃每週的預期項目。
 Google Meet連結:
-  https://meet.google.com/ubr-ifti-mfi
+ https://meet.google.com/kcz-wwxd-mxw
 ### 專題主題：改進BH-Octree演算法及模擬展示
 * 建立這棵樹後就固定存在、物件移動時就reinsert（或 loose 容忍）、只更新受影響路徑摘要
 ### 專題方向
