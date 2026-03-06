@@ -15,3 +15,5 @@
 - A N-body Simulation using a
 Bounding Volume Hierarchy
 Structure **(2025)**: https://lup.lub.lu.se/luur/download?func=downloadFile&recordOId=9184695&fileOId=9184697
+
+- N-body interactions and collisions in circumstellar discs for planar and inclined binary star configurations **(2025)** : https://academic.oup.com/mnras/article/545/4/staf2230/8383414?guestAccessKey=
