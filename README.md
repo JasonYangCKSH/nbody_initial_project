@@ -3,3 +3,11 @@
 ## Reference:
 
 - GitHub barnes-hut alrorithm: https://github.com/DeadlockCode/barnes-hut
+
+- A Fast Parallel Processing Algorithm for Triangle Collision Detection Based on AABB and Octree Space Slicing in Unity3D(2025): https://ieeexplore.ieee.org/abstract/document/10820353
+
+- Load balancing n-body simulations with highly non-uniform density(2014): https://dl.acm.org/doi/abs/10.1145/2597652.2597659
+
+- SX-FlatTree: Pointerless Multi-Level Barnes-Hut N-Body Simulation via Z-Order Morton Encoding and Atomic Dispatch(2026): https://www.researchgate.net/profile/Andres-Pirolo-2/publication/401427307_L_O_R_SX-FlatTree_Pointerless_Multi-Level_Barnes-Hut_N-Body_Simulation_via_Z-Order_Morton_Encoding_and_Atomic_Dispatch_201_speedup_over_ON_2_exact_at_055_force_error_Empirical_Pareto_frontier_for_N10_/links/69a55b01003023747db36175/L-O-R-SX-FlatTree-Pointerless-Multi-Level-Barnes-Hut-N-Body-Simulation-via-Z-Order-Morton-Encoding-and-Atomic-Dispatch-201-speedup-over-ON-2-exact-at-055-force-error-Empirical-Pareto-frontier-for-N10.pdf
+
+
