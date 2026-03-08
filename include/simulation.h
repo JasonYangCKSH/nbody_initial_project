@@ -13,7 +13,7 @@ public:
         dt(_dt), frame(0), octree(theta, epsilon) {}
     void step() {
         this->iterate();  // update positions and velocities
-        this->collide(); // handle collisions
+        this->collide(); // handle collisions (find neighbor)
         this->attract(); // calculate gravitational forces and update accelerations
         frame++;
     }
