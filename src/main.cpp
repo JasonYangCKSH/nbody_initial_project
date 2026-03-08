@@ -57,9 +57,7 @@ void simulation_thread(Simulation& sim) {
 
 int main() {
     // 初始化物理引擎
-    /*float dt = 0.01f;
-    float theta = 0.0f;
-    float epsilon = 0.1f;*/
+
     std::array<float, 3> datas;
     for (int i = 0; i < 3; i++) {
         if (i == 0) std::cout << "please input dt: ";
@@ -110,6 +108,10 @@ int main() {
         b.radius = 0.1f;
         sim.bodies.push_back(b);
     }
+
+
+
+    // ---------------------------------------------------------------------
     // --- 啟動物理執行緒 (std::thread::spawn) ---
     std::thread physics_thread(simulation_thread, std::ref(sim));
     physics_thread.detach(); // 讓他在背景跑
@@ -144,6 +146,6 @@ int main() {
         window.draw(va);
         window.display();
     }
-
+    // ---------------------------------------------------------------------
     return 0;
 }
