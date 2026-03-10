@@ -23,7 +23,7 @@
 
 1. 當前本專題的Octree專注於空間的分割，並套入barnes-hut演算法進行加速，然而在collision detection的部分，仍在使用$O(n^2)$，這部分的演算法我看原rust專案是採用call API的形式(broccoli)，這邊考慮採用c++實作，並設計三種比較的case(Brute force, BVH, uniform grid)。
 
-2. data mining的部分插入點可能著重於星體的探索，找尋星體相關資料。
+2. data mining的部分插入點可能著重於星體的探索，找尋星體相關資料，以此project來說，會著重於main.cpp。
 
 ## 預期規劃：
 **3/8 - 3/25:**
