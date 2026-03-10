@@ -34,7 +34,7 @@
 ## 預期規劃：
 **3/8 - 3/25:**
 - 專注於AABB based BVH實作，並且測試效能(Brute force, BVH, uniform grid)
-- 導入極端案例**質量巨大黑洞**。
+- 導入極端案例(ex: extreme load-imbalanced case)。
 ## Reference:
 
 - GitHub barnes-hut alrorithm: https://github.com/DeadlockCode/barnes-hut
