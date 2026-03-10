@@ -1,4 +1,9 @@
 # Baseline for barnes-hut algorithm (still under construction)
+1. AABB(broccoli)、BVH
+2. Load Balancing
+3. SIMD(AVX)
+4. OPENMP/TBB ==> Parallel Computing
+5. data mining: 判斷哪些Body set正在形成特殊天體
 ## 預期規劃：
 **3/8 - 3/25:**
 
