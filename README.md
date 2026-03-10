@@ -12,7 +12,7 @@
 - BVH（Bounding Volume Hierarchy）: 將每個AABB存成樹狀結構，判斷在**極端環境(ex: 超大質量黑洞)**時是否能比Uniform Grid來的有效率。
 ## Question:
 
-1. 當前本專題的Octree專注於空間的分割，並套入barnes-hut演算法進行加速，然而在collision detection的部分，仍在使用$O(n^2)$，這部分的演算法我看原rust專案是採用call API的形式(broccoli)，這邊考慮採用c++實作，並設計三種比較的case
+1. 當前本專題的Octree專注於空間的分割，並套入barnes-hut演算法進行加速，然而在collision detection的部分，仍在使用$O(n^2)$，這部分的演算法我看原rust專案是採用call API的形式(broccoli)，這邊考慮採用c++實作，並設計三種比較的case(Brute force, BVH, uniform grid)。
 
 
 
