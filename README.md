@@ -1,14 +1,14 @@
 # Baseline for barnes-hut algorithm (still under construction)
 ## Keywords:
-1. AABB(broccoli)、BVH
+1. AABB(Axis-aligned Bounding Box)、BVH（Bounding Volume Hierarchy）
 2. Load Balancing
 3. SIMD(AVX)
 4. OPENMP/TBB ==> Parallel Computing
 5. data mining: 判斷哪些Body set正在形成特殊天體
 ## Key points:
-### [Barnes-hut octree] vs [AABB(Axis-aligned Bounding Box) based BVH(Bounding Volume Hierarchy)]
+### [Barnes-hut octree] vs [AABB based BVH]
 - Barnes-hut algorithm: 應用於**octree空間分割、計算body之間的重力吸引**，屬於**空間層級**。
-- AABB: 應用於**天體(body的集合)**，用來處理如**兩個星系**碰撞之類的問題。
+- AABB(Axis-aligned Bounding Box): 應用於**天體(body的集合)**，用來處理如**兩個星系**碰撞之類的問題。
 - BVH（Bounding Volume Hierarchy）: 將每個AABB存成樹狀結構，判斷在**極端環境(ex: 超大質量黑洞)**時是否能比Uniform Grid來的有效率。
 ## Question:
 
