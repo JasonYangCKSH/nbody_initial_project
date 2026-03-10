@@ -10,12 +10,15 @@
 - Barnes-hut algorithm: 應用於**octree空間分割、計算body之間的重力吸引**，屬於**空間層級**。
 - AABB(Axis-aligned Bounding Box): 應用於**天體(body的集合)**，用來處理如**兩個星系**碰撞之類的問題。
 - BVH（Bounding Volume Hierarchy）: 將每個AABB存成樹狀結構，判斷在**極端環境(ex: 超大質量黑洞)**時是否能比Uniform Grid來的有效率。
+'''
+
 | Method     | Primary Purpose                  | Structure         |
 | ---------- | -------------------------------- | ----------------- |
 | Barnes–Hut | 優化計算重力的時間複雜度           | Octree            |
 | AABB       | bounding volume representation   | box               |
 | BVH        | collision detection acceleration | hierarchical tree |
 
+'''
 ## Question:
 
 1. 當前本專題的Octree專注於空間的分割，並套入barnes-hut演算法進行加速，然而在collision detection的部分，仍在使用$O(n^2)$，這部分的演算法我看原rust專案是採用call API的形式(broccoli)，這邊考慮採用c++實作，並設計三種比較的case(Brute force, BVH, uniform grid)。
