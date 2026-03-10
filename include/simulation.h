@@ -46,6 +46,8 @@ private:
     }
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
+        // can use something like AABB(Axis-Aligned Bounding Box) 
+        // also BVH (related to Load Balance and particle density)
         // temporarily use O(n^2) to find the neighbor body
         for (int i = 0;  i < (int)bodies.size(); i++) {
             for (int j = i + 1; j < (int)bodies.size(); j++) {
