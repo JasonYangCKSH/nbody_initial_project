@@ -4,7 +4,7 @@
 2. Load Balancing
 3. SIMD(AVX)
 4. OPENMP/TBB ==> Parallel Computing
-5. data mining: 判斷哪些Body set正在形成特殊天體
+5. data mining: 判斷哪些Body set正在形成特殊天體 (天文模擬)
 ## Key points:
 ### [Barnes-hut octree] vs [AABB based BVH]
 - Barnes-hut algorithm: 應用於**octree空間分割、計算body之間的重力吸引**，屬於**空間層級**。
