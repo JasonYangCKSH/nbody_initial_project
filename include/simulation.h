@@ -23,7 +23,7 @@ private:
     void iterate() {
         // 如果粒子數目巨大，可能造成效能瓶頸
         for (Body& body : bodies) 
-            body.update(dt);
+            body.update(dt);  
     }
     // Barnes-Hut Logic
     void attract() {
@@ -31,7 +31,7 @@ private:
         Oct boundary = Oct().new_containing(bodies);
 
         // 2.clear and rebuild octree ==> BOTTLENECK
-        // 每次都要重建一棵樹，造成效能瓶頸
+        // 每次都要重建一棵樹，造成效能瓶頸---------------->>>>>fix
         octree.clear(boundary);
         for (Body& body : bodies)
             octree.insert(body.pos, body.mass);
@@ -50,7 +50,7 @@ private:
         // also BVH (related to Load Balance and particle density)
         // temporarily use O(n^2) to find the neighbor body
         for (int i = 0;  i < (int)bodies.size(); i++) {
-            for (int j = i + 1; j < (int)bodies.size(); j++) {
+            for (int j = i + 1; j < (int)bodies.size(); j++) {  // ----------------->>>fix
                 
                 float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
                 float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
