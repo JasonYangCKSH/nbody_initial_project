@@ -25,15 +25,15 @@
 
 2. data mining的部分插入點可能著重於星體的探索，找尋星體相關資料，以此project來說，可能會找較為load-imbalanced的case來跑。
 
-    testbench example: 
+    **testbench example:** 
 
-    a. 超大質量黑洞 + stellar cusp：大量恆星聚集在非常小的區域
+    **(a)** 超大質量黑洞 + stellar cusp：大量恆星聚集在非常小的區域
     
-    b. 星系碰撞：(Milky Way–Andromeda collision)：
+    **(b)** 星系碰撞：(Milky Way–Andromeda collision)：
 
-    c. 球狀星團核心塌縮(Core collapse)：stars gradually migrate toward center -->許多body往中心攤縮，這時基礎的barnes-hut algorithm就會出現錯誤。
+    **(c)** 球狀星團核心塌縮(Core collapse)：stars gradually migrate toward center -->許多body往中心攤縮，這時基礎的barnes-hut algorithm就會出現錯誤。
 
-    d. tidal disruption event(潮汐瓦解事件)
+    **(d)** tidal disruption event(潮汐瓦解事件)
 
 3.論文方面：
 - A Fast Parallel Processing Algorithm for Triangle Collision Detection Based on AABB and Octree Space Slicing in Unity3D **(2025)**
