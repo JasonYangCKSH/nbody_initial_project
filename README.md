@@ -37,7 +37,10 @@
 
 3.論文方面：
 - A Fast Parallel Processing Algorithm for Triangle Collision Detection Based on AABB and Octree Space Slicing in Unity3D **(2025)**
+
 - Load balancing n-body simulations with highly non-uniform density **(2014)**
+
+- 將AoS的Body改為SoA
 
 上述兩篇論文會是與我目前實作的方向較直接相關，未來兩周將參考這兩篇論文進行實作
 
