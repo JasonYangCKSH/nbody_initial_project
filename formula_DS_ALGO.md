@@ -20,9 +20,9 @@ $$
 
 ### (2) 向量形式（N-body simulation常用）
 
-[
+$$
 \vec F_i = \sum_j G\frac{m_i m_j}{r_{ij}^3}(\vec x_j-\vec x_i)
-]
+$$
 
 ---
 
