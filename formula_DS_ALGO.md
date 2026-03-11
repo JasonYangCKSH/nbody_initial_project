@@ -28,24 +28,24 @@ $$
 
 ### (3) 牛頓第二定律
 
-[
+$$
 \vec F = m\vec a
-]
+$$
 
 得到
 
-[
+$$
 \vec a_i =
 \sum_j G\frac{m_j}{r_{ij}^3}(\vec x_j-\vec x_i)
-]
+$$
 
 ---
 
 ### (4) 引力位能
 
-[
+$$
 U = -G\frac{m_i m_j}{r}
-]
+$$
 
 常用於：
 
@@ -55,23 +55,23 @@ U = -G\frac{m_i m_j}{r}
 
 ### (5) 系統總能量
 
-[
+$$
 E = T + U
-]
+$$
 
 其中
 
-[
+$$
 T = \frac12 mv^2
-]
+$$
 
 ---
 
 ### (6) 軌道速度
 
-[
+$$
 v = \sqrt{\frac{GM}{r}}
-]
+$$
 
 用於初始化 orbital system。
 
@@ -79,9 +79,9 @@ v = \sqrt{\frac{GM}{r}}
 
 ### (7) 角動量
 
-[
+$$
 L = r \times mv
-]
+$$
 
 ---
 
@@ -89,10 +89,10 @@ L = r \times mv
 
 避免 (r\to0)
 
-[
+$$
 F =
 G\frac{m_i m_j}{(r^2+\epsilon^2)^{3/2}}
-]
+$$
 
 ---
 
@@ -102,9 +102,9 @@ G\frac{m_i m_j}{(r^2+\epsilon^2)^{3/2}}
 
 與 **潮汐瓦解事件** 有關
 
-[
+$$
 r_t \approx R_* \left(\frac{M_{BH}}{M_*}\right)^{1/3}
-]
+$$
 
 ---
 
@@ -112,23 +112,23 @@ r_t \approx R_* \left(\frac{M_{BH}}{M_*}\right)^{1/3}
 
 與 **史瓦西半徑**
 
-[
+$$
 r_s = \frac{2GM}{c^2}
-]
+$$
 
 ---
 
 ### (3) 密度分佈 (stellar cusp)
 
-[
+$$
 \rho(r) \propto r^{-\gamma}
-]
+$$
 
 典型：
 
-[
+$$
 \gamma \approx 1.5\sim2
-]
+$$
 
 ---
 
@@ -136,10 +136,10 @@ r_s = \frac{2GM}{c^2}
 
 在 **球狀星團** 研究常用
 
-[
+$$
 t_r \sim
 \frac{N}{\ln N}t_{cross}
-]
+$$
 
 ---
 
@@ -270,9 +270,9 @@ struct Node{
 
 時間複雜度
 
-[
+$$
 O(N^2)
-]
+$$
 
 ---
 
@@ -280,9 +280,9 @@ O(N^2)
 
 複雜度
 
-[
+$$
 O(N\log N)
-]
+$$
 
 主要概念
 
@@ -297,9 +297,9 @@ O(N\log N)
 
 複雜度
 
-[
+$$
 O(N)
-]
+$$
 
 但實作很複雜。
 
@@ -309,9 +309,9 @@ O(N)
 
 ### (1) Euler
 
-[
+$$
 x_{t+1}=x_t+v_t dt
-]
+$$
 
 不穩定。
 
@@ -321,9 +321,9 @@ x_{t+1}=x_t+v_t dt
 
 N-body 最常用
 
-[
+##
 v_{t+1/2}=v_t+a_t dt/2
-]
+##
 
 ---
 
