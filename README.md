@@ -46,7 +46,7 @@
 
 ## 預期規劃：
 **3/8 - 3/25:**
-- 專注於AABB based BVH實作，並且測試效能(Brute force, BVH, uniform grid)
+- 專注於AABB based BVH實作(or even KD-tree)，並且測試效能(Brute force, BVH, uniform grid)
 - 將AoS的Body改為SoA，方便之後SIMD的效能優化
 - 導入極端案例(ex: extreme load-imbalanced case)，數據來自符合科學原理的演算法。
 ## Reference:
