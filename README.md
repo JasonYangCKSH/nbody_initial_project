@@ -18,6 +18,15 @@
 | AABB       | bounding volume representation   | box               |
 | BVH        | collision detection acceleration | hierarchical tree |
 
+
+| structure | 優點             | 缺點              |
+| --------- | -------------- | --------------- |
+| Octree    | simple         | cache 不好        |
+| KD-tree   | balanced       | rebuild cost    |
+| BVH       | cache friendly | build algorithm |
+| AABB tree | traversal 快    | dynamic update  |
+
+
 '''
 ## Question:
 
