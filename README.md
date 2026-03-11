@@ -40,13 +40,14 @@
 
 - Load balancing n-body simulations with highly non-uniform density **(2014)**
 
-- 將AoS的Body改為SoA
+
 
 上述兩篇論文會是與我目前實作的方向較直接相關，未來兩周將參考這兩篇論文進行實作
 
 ## 預期規劃：
 **3/8 - 3/25:**
 - 專注於AABB based BVH實作，並且測試效能(Brute force, BVH, uniform grid)
+- 將AoS的Body改為SoA，方便之後SIMD的效能優化
 - 導入極端案例(ex: extreme load-imbalanced case)，數據來自符合科學原理的演算法。
 ## Reference:
 
