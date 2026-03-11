@@ -23,7 +23,15 @@
 
 1. 當前本專題的Octree專注於空間的分割，並套入barnes-hut演算法進行加速，然而在collision detection的部分，仍在使用$O(n^2)$，這部分的演算法我看原rust專案是採用call API的形式(broccoli)，這邊考慮採用c++實作，並設計三種比較的case(Brute force, BVH, uniform grid)。
 
-2. data mining的部分插入點可能著重於星體的探索，找尋星體相關資料，以此project來說，會著重於main.cpp的設計。
+2. data mining的部分插入點可能著重於星體的探索，找尋星體相關資料，以此project來說，可能會找較為load-imbalanced的case來跑。
+
+    testbench example: 
+
+    a. 超大質量黑洞 + stellar cusp：大量恆星聚集在非常小的區域
+    
+    b. 星系碰撞：(Milky Way–Andromeda collision)：
+
+    c. 球狀星團核心塌縮Core collapse：(stars gradually migrate toward center)
 
 3.論文方面：
 - A Fast Parallel Processing Algorithm for Triangle Collision Detection Based on AABB and Octree Space Slicing in Unity3D **(2025)**
@@ -34,7 +42,7 @@
 ## 預期規劃：
 **3/8 - 3/25:**
 - 專注於AABB based BVH實作，並且測試效能(Brute force, BVH, uniform grid)
-- 導入極端案例(ex: extreme load-imbalanced case)。
+- 導入極端案例(ex: extreme load-imbalanced case)，數據來自符合科學原理的演算法。
 ## Reference:
 
 - GitHub barnes-hut alrorithm: https://github.com/DeadlockCode/barnes-hut
