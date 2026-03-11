@@ -1,7 +1,7 @@
 #ifndef BODY_H
 #define BODY_H
 #include <glm/glm.hpp>
-
+// AoS結構
 class Body {
 public:
     glm::vec3 pos;  // position 
