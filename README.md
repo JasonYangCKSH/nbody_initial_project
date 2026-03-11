@@ -31,7 +31,9 @@
     
     b. 星系碰撞：(Milky Way–Andromeda collision)：
 
-    c. 球狀星團核心塌縮Core collapse：(stars gradually migrate toward center)
+    c. 球狀星團核心塌縮(Core collapse)：stars gradually migrate toward center -->許多body往中心攤縮，這時基礎的barnes-hut algorithm就會出現錯誤。
+
+    d. tidal disruption event(潮汐瓦解事件)
 
 3.論文方面：
 - A Fast Parallel Processing Algorithm for Triangle Collision Detection Based on AABB and Octree Space Slicing in Unity3D **(2025)**
