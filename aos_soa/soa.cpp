@@ -33,12 +33,12 @@ int main()
     for (size_t i = 0; i < N; i++)
     {
         p.x[i] = dist(rng);
-        p.y[i] = dist(rng);
-        p.z[i] = dist(rng);
+        //p.y[i] = dist(rng);
+        //p.z[i] = dist(rng);
 
         p.vx[i] = dist(rng);
-        p.vy[i] = dist(rng);
-        p.vz[i] = dist(rng);
+        //p.vy[i] = dist(rng);
+        //p.vz[i] = dist(rng);
     }
     auto end = chrono::high_resolution_clock::now();
     auto start2 = chrono::high_resolution_clock::now();
@@ -46,8 +46,8 @@ int main()
     for (size_t i = 0; i < N; i++)
     {
         p.x[i] += p.vx[i] * dt;
-        p.y[i] += p.vy[i] * dt;
-        p.z[i] += p.vz[i] * dt;
+        //p.y[i] += p.vy[i] * dt;
+        //p.z[i] += p.vz[i] * dt;
     }
     auto end2 = chrono::high_resolution_clock::now();
     chrono::duration<double> dur = end -start;

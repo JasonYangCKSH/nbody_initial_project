@@ -24,12 +24,12 @@ int main()
     for (size_t i = 0; i < N; i++)
     {
         particles[i].x = dist(rng);
-        particles[i].y = dist(rng);
-        particles[i].z = dist(rng);
+        //particles[i].y = dist(rng);
+        //particles[i].z = dist(rng);
 
         particles[i].vx = dist(rng);
-        particles[i].vy = dist(rng);
-        particles[i].vz = dist(rng);
+        //particles[i].vy = dist(rng);
+        //particles[i].vz = dist(rng);
     }
     auto end = chrono::high_resolution_clock::now();
     // update position
@@ -37,8 +37,8 @@ int main()
     for (size_t i = 0; i < N; i++)
     {
         particles[i].x += particles[i].vx * dt;
-        particles[i].y += particles[i].vy * dt;
-        particles[i].z += particles[i].vz * dt;
+        //particles[i].y += particles[i].vy * dt;
+        //particles[i].z += particles[i].vz * dt;
     }
     auto end2 = chrono::high_resolution_clock::now();
     chrono::duration<double> dur = end - start;
