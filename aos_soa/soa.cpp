@@ -28,7 +28,7 @@ int main()
 
     std::mt19937 rng(42);
     std::uniform_real_distribution<double> dist(0.0, 1.0);
-    //auto start = chrono::high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
     // 初始化
     for (size_t i = 0; i < N; i++)
     {
@@ -40,7 +40,7 @@ int main()
         p.vy[i] = dist(rng);
         p.vz[i] = dist(rng);
     }
-    //auto end = chrono::high_resolution_clock::now();
+    auto end = chrono::high_resolution_clock::now();
     auto start2 = chrono::high_resolution_clock::now();
     // update position
     for (size_t i = 0; i < N; i++)
@@ -50,7 +50,7 @@ int main()
         p.z[i] += p.vz[i] * dt;
     }
     auto end2 = chrono::high_resolution_clock::now();
-    //chrono::duration<double> dur = end -start;
+    chrono::duration<double> dur = end -start;
     chrono::duration<double> dur2 = end2 - start2;
-    std::cout /*<< dur.count()*/<<", "<< dur2.count() << std::endl;
+    std::cout << dur.count()<<", "<< dur2.count() << std::endl;
 }
