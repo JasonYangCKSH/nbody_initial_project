@@ -12,7 +12,7 @@ struct Particle
 
 int main()
 {
-    const size_t N = 100000000;
+    const size_t N = 10000000;
     const double dt = 0.01;
 
     std::vector<Particle> particles(N);
