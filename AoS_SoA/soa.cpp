@@ -21,7 +21,7 @@ struct Particles
 
 int main()
 {
-    const size_t N = 1000000;
+    const size_t N = 10000000;
     const double dt = 0.01;
 
     Particles p(N);
