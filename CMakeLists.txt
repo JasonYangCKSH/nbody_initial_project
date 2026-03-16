@@ -34,9 +34,9 @@ find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 # ----------------------------------------------------------------
 add_executable(a 
     src/main.cpp 
-    include/body.h 
-    include/octree.h 
-    include/simulation.h
+    include/body.hpp 
+    include/octree.hpp
+    include/simulation.hpp
 )
 
 # ----------------------------------------------------------------
