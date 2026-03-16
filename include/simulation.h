@@ -4,9 +4,7 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 #include "octree.h" 
-struct Cell {
-    std::vector<int> bodies;
-};
+
 class Simulation {
 public:
     float dt;  // time step
@@ -55,7 +53,7 @@ private:
             body.acc = octree.calculate_acc(body.pos);
         
     }
-    std::unordered_map<glm::vec3, Cell> grid;
+   
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
         // can use something like AABB(Axis-Aligned Bounding Box) 
@@ -83,6 +81,9 @@ private:
     
     
         //----Uniform Grid----------------------------------------------------------------------
+        
+        
+        
         //-------------------------------------------------------------------------------------
 
         //-------------------------------------------------------------------------------------
