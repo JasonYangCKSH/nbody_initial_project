@@ -8,6 +8,8 @@ enum CollideDS{
     BRUTE_FORCE,
     UNIFORM_GRID,
     BVH,
+    SWEEP_AND_PRUNE,
+    OCTREE,
     NONE
 };
 class Simulation {
