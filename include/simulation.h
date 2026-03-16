@@ -4,22 +4,30 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 #include "octree.h" 
-
+enum CollideDS{
+    BRUTE_FORCE,
+    UNIFORM_GRID,
+    BVH,
+    NONE
+};
 class Simulation {
 public:
     float dt;  // time step
     int frame;  // current frame number
     std::vector<Body> bodies;  // all bodies in the simulation
     Octree octree;  // Barnes-Hut octree for efficient force calculation
+
+    CollideDS ds;
+
     Simulation(float _dt, float theta, float epsilon) :
-        dt(_dt), frame(0), octree(theta, epsilon) {}
+        dt(_dt), frame(0), octree(theta, epsilon), ds(NONE) {}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
         this->attract(); // calculate gravitational forces and update accelerations (barnes-hut來提高效能)
         frame++;
     }
-    
+
 private:
     // Kinematics "Update"
     void iterate() {
@@ -63,34 +71,43 @@ private:
         
         
         //----Brute Force----------------------------------------------------------------------
-        for (int i = 0;  i < (int)bodies.size(); i++) {
-            for (int j = i + 1; j < (int)bodies.size(); j++) {  // ----------------->>>fix
-                
-                float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
-                float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
-                float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
-                float combinedRadius = bodies[i].radius + bodies[j].radius;
+        if (ds == BRUTE_FORCE) {
+            for (int i = 0;  i < (int)bodies.size(); i++) {
+                for (int j = i + 1; j < (int)bodies.size(); j++) {  // ----------------->>>fix
+                    
+                    float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
+                    float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
+                    float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
+                    float combinedRadius = bodies[i].radius + bodies[j].radius;
 
-                // 只有當三個軸向的距離都小於半徑和，才進入精確的 resolve 計算
-                if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
-                    this->resolve(i, j);
+                    // 只有當三個軸向的距離都小於半徑和，才進入精確的 resolve 計算
+                    if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
+                        this->resolve(i, j);
+                    }
                 }
             }
+            return;
         }
         //-------------------------------------------------------------------------------------
     
     
         //----Uniform Grid----------------------------------------------------------------------
-        
-        
-        
+        if (ds == UNIFORM_GRID) {
+
+            return;
+        }
         //-------------------------------------------------------------------------------------
 
-        //-------------------------------------------------------------------------------------
+        //----BVH------------------------------------------------------------------------------
+        if (ds == BVH) {
+
+
+
+            return;
+        }
         //-------------------------------------------------------------------------------------
     
-        //-------------------------------------------------------------------------------------
-        //-------------------------------------------------------------------------------------
+
     
     }
     // Resolve collision between body i (index) and body j (index)
