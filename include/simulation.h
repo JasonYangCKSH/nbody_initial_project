@@ -2,7 +2,11 @@
 #define SIMULATION_H
 #include <vector>
 #include <glm/glm.hpp>
+#include <unordered_map>
 #include "octree.h" 
+struct Cell {
+    std::vector<int> bodies;
+};
 class Simulation {
 public:
     float dt;  // time step
@@ -51,11 +55,16 @@ private:
             body.acc = octree.calculate_acc(body.pos);
         
     }
+    std::unordered_map<glm::vec3, Cell> grid;
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
         // can use something like AABB(Axis-Aligned Bounding Box) 
         // also BVH (related to Load Balance and particle density)
         // temporarily use O(n^2) to find the neighbor body
+        
+        
+        
+        //----Brute Force----------------------------------------------------------------------
         for (int i = 0;  i < (int)bodies.size(); i++) {
             for (int j = i + 1; j < (int)bodies.size(); j++) {  // ----------------->>>fix
                 
@@ -70,6 +79,18 @@ private:
                 }
             }
         }
+        //-------------------------------------------------------------------------------------
+    
+    
+        //----Uniform Grid----------------------------------------------------------------------
+        //-------------------------------------------------------------------------------------
+
+        //-------------------------------------------------------------------------------------
+        //-------------------------------------------------------------------------------------
+    
+        //-------------------------------------------------------------------------------------
+        //-------------------------------------------------------------------------------------
+    
     }
     // Resolve collision between body i (index) and body j (index)
     void resolve(int i, int j) {
@@ -147,5 +168,6 @@ private:
         bodies[j].pos += v2 * t;
 
     }
+
 };
 #endif
