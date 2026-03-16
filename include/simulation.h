@@ -35,6 +35,13 @@ private:
         octree.clear(boundary);
         for (Body& body : bodies)
             octree.insert(body.pos, body.mass);
+        /*
+        if (>= K nodes changes position)
+            rebuild;
+        else
+            update node locally;
+        */
+
 
         // 3.propagate mass and center of mass up the tree
         octree.propagate();
