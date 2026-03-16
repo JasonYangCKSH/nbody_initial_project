@@ -1,7 +1,7 @@
 #include <iostream>
-#include "body.h"
-#include "octree.h"
-#include "simulation.h"
+#include "body.hpp"
+#include "octree.hpp"
+#include "simulation.hpp"
 using namespace std;
 int main() {
 

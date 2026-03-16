@@ -10,7 +10,7 @@
 #include <limits>
 #include <array>
 #include <algorithm>
-#include "body.h"
+#include "body.hpp"
 // boundary class for octree node
 // *****"class Oct" 即為boundary，起初沒有命名完善*****
 class Oct {
