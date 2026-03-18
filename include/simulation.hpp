@@ -71,34 +71,29 @@ private:
         // temporarily use O(n^2) to find the neighbor body
         
 
-        if (ds == BRUTE_FORCE) {
-            for (int i = 0;  i < (int)bodies.size(); i++) {
-                for (int j = i + 1; j < (int)bodies.size(); j++) {  // ----------------->>>fix
-                    
-                    float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
-                    float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
-                    float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
-                    float combinedRadius = bodies[i].radius + bodies[j].radius;
+        switch(ds) {
+            case BRUTE_FORCE:
+                for (int i = 0;  i < (int)bodies.size(); i++) {
+                    for (int j = i + 1; j < (int)bodies.size(); j++) {  // ----------------->>>fix
+                        
+                        float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
+                        float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
+                        float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
+                        float combinedRadius = bodies[i].radius + bodies[j].radius;
 
-                    // 只有當三個軸向的距離都小於半徑和，才進入精確的 resolve 計算
-                    if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
-                        this->resolve(i, j);
+                        // 只有當三個軸向的距離都小於半徑和，才進入精確的 resolve 計算
+                        if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
+                            this->resolve(i, j);
+                        }
                     }
                 }
-            }
-            return;
+                break;
+            case GRID:
+            case BVH:
+            case OCTREE:
+            default:
         }
-        if (ds == GRID) {
 
-            return;
-        }
-
-        if (ds == BVH) {
-
-
-
-            return;
-        }
 
     
 
