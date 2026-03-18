@@ -30,8 +30,8 @@ public:
     std::unordered_map<int, std::vector<int>> mapGrid;  // UNORDERED_MAP
     std::vector<std::pair<int, int>> entries; // entries for GRID
 
-    Simulation(float _dt, float theta, float epsilon, float body_radius) :
-        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), cellSize(body_radius), ds(NONE) {}
+    Simulation(float _dt, float theta, float epsilon, float body_radius, Collide _ds) :
+        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), cellSize(body_radius), ds(_ds) {}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 

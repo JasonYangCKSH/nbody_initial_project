@@ -5,6 +5,6 @@
 #include "simulation.hpp"
 using namespace std;
 int main() {
-
+    Simulation sim();
     return 0;
 }
