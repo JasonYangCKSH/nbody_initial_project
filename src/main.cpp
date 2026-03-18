@@ -5,7 +5,7 @@
 #include "simulation.hpp"
 using namespace std;
 int main() {
-    // position: [-100, 100]
+    // position range: ([-100, 100], [-100, 100], [-100, 100])
     Simulation sim();
     return 0;
 }
