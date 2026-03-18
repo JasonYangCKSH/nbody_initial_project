@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include "octree.hpp" 
 enum CollideDS{
-    BRUTE_FORCE,
-    UNORDERED_MAP,
+    BRUTE_FORCE,  // finished
+    UNORDERED_MAP,  // finished
     SORT_BASED_GRID,
     BVH,
     SWEEP_AND_PRUNE,
