@@ -148,9 +148,9 @@ private:
                 break;
             case SORT_BASED_GRID:
                 break;
-            case BVH:
+            case BVH:  // implement
                 break;
-            case OCTREE:
+            case OCTREE: // implement
                 break;
             default:
                 break;
