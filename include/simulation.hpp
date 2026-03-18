@@ -30,7 +30,7 @@ public:
     std::unordered_map<int, std::vector<int>> mapGrid;  // UNORDERED_MAP
     std::vector<std::pair<int, int>> entries; // entries for GRID
 
-    Simulation(float _dt, float theta, float epsilon, Collide _ds, float body_radius) :
+    Simulation(float _dt, float theta, float epsilon, CollideDS _ds, float body_radius) :
         dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ds(_ds), cellSize(body_radius) {}
     void step() {
         this->iterate();  // update positions and velocities
