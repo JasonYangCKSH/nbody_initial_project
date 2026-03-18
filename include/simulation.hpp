@@ -107,24 +107,44 @@ private:
                 break;
             
             case UNORDERED_MAP:
-                // O(n)
+                mapGrid.clear();
+                // 1. build body
                 for (int i = 0; i < (int)bodies.size(); i++) {
-                    int num = HashFunction(bodies[i].pos) % bodies.size();
-                    mapGrid[num].push_back(bodies[i]);
+                    int key = HashFunction(bodies[i].pos);
+                    mapGrid[key].push_back(bodies[i]);
                 }
-                // if load balance: O(n); if load imbalance: O(n^2)
+                // 2. neighbor search
                 for (int i = 0; i < (int)bodies.size(); i++) {
-                    int num = HashFunction(bodies[i].pos) % bodies.size();
-                    for (int j = 0; j < (int)mapGrid[num].size(); j++) {
-                        float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
-                        float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
-                        float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
-                        float combinedRadius = bodies[i].radius + bodies[j].radius;
+                    glm::vec3 pos = bodies[i].pos; 
+                    glm::vec3 cellPos = {(int)std::floor(pos.x / cellSize), 
+                                        (int)std::floor(pos.y / cellSize), 
+                                        (int)std::floor(pos.z / cellSize)};
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dy = -1; dy <= 1; dy++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                glm::vec3 neighborPos = {cellPos.x + dx, 
+                                                         cellPos.y + dy, 
+                                                         cellPos.z + dz};
+                                int neighborKey = HashFunction(neighborPos);
 
-                        // 只有當三個軸向的距離都小於半徑和，才進入精確的 resolve 計算
-                        if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
-                            this->resolve(i, j);
-                        }                        
+                                auto it = mapGrid.find(neighborKey);
+                                if (it == mapGrid.end()) continue;
+                                for (int j : it->second) {
+                                    if (i >= j) continue;
+
+                                    float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
+                                    float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
+                                    float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
+                                    float combinedRadius = bodies[i].radius + bodies[j].radius;
+
+                                    if (dist_x < combinedRadius &&
+                                        dist_y < combinedRadius &&
+                                        dist_z < combinedRadius) {
+                                        resolve(i, j);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 break;
