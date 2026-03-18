@@ -27,7 +27,7 @@ public:
     float cellSize;
 
     CollideDS ds;
-    std::unordered_map<int, std::vector<Body>> mapGrid;  // UNORDERED_MAP
+    std::unordered_map<int, std::vector<int>> mapGrid;  // UNORDERED_MAP
     std::vector<std::pair<int, int>> entries; // entries for GRID
 
     Simulation(float _dt, float theta, float epsilon, float body_radius) :
@@ -111,7 +111,7 @@ private:
                 // 1. build body
                 for (int i = 0; i < (int)bodies.size(); i++) {
                     int key = HashFunction(bodies[i].pos);
-                    mapGrid[key].push_back(bodies[i]);
+                    mapGrid[key].push_back(i);
                 }
                 // 2. neighbor search
                 for (int i = 0; i < (int)bodies.size(); i++) {
@@ -129,7 +129,7 @@ private:
 
                                 auto it = mapGrid.find(neighborKey);
                                 if (it == mapGrid.end()) continue;
-                                for (int j : it->second) {
+                                for (int j: it->second) {
                                     if (i >= j) continue;
 
                                     float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
