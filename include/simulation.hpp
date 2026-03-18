@@ -72,6 +72,7 @@ private:
             body.acc = octree.calculate_acc(body.pos);
         
     }
+    // position--->key
     int HashFunction(const glm::vec3& pos) {
         int x = (int)(std::floor((pos.x) / cellSize));
         int y = (int)(std::floor((pos.y) / cellSize));
