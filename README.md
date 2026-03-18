@@ -59,6 +59,8 @@
 - 將AoS的Body改為SoA，方便之後SIMD的效能優化
 - 導入極端案例(ex: extreme load-imbalanced case)，數據來自符合科學原理的演算法。
 ## Reference:
+- MPI for SPH Methods and Parallel Computing on CPUs and
+GPUs **(2024)**: https://www.researchgate.net/profile/Sunil-Kumar-388/publication/388907868_MPI_for_SPH_Methods_and_Parallel_Computing_on_CPUs_and_GPUs/links/67ac5898645ef274a47b041e/MPI-for-SPH-Methods-and-Parallel-Computing-on-CPUs-and-GPUs.pdf
 
 - GitHub barnes-hut alrorithm: https://github.com/DeadlockCode/barnes-hut
 
