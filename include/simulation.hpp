@@ -133,12 +133,10 @@ private:
                                 // if load imbalanced:O(n);
                                 for (int j: it->second) {
                                     if (i >= j) continue;
-
                                     float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
                                     float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
                                     float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
                                     float combinedRadius = bodies[i].radius + bodies[j].radius;
-
                                     if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
                                         this->resolve(i, j);
                                     }
