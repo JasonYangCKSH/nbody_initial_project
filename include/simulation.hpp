@@ -119,6 +119,8 @@ private:
                     glm::vec3 cellPos = {(int)std::floor(pos.x / cellSize), 
                                         (int)std::floor(pos.y / cellSize), 
                                         (int)std::floor(pos.z / cellSize)};
+                    
+                    // 搜尋鄰近的neighborCell ==> (3^3 == 27)
                     for (int dx = -1; dx <= 1; dx++) {
                         for (int dy = -1; dy <= 1; dy++) {
                             for (int dz = -1; dz <= 1; dz++) {
