@@ -108,19 +108,19 @@ private:
             
             case UNORDERED_MAP:
                 mapGrid.clear();
-                // 1. build body
+                // 1. build body O(n)
                 for (int i = 0; i < (int)bodies.size(); i++) {
                     int key = HashFunction(bodies[i].pos);
                     mapGrid[key].push_back(i);
                 }
-                // 2. neighbor search
+                // 2. neighbor search O(n)
                 for (int i = 0; i < (int)bodies.size(); i++) {
                     glm::vec3 pos = bodies[i].pos; 
                     glm::vec3 cellPos = {(int)std::floor(pos.x / cellSize), 
                                         (int)std::floor(pos.y / cellSize), 
                                         (int)std::floor(pos.z / cellSize)};
                     
-                    // 搜尋鄰近的neighborCell ==> (3^3 == 27)
+                    // 搜尋鄰近的neighborCell ==> (3^3 == 27) ==> O(1)
                     for (int dx = -1; dx <= 1; dx++) {
                         for (int dy = -1; dy <= 1; dy++) {
                             for (int dz = -1; dz <= 1; dz++) {
@@ -131,6 +131,9 @@ private:
 
                                 auto it = mapGrid.find(neighborKey);
                                 if (it == mapGrid.end()) continue;
+
+                                // if load balanced: O(1); 
+                                // if load imbalanced:O(n);
                                 for (int j: it->second) {
                                     if (i >= j) continue;
 
