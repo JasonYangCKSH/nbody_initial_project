@@ -18,19 +18,20 @@ class Simulation {
 public:
     float dt;  // time step
     int frame;  // current frame number
-    Oct boundary;
-    
 
     std::vector<Body> bodies;  // all bodies in the simulation
     
     Octree octree;  // Barnes-Hut octree for efficient force calculation
+    Oct boundary;
+    
+    float cellSize;
 
     CollideDS ds;
     std::unordered_map<int, std::vector<Body>> mapGrid;  // UNORDERED_MAP
     std::vector<std::pair<int, int>> entries; // entries for GRID
 
-    Simulation(float _dt, float theta, float epsilon) :
-        dt(_dt), frame(0), octree(theta, epsilon)/*, ds(NONE)*/ {}
+    Simulation(float _dt, float theta, float epsilon, float body_radius) :
+        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), cellSize(body_radius), ds(NONE) {}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
@@ -72,9 +73,9 @@ private:
         
     }
     int HashFunction(const glm::vec3& pos) {
-        int x = (int)(pos.x / boundary.size);
-        int y = (int)(pos.y / boundary.size);
-        int z = (int)(pos.z / boundary.size);
+        int x = (int)(std::floor((pos.x) / cellSize));
+        int y = (int)(std::floor((pos.y) / cellSize));
+        int z = (int)(std::floor((pos.z) / cellSize));
 
         return x * 73856093 ^ y * 19349663 ^ z * 83492791;
     }
@@ -86,8 +87,9 @@ private:
         
 
         switch(ds) {
-            // O(n^2)
+            
             case BRUTE_FORCE:
+                // O(n^2)
                 for (int i = 0;  i < (int)bodies.size(); i++) {
                     for (int j = i + 1; j < (int)bodies.size(); j++) {  // ----------------->>>fix
                         
@@ -103,11 +105,27 @@ private:
                     }
                 }
                 break;
-            // 
+            
             case UNORDERED_MAP:
+                // O(n)
                 for (int i = 0; i < (int)bodies.size(); i++) {
                     int num = HashFunction(bodies[i].pos) % bodies.size();
                     mapGrid[num].push_back(bodies[i]);
+                }
+                // if load balance: O(n); if load imbalance: O(n^2)
+                for (int i = 0; i < (int)bodies.size(); i++) {
+                    int num = HashFunction(bodies[i].pos) % bodies.size();
+                    for (int j = 0; j < (int)mapGrid[num].size(); j++) {
+                        float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
+                        float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
+                        float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
+                        float combinedRadius = bodies[i].radius + bodies[j].radius;
+
+                        // 只有當三個軸向的距離都小於半徑和，才進入精確的 resolve 計算
+                        if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
+                            this->resolve(i, j);
+                        }                        
+                    }
                 }
                 break;
             case SORT_BASED_GRID:
