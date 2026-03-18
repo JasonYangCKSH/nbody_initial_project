@@ -2,11 +2,13 @@
 #define SIMULATION_H
 #include <vector>
 #include <glm/glm.hpp>
+#include <utility>
 #include <unordered_map>
 #include "octree.hpp" 
 enum CollideDS{
     BRUTE_FORCE,
-    GRID,
+    UNORDERED_MAP,
+    SORT_BASED_GRID,
     BVH,
     SWEEP_AND_PRUNE,
     OCTREE,
@@ -16,13 +18,19 @@ class Simulation {
 public:
     float dt;  // time step
     int frame;  // current frame number
+    Oct boundary;
+    
+
     std::vector<Body> bodies;  // all bodies in the simulation
+    
     Octree octree;  // Barnes-Hut octree for efficient force calculation
 
     CollideDS ds;
+    std::unordered_map<int, std::vector<Body>> mapGrid;  // UNORDERED_MAP
+    std::vector<std::pair<int, int>> entries; // entries for GRID
 
     Simulation(float _dt, float theta, float epsilon) :
-        dt(_dt), frame(0), octree(theta, epsilon), ds(NONE) {}
+        dt(_dt), frame(0), octree(theta, epsilon)/*, ds(NONE)*/ {}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
@@ -40,7 +48,7 @@ private:
     // Barnes-Hut Logic
     void attract() {
         // 1.set up octree boundary
-        Oct boundary = Oct().new_containing(bodies);
+        boundary = Oct().new_containing(bodies);
 
         // 2.clear and rebuild octree ==> BOTTLENECK
         // 每次都要重建一棵樹，造成效能瓶頸---------------->>>>>fix
@@ -63,7 +71,13 @@ private:
             body.acc = octree.calculate_acc(body.pos);
         
     }
-   
+    int HashFunction(const glm::vec3& pos) {
+        int x = (int)(pos.x / boundary.size);
+        int y = (int)(pos.y / boundary.size);
+        int z = (int)(pos.z / boundary.size);
+
+        return x * 73856093 ^ y * 19349663 ^ z * 83492791;
+    }
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
         // can use something like AABB(Axis-Aligned Bounding Box) 
@@ -72,6 +86,7 @@ private:
         
 
         switch(ds) {
+            // O(n^2)
             case BRUTE_FORCE:
                 for (int i = 0;  i < (int)bodies.size(); i++) {
                     for (int j = i + 1; j < (int)bodies.size(); j++) {  // ----------------->>>fix
@@ -88,10 +103,21 @@ private:
                     }
                 }
                 break;
-            case GRID:
+            // 
+            case UNORDERED_MAP:
+                for (int i = 0; i < (int)bodies.size(); i++) {
+                    int num = HashFunction(bodies[i].pos) % bodies.size();
+                    mapGrid[num].push_back(bodies[i]);
+                }
+                break;
+            case SORT_BASED_GRID:
+                break;
             case BVH:
+                break;
             case OCTREE:
+                break;
             default:
+                break;
         }
 
 
