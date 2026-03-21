@@ -3,6 +3,12 @@
 #include<glm/glm.hpp>
 #include "octree.hpp"
 #include "body.hpp"
+enum class NeighborMethod {
+    BRUTE_FORCE,
+    UNIFORM_GRID,
+    OCTREE,
+    NONE
+};
 class NeighborSearch {
 private:
 public:

@@ -7,11 +7,8 @@
 #include "octree.hpp" 
 #include "neighbor_search.hpp"
 enum CollideDS{
-    BRUTE_FORCE,  // finished
-    UNORDERED_MAP,  // finished
-    SORT_BASED_GRID,
-    BVH,
-    SWEEP_AND_PRUNE,
+    BRUTE_FORCE,
+    UNIFORM_GRID,
     OCTREE,
     NONE
 };
@@ -28,7 +25,7 @@ public:
     float cellSize;
 
     
-    std::unordered_map<int, std::vector<int>> mapGrid;  // UNORDERED_MAP
+    std::unordered_map<int, std::vector<int>> mapGrid;  // UNIFORM_GRID
     std::vector<std::pair<int, int>> sortBasedGrid; // entries for GRID
 
     Simulation(float _dt, float theta, float epsilon, CollideDS _ds, float body_radius) :
@@ -104,7 +101,7 @@ private:
                 }
                 break;
             
-            case UNORDERED_MAP:
+            case UNIFORM_GRID:
                 mapGrid.clear();
                 // 1. build body O(n)
                 for (int i = 0; i < (int)bodies.size(); i++) {
