@@ -3,5 +3,8 @@
 #include<glm/glm.hpp>
 #include "octree.hpp"
 #include "body.hpp"
-
+class NeighborSearch {
+private:
+public:
+};
 #endif 
