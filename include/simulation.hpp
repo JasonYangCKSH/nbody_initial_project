@@ -5,6 +5,7 @@
 #include <utility>
 #include <unordered_map>
 #include "octree.hpp" 
+#include "neighbor_search.hpp"
 enum CollideDS{
     BRUTE_FORCE,  // finished
     UNORDERED_MAP,  // finished
