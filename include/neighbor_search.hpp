@@ -101,8 +101,19 @@ private:
 
     // 3. Octree
     std::vector<NeighborPair> OctreeSearch(const std::vector<Body>& bodies) {
+        std::vector<NeighborPair> pairs;
         NSOctree nsOctree;
-        return BruteForce(bodies);
+        nsOctree.Build(bodies);
+
+        std::vector<int> neighbors;
+        for (int i = 0; i < (int)bodies.size(); i++) {
+            neighbors.clear();
+            nsOctree.Query(i, cell_size, neighbors);
+            for (int j : neighbors)
+                if (i < j)
+                    pairs.push_back({i, j});
+        }
+        return pairs;
     }
 
 };
