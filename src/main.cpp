@@ -26,7 +26,7 @@ void PrintProgress(int current, int total, int bar_width = 20) {
 int main() {
     // position range: ([-100, 100], [-100, 100], [-100, 100])
     
-    int N = 10000;
+    int N = 100000;
     float range = 100.0f;
     float mass = 1.0f;
     float radius = 1.0f;
