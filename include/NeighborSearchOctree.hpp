@@ -46,16 +46,16 @@ private:
         return idx;
     }
     void Insert(int nodeIdx, int bodyIdx) {
-        // case 1：Branch Node → 往對應子節點走
+        // case 1：Branch Node -> 往對應子節點走
         while (!nsNodes[nodeIdx].isLeaf()) {
             int octant = FindOctant(nodeIdx, positions[bodyIdx]);
             nodeIdx = nsNodes[nodeIdx].firstChild + octant;
         }
 
-        // case 2：空 Leaf → 直接放入
+        // case 2：空 Leaf -> 直接放入
         nsNodes[nodeIdx].bodiesIndicesVector.push_back(bodyIdx);
 
-        // case 3：超過容量 → 分裂
+        // case 3：超過容量 -> 分裂
         if ((int)nsNodes[nodeIdx].bodiesIndicesVector.size() 
                 > NSNode::MAX_LEAF_CAPACITY) {
             Subdivide(nodeIdx);
