@@ -24,9 +24,6 @@ public:
     // --------------------------------------------------------------
     
 
-    
-    std::unordered_map<int, std::vector<int>> mapGrid;  // UNIFORM_GRID
-
 
     Simulation(float _dt, float theta, float epsilon, NeighborMethod method) :
         dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ns(method){}
