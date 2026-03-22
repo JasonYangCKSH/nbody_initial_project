@@ -38,6 +38,7 @@ add_executable(a
     include/Barnes-HutOctree.hpp
     include/simulation.hpp
     include/neighbor_search.hpp
+    include/senario.hpp
 )
 
 # ----------------------------------------------------------------
