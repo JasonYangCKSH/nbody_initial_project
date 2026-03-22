@@ -16,15 +16,18 @@ public:
     
     Octree octree;  // Barnes-Hut octree for efficient force calculation
     Oct boundary;
+
     NeighborSearch ns;
-    float cellSize;
+    
+    
+    //float cellSize;
 
     
     std::unordered_map<int, std::vector<int>> mapGrid;  // UNIFORM_GRID
-    std::vector<std::pair<int, int>> sortBasedGrid; // entries for GRID
 
-    Simulation(float _dt, float theta, float epsilon, NeighborSearch _ns, float body_radius) :
-        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ns(_ns), cellSize(body_radius) {}
+
+    Simulation(float _dt, float theta, float epsilon, NeighborSearch _ns) :
+        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ns(_ns){}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
