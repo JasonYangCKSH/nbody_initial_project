@@ -19,4 +19,10 @@ namespace Senario {
         }
         return bodies;
     }
+
+
+    // 2. clustered
+    std::vector<Body> clustered(int N, int numOfClusters, float clusterRadius, float mass, float radius, unsigned int seed = 42) {
+
+    }
 };
