@@ -22,7 +22,7 @@ namespace Senario {
 
 
     // 2. clustered
-    std::vector<Body> Clustered(int N, int numOfClusters, float clusterRadius, float mass, float radius, unsigned int seed = 42) {
+    /*std::vector<Body> Clustered(int N, int numOfClusters, float clusterRadius, float mass, float radius, unsigned int seed = 42) {
 
-    }
+    }*/
 };
