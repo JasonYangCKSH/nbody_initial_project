@@ -73,7 +73,7 @@ private:
     */
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
-
+        /*
         switch(neighbor_method) {
             
             case NeighborMethod::BRUTE_FORCE:
@@ -143,7 +143,7 @@ private:
             default:
                 break;
         }
-
+        */
 
     
 
