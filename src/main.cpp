@@ -26,7 +26,7 @@ void PrintProgress(int current, int total, int bar_width = 20) {
 int main() {
     // position range: ([-100, 100], [-100, 100], [-100, 100])
     
-    int N = 100000;
+    int N = 15000;
     float range = 100.0f;
     float mass = 1.0f;
     float radius = 1.0f;
@@ -60,14 +60,14 @@ int main() {
     Simulation sim(dt, theta, epsilon, bodies, neighbor_method);
     std::cout << "---simulation started---\n";
     std::cout << "N: " << N << std::endl;
-    int frame = 100;
+    int frame = 20;
     std::cout << "Frame: " << frame << std::endl;
-    std::chrono::time_point<std::chrono::high_resolution_clock> start = now();
+    auto start = now();
     for (int i = 0; i < frame; i++) {
         sim.step();
         PrintProgress(i + 1, frame);
     }
-    std::chrono::time_point<std::chrono::high_resolution_clock> end = now();
+    auto end = now();
     std::cout << "\ntime spend: "<< ms(start, end) << " ms\n";
     std::cout << "---simulation ended---\n";
     return 0;
