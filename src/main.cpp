@@ -34,8 +34,6 @@ int main() {
     
     
     
-    
-    
-    
+    std::cout << "---simulation ended---\n";
     return 0;
 }
