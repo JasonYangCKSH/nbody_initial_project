@@ -46,16 +46,16 @@ private:
         return idx;
     }
     void Insert(int nodeIdx, int bodyIdx) {
-        // 情況 1：Branch Node → 往對應子節點走
+        // case 1：Branch Node → 往對應子節點走
         while (!nsNodes[nodeIdx].isLeaf()) {
             int octant = FindOctant(nodeIdx, positions[bodyIdx]);
             nodeIdx = nsNodes[nodeIdx].firstChild + octant;
         }
 
-        // 情況 2：空 Leaf → 直接放入
+        // case 2：空 Leaf → 直接放入
         nsNodes[nodeIdx].bodiesIndicesVector.push_back(bodyIdx);
 
-        // 情況 3：超過容量 → 分裂
+        // case 3：超過容量 → 分裂
         if ((int)nsNodes[nodeIdx].bodiesIndicesVector.size() 
                 > NSNode::MAX_LEAF_CAPACITY) {
             Subdivide(nodeIdx);
@@ -81,7 +81,7 @@ private:
             child.aabb_max.y = (i & 2) ? cMax.y : center.y;
             child.aabb_max.z = (i & 4) ? cMax.z : center.z;
             child.nextSibling = (i < 7) ? (firstChildIdx + i + 1) : parentNextSibling;
-            nsNodes.push_back(child);  // ✅ cMin/cMax 已經是 local copy，安全
+            nsNodes.push_back(child);  
         }
 
         // 重新分配粒子（注意：此時 nsNodes[nodeIdx] 仍需存取，但 push_back 已結束）
