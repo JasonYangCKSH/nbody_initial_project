@@ -11,7 +11,7 @@ private:
     std::vector<int> bodiesIndicesVector;
     static constexpr int MAX_LEAF_CAPACITY = 8;  
 public:
-    NeighborSearchNode(): boundary(), firstChild(0), nextSibling(0){}
+    NeighborSearchNode():  firstChild(0), nextSibling(0){}
     bool isLeaf() const {return (firstChild == 0);}
     bool isEmpty() const {return bodiesIndicesVector.empty();}
 };
