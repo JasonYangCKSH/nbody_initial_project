@@ -4,9 +4,11 @@
 class NeighborSearchNode {
 private:
     Oct boundary;
-    
+    int firstChild;
+    int nextSibling;
 public:
-
+    NeighborSearchNode(): boundary(), firstChild(0), nextSibling(0){}
+    bool isLeaf() const {return (firstChild == 0);}
 };
 
 
