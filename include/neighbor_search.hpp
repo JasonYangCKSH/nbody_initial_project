@@ -100,7 +100,7 @@ private:
 
     // 3. Octree
     std::vector<NeighborPair> OctreeSearch(const std::vector<Body>& bodies) {
-        return BruteForce(bodies);
+        //return BruteForce(bodies);
     }
 
 };
