@@ -99,6 +99,10 @@ private:
         return pairs;
     }
 
+    // 3. Octree
+    std::vector<NeighborSearch> OctreeSearch(const std::vector<Body>& bodies) {
+        return BruteForce(bodies);
+    }
 
 };
 #endif 
