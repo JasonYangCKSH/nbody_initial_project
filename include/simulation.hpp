@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <utility>
 #include <unordered_map>
-#include "octree.hpp" 
+#include "Barnes-HutOctree.hpp" 
 #include "neighbor_search.hpp"
 
 class Simulation {
