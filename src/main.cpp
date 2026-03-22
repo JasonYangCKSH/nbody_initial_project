@@ -60,7 +60,7 @@ int main() {
     Simulation sim(dt, theta, epsilon, bodies, neighbor_method);
     std::cout << "---simulation started---\n";
     std::cout << "N: " << N << std::endl;
-    int frame = 20;
+    int frame = 100;
     std::cout << "Frame: " << frame << std::endl;
     auto start = now();
     for (int i = 0; i < frame; i++) {
@@ -69,6 +69,7 @@ int main() {
     }
     auto end = now();
     std::cout << "\ntime spend: "<< ms(start, end) << " ms\n";
+
     std::cout << "---simulation ended---\n";
     return 0;
 }
