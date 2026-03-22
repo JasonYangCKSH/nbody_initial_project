@@ -11,6 +11,9 @@ enum class NeighborMethod {
 };
 class NeighborSearch {
 private:
+    NeighborMethod method;
 public:
+    NeighborSearch(): method(NONE){}
+    NeighborSearch(NeighborMetHod nm): method(nm) {}
 };
 #endif 

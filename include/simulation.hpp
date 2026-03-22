@@ -16,15 +16,15 @@ public:
     
     Octree octree;  // Barnes-Hut octree for efficient force calculation
     Oct boundary;
-    NeighborMethod method;
+    NeighborSearch ns;
     float cellSize;
 
     
     std::unordered_map<int, std::vector<int>> mapGrid;  // UNIFORM_GRID
     std::vector<std::pair<int, int>> sortBasedGrid; // entries for GRID
 
-    Simulation(float _dt, float theta, float epsilon, NeighborMethod _method, float body_radius) :
-        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), method(_method), cellSize(body_radius) {}
+    Simulation(float _dt, float theta, float epsilon, NeighborSearch _ns, float body_radius) :
+        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ns(_ns), cellSize(body_radius) {}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
@@ -43,23 +43,13 @@ private:
     void attract() {
         // 1.set up octree boundary
         boundary = Oct().new_containing(bodies);
-
         // 2.clear and rebuild octree ==> BOTTLENECK
         // 每次都要重建一棵樹，造成效能瓶頸---------------->>>>>fix
         octree.clear(boundary);
         for (Body& body : bodies)
             octree.insert(body.pos, body.mass);
-        /*
-        if (>= K nodes changes position)
-            rebuild;
-        else
-            update node locally;
-        */
-
-
         // 3.propagate mass and center of mass up the tree
         octree.propagate();
-
         // 4.calculate acceleration for each body
         for (Body& body : bodies)
             body.acc = octree.calculate_acc(body.pos);
