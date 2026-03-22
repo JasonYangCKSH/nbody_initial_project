@@ -78,7 +78,7 @@ private:
 
         switch(method) {
             
-            case BRUTE_FORCE:
+            case NeighborMethod::BRUTE_FORCE:
                 // O(n^2)
                 for (int i = 0;  i < (int)bodies.size(); i++) {
                     for (int j = i + 1; j < (int)bodies.size(); j++) {  
@@ -96,7 +96,7 @@ private:
                 }
                 break;
             
-            case UNIFORM_GRID:
+            case NeighborMethod::UNIFORM_GRID:
                 mapGrid.clear();
                 // 1. build body O(n)
                 for (int i = 0; i < (int)bodies.size(); i++) {
@@ -139,12 +139,7 @@ private:
                     }
                 }
                 break;
-            case SORT_BASED_GRID:
-            
-                break;
-            case BVH:  // implement
-                break;
-            case OCTREE: // implement
+            case NeighborMethod::OCTREE: // implement
                 break;
             default:
                 break;

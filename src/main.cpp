@@ -6,6 +6,6 @@
 using namespace std;
 int main() {
     // position range: ([-100, 100], [-100, 100], [-100, 100])
-    Simulation sim();
+    Simulation sim(0.01, 0.0, 0.1, NeighborMethod::BRUTE_FORCE, 0.1);
     return 0;
 }

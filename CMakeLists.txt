@@ -37,6 +37,7 @@ add_executable(a
     include/body.hpp 
     include/octree.hpp
     include/simulation.hpp
+    include/neighbor_search.hpp
 )
 
 # ----------------------------------------------------------------
