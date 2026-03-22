@@ -13,11 +13,15 @@ public:
     int frame;  // current frame number
 
     std::vector<Body> bodies;  // all bodies in the simulation
-    
+
+    // -----Barnes-hut Approximation---------------------------------
     Octree octree;  // Barnes-Hut octree for efficient force calculation
     Oct boundary;
-
+    //---------------------------------------------------------------
+    
+    // -----Neighbor Search------------------------------------------
     NeighborSearch ns;
+    // --------------------------------------------------------------
     
     
     //float cellSize;
@@ -26,8 +30,8 @@ public:
     std::unordered_map<int, std::vector<int>> mapGrid;  // UNIFORM_GRID
 
 
-    Simulation(float _dt, float theta, float epsilon, NeighborSearch _ns) :
-        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ns(_ns){}
+    Simulation(float _dt, float theta, float epsilon) :
+        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(){}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
