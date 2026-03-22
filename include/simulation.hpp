@@ -60,7 +60,7 @@ private:
 
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
-        auto pairs = ns.find_pairs(bodies);
+        auto pairs = ns.FindPairs(bodies);
         for (auto& [i, j] : pairs)
             this->resolve(i, j);
     

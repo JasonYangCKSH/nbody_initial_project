@@ -19,14 +19,14 @@ class NeighborSearch {
 public:
 
 
-    NeighborSearch(): method(NeighborMethod::NONE), cell_size(1.0f){}
+    NeighborSearch(): method(), cell_size(1.0f){}
     explicit NeighborSearch(NeighborMethod nm, float _cell_size = 1.0f): method(nm), cell_size(_cell_size){}
 
     std::vector<NeighborPair> FindPairs(const std::vector<Body>& bodies) {
         switch (method) {
-            case(NeighborMetHod::BRUTE_FORCE):  return BruteForce(bodies);
-            case(NeighborMetHod::UNIFORM_GRID): return UniformGrid(bodies);
-            case(NeighborMetHod::OCTREE): return OctreeSearch();
+            case(NeighborMethod::BRUTE_FORCE):  return BruteForce(bodies);
+            case(NeighborMethod::UNIFORM_GRID): return UniformGrid(bodies);
+            case(NeighborMethod::OCTREE): return OctreeSearch(bodies);
             default:    return {};
         }
     }
@@ -39,14 +39,14 @@ private:
     std::vector<NeighborPair> BruteForce(const std::vector<Body>& bodies) {
         std::vector<NeighborPair> pairs;
         for (int i = 0; i < (int)bodies.size(); i++) {
-            for (int j = i + 1; j < n; j++) {
+            for (int j = i + 1; j < (int)bodies.size(); j++) {
                 float combinedRadius = bodies[i].radius + bodies[j].radius;
 
                 // 先做 AABB 快速排除
                 glm::vec3 d = bodies[j].pos - bodies[i].pos;
-                if (std::abs(d.x) > combined_r) continue;
-                if (std::abs(d.y) > combined_r) continue;
-                if (std::abs(d.z) > combined_r) continue;
+                if (std::abs(d.x) > combinedRadius) continue;
+                if (std::abs(d.y) > combinedRadius) continue;
+                if (std::abs(d.z) > combinedRadius) continue;
 
                 pairs.push_back({i, j});
             }
@@ -59,39 +59,39 @@ private:
     int HashCell(int x, int y, int z) const {
         return x * 73856093 ^ y * 19349663 ^ z * 83492791;
     }
-    glm::ivec3 BodyToCell(const glm::vec3& pos) const {
+    glm::ivec3 BodyToCell(int pos_x, int pos_y, int pos_z) const {
         return {
-            (int)std::floor(pos.x / cell_size),
-            (int)std::floor(pos.y / cell_size),
-            (int)std::floor(pos.z / cell_size)
+            (int)std::floor(pos_x / cell_size),
+            (int)std::floor(pos_y / cell_size),
+            (int)std::floor(pos_z / cell_size)
         };
     }
-    std::vector<NeighborSearch> UniformGrid(const std::vector<Body>& bodies) {
+    std::vector<NeighborPair> UniformGrid(const std::vector<Body>& bodies) {
         std::vector<NeighborPair> pairs;
         std::unordered_map<int, std::vector<int>> grid;
 
         // 1. Build Cell, insert every Body into its corresponding cell
         for (int i = 0; i < (int)bodies.size(); i++) {
-            glm::ivec3 cell = world_to_cell(bodies[i].pos);
+            glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
             grid[HashCell(cell.x, cell.y, cell.z)].push_back(i);
         }
 
         // 2. Query: for every Body, search its neighbor 27 cells
         for (int i = 0; i < (int)bodies.size(); i++) {
-            glm::ivec3 cell = BodyToCell(bodies[i].pos);
+            glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
             for (int dx = -1; dx <= 1; dx++)
                 for (int dy = -1; dy <= 1; dy++)
                     for (int dz = -1; dz <= 1; dz++) {
                         glm::ivec3 key = BodyToCell(cell.x + dx, cell.y + dy, cell.z + dz);
-                        auto it = grid.find(key);
+                        auto it = grid.find(HashCell(key.x, key.y, key.z)); 
                         if (it == grid.end()) continue;
                         for (int j : it->second) {
                             if (i >= j) continue;
-                            float combinedRadius = body[i].radius + body[j].radius;
+                            float combinedRadius = bodies[i].radius + bodies[j].radius;
                             glm::vec3 d = bodies[j].pos - bodies[i].pos;
-                            if (std::abs(d.x) > combined_r) continue;
-                            if (std::abs(d.y) > combined_r) continue;
-                            if (std::abs(d.z) > combined_r) continue;        
+                            if (std::abs(d.x) > combinedRadius) continue;
+                            if (std::abs(d.y) > combinedRadius) continue;
+                            if (std::abs(d.z) > combinedRadius) continue;        
                             pairs.push_back({i, j});       
                         } 
                     } 
@@ -100,7 +100,7 @@ private:
     }
 
     // 3. Octree
-    std::vector<NeighborSearch> OctreeSearch(const std::vector<Body>& bodies) {
+    std::vector<NeighborPair> OctreeSearch(const std::vector<Body>& bodies) {
         return BruteForce(bodies);
     }
 
