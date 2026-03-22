@@ -7,7 +7,7 @@ private:
     Oct boundary;  // use Oct to represent AABB
     int firstChild;
     int nextSibling;
-    std::vector<NeighborSearchNode> neighborNodesVector;
+    std::vector<NeighborSearchNode> NSnodesSubset;  
 public:
     NeighborSearchNode(): boundary(), firstChild(0), nextSibling(0){}
     bool isLeaf() const {return (firstChild == 0);}
