@@ -26,11 +26,16 @@ int main() {
     NeighborMethod neighbor_method = NeighborMethod::BRUTE_FORCE;
     std::vector<Body> bodies;
 
+    // choose a senario to form the example test bench
     bodies = Senario::UniformRandom(N, range, mass, radius);
-
-
-
-
+    
+    // start to simulate the moving part
     Simulation sim(dt, theta, epsilon, bodies, neighbor_method);
+    
+    
+    
+    
+    
+    
     return 0;
 }
