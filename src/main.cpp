@@ -27,7 +27,7 @@ int main() {
     // position range: ([-100, 100], [-100, 100], [-100, 100])
     
     int N = 10000;
-    float range = 100;
+    float range = 100.0f;
     float mass = 1.0f;
     float radius = 1.0f;
 
@@ -46,20 +46,28 @@ int main() {
     std::vector<Body> bodies;
 
     // choose a senario to form the example test bench
-    bodies = Senario::UniformRandom(N, range, mass, radius);
-    
+    int mode2;
+    std::cout << "please input testbench(1, 2, 3): ";
+    std::cin >> mode2;
+    if (mode2 == 1)
+        bodies = Senario::UniformRandom(N, range, mass, radius);
+    if (mode2 == 2)
+        bodies = Senario::Clustered(N, 10, 100.0f, 5.0f, 1.0f, 0.5f);
+    if (mode2 == 3)
+        bodies = Senario::ExtremeClustered(N, mass, radius);
+
     // start to simulate the moving part
     Simulation sim(dt, theta, epsilon, bodies, neighbor_method);
     std::cout << "---simulation started---\n";
     std::cout << "N: " << N << std::endl;
     int frame = 100;
     std::cout << "Frame: " << frame << std::endl;
-    auto start = now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> start = now();
     for (int i = 0; i < frame; i++) {
         sim.step();
         PrintProgress(i + 1, frame);
     }
-    auto end = now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> end = now();
     std::cout << "\ntime spend: "<< ms(start, end) << " ms\n";
     std::cout << "---simulation ended---\n";
     return 0;
