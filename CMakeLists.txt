@@ -39,6 +39,7 @@ add_executable(a
     include/simulation.hpp
     include/neighbor_search.hpp
     include/senario.hpp
+    include/NeighborSearchOctree.hpp
 )
 
 # ----------------------------------------------------------------
