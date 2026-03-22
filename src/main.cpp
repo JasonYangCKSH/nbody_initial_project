@@ -10,7 +10,8 @@ int main() {
     float dt = 0.01f;
     float theta = 0.5f;
     float epsilon = 0.1f;
+    NeighborMethod neighbor_method = NeighborMethod::BRUTE_FORCE;
     std::vector<Body> bodies;
-    Simulation sim(dt, theta, epsilon, bodies, NeighborMethod::BRUTE_FORCE);
+    Simulation sim(dt, theta, epsilon, bodies, neighbor_method);
     return 0;
 }
