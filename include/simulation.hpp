@@ -61,92 +61,12 @@ private:
             body.acc = octree.calculate_acc(body.pos);
         
     }
-    /*
-    // position--->key
-    int HashFunction(const glm::vec3& pos) {
-        int x = (int)(std::floor((pos.x) / cellSize));
-        int y = (int)(std::floor((pos.y) / cellSize));
-        int z = (int)(std::floor((pos.z) / cellSize));
 
-        return x * 73856093 ^ y * 19349663 ^ z * 83492791;
-    }
-    */
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
-        /*
-        switch(neighbor_method) {
-            
-            case NeighborMethod::BRUTE_FORCE:
-                // O(n^2)
-                for (int i = 0;  i < (int)bodies.size(); i++) {
-                    for (int j = i + 1; j < (int)bodies.size(); j++) {  
-                        
-                        float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
-                        float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
-                        float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
-                        float combinedRadius = bodies[i].radius + bodies[j].radius;
-
-                        // 只有當三個軸向的距離都小於半徑和，才進入精確的 resolve 計算
-                        if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
-                            this->resolve(i, j);
-                        }
-                    }
-                }
-                break;
-            
-            case NeighborMethod::UNIFORM_GRID:
-                mapGrid.clear();
-                // 1. build body O(n)
-                for (int i = 0; i < (int)bodies.size(); i++) {
-                    int key = HashFunction(bodies[i].pos);
-                    mapGrid[key].push_back(i);
-                }
-                // 2. neighbor search O(n)
-                for (int i = 0; i < (int)bodies.size(); i++) {
-                    glm::vec3 pos = bodies[i].pos; 
-                    glm::vec3 cellPos = {(int)std::floor(pos.x / cellSize), 
-                                        (int)std::floor(pos.y / cellSize), 
-                                        (int)std::floor(pos.z / cellSize)};
-                    
-                    // 搜尋鄰近的neighborCell ==> (3^3 == 27) ==> O(1)
-                    for (int dx = -1; dx <= 1; dx++) {
-                        for (int dy = -1; dy <= 1; dy++) {
-                            for (int dz = -1; dz <= 1; dz++) {
-                                glm::vec3 neighborPos = {cellPos.x + dx, 
-                                                         cellPos.y + dy, 
-                                                         cellPos.z + dz};
-                                int neighborKey = HashFunction(neighborPos);
-
-                                auto it = mapGrid.find(neighborKey);
-                                if (it == mapGrid.end()) continue;
-
-                                // if load balanced: O(1); 
-                                // if load imbalanced:O(n);
-                                for (int j: it->second) {
-                                    if (i >= j) continue;
-                                    float dist_x = std::abs(bodies[i].pos.x - bodies[j].pos.x);
-                                    float dist_y = std::abs(bodies[i].pos.y - bodies[j].pos.y);
-                                    float dist_z = std::abs(bodies[i].pos.z - bodies[j].pos.z);
-                                    float combinedRadius = bodies[i].radius + bodies[j].radius;
-                                    if (dist_x < combinedRadius && dist_y < combinedRadius && dist_z < combinedRadius) {
-                                        this->resolve(i, j);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                break;
-            case NeighborMethod::OCTREE: // implement
-                break;
-            default:
-                break;
-        }
-        */
-
-    
-
+        auto pairs = ns.find_pairs(bodies);
+        for (auto& [i, j] : pairs)
+            this->resolve(i, j);
     
     }
     // Resolve collision between body i (index) and body j (index)
