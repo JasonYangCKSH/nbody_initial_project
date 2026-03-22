@@ -46,6 +46,7 @@ int main() {
     std::cout << "---simulation started---\n";
     std::cout << "N: " << N << std::endl;
     int frame = 100;
+    std::cout << "Frame: " << frame << std::endl;
     auto start = now();
     for (int i = 0; i < frame; i++) {
         sim.step();
