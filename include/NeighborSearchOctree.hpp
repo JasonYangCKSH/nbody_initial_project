@@ -1,7 +1,5 @@
 #pragma once
-class NeighborSearchOct {
-    
-};
+#include "Barnes-hutOctree.hpp"  // only referring Oct(boundary)
 class NeighBorSearchOctree {
 public:
 
