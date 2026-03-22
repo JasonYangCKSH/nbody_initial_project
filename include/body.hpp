@@ -1,5 +1,5 @@
-#ifndef BODY_H
-#define BODY_H
+#ifndef BODY_HPP
+#define BODY_HPP
 #include <glm/glm.hpp>
 // AoS結構
 class Body {
