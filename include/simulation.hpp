@@ -20,18 +20,17 @@ public:
     //---------------------------------------------------------------
     
     // -----Neighbor Search------------------------------------------
+    NeighborMetHod neighbor_method;
     NeighborSearch ns;
     // --------------------------------------------------------------
     
-    
-    //float cellSize;
 
     
     std::unordered_map<int, std::vector<int>> mapGrid;  // UNIFORM_GRID
 
 
-    Simulation(float _dt, float theta, float epsilon) :
-        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(){}
+    Simulation(float _dt, float theta, float epsilon, NeighborMethod method) :
+        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ns(method){}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
@@ -62,6 +61,7 @@ private:
             body.acc = octree.calculate_acc(body.pos);
         
     }
+    /*
     // position--->key
     int HashFunction(const glm::vec3& pos) {
         int x = (int)(std::floor((pos.x) / cellSize));
@@ -70,10 +70,11 @@ private:
 
         return x * 73856093 ^ y * 19349663 ^ z * 83492791;
     }
+    */
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
 
-        switch(method) {
+        switch(neighbor_method) {
             
             case NeighborMethod::BRUTE_FORCE:
                 // O(n^2)
@@ -135,6 +136,7 @@ private:
                         }
                     }
                 }
+                
                 break;
             case NeighborMethod::OCTREE: // implement
                 break;
