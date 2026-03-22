@@ -4,8 +4,10 @@
 
 class NeighborSearchNode {
 private:
-    glm::vec3 aabb_min;
+    // -both of these are used to define the boundary of a node-
+    glm::vec3 aabb_min;  
     glm::vec3 aabb_max;
+    // --------------------------------------------------------
     int firstChild;
     int nextSibling;
     std::vector<int> bodiesIndicesVector;
