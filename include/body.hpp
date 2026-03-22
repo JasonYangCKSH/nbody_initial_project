@@ -1,5 +1,4 @@
-#ifndef BODY_HPP
-#define BODY_HPP
+#pragma once
 #include <glm/glm.hpp>
 // AoS結構
 class Body {
@@ -23,4 +22,3 @@ public:
     }
 
 };
-#endif
