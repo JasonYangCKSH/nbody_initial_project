@@ -16,6 +16,10 @@ public:
     NSNode():  firstChild(0), nextSibling(0){}
     bool isLeaf() const {return (firstChild == 0);}
     bool isEmpty() const {return bodiesIndicesVector.empty();}
+    glm::vec3 GetAABBMin() {return aabb_min;}
+    glm::vec3 GetAABBMax() {return aabb_max;}
+    void SetAABBMin(glm::vec3 pos){aabb_min = pos;}
+    void SetAABBMax(glm::vec3 pos){aabb_max = pos;}
 };
 
 
@@ -43,13 +47,26 @@ public:
 
     void Build(const std::vector<Body>& bodies) {
         // step1: catch all position
-        position.clear();
-        for (Body& body : bodies) 
-            position.push_vack(b.pos);
-        // step2: build root node, aabb will wrap up all the particles
-        nsNodes.clear();
-        nsParent.clear();
+        positions.clear();
         
+        for (int i = 0; i < (int)bodies.size(); i++)
+            positions.push_back(bodies[i].pos);
+        
+        
+        nsNodes.clear();
+        nsParents.clear();
+        NSNode root;
+        root.SetAABBMin(positions[0]);
+        root.SetAABBMax(positions[0]);
+        for (glm::vec3& pos: positions) {
+            root.SetAABBMin(glm::min(root.GetAABBMin(), pos));
+            root.SetAABBMax(glm::max(root.GetAABBMax(), pos));
+        }
+        nsNodes.push_back(root);
+        // step3: insert every body step by step
+        for (int i = 0; i < (int)positions.size(); i++) {
+            this->Insert(ROOT, i);
+        }
     }
 
     void Query(int idx, float r, std::vector<int>& out) const {
