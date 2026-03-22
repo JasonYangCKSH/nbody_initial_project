@@ -68,7 +68,8 @@ public:
     }
 
     void Query(int idx, float r, std::vector<int>& out) const {
-
+        out.clear();
+        RangeQuery(ROOT, positions[idx], r * r, idx, out);
     }
 
 
