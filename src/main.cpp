@@ -6,6 +6,11 @@
 using namespace std;
 int main() {
     // position range: ([-100, 100], [-100, 100], [-100, 100])
-   // Simulation sim(0.01, 0.0, 0.1, NeighborMethod::BRUTE_FORCE, 0.1);
+    // Simulation sim(0.01, 0.0, 0.1, NeighborMethod::BRUTE_FORCE, 0.1);
+    float dt = 0.01f;
+    float theta = 0.5f;
+    float epsilon = 0.1f;
+    std::vector<Body> bodies;
+    Simulation sim(dt, theta, epsilon, bodies, NeighborMethod::BRUTE_FORCE);
     return 0;
 }

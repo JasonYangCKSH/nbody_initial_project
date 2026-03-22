@@ -25,8 +25,8 @@ public:
     
 
 
-    Simulation(float _dt, float theta, float epsilon, NeighborMethod method) :
-        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ns(method){}
+    Simulation(float _dt, float theta, float epsilon, std::vector<Body> _bodies, NeighborMethod method) :
+        dt(_dt), frame(0), bodies(_bodies), octree(theta, epsilon), boundary(), ns(method){}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
