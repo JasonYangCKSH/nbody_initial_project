@@ -6,7 +6,7 @@ namespace Senario {
     // 1. uniform distributed bodies
     std::vector<Body> UniformRandom(int N, float range, float mass, float radius) {
         std::vector<Body> bodies;
-        body.reserve(N);  // reserve N bodies' space, enhance efficiency
+        bodies.reserve(N);  // reserve N bodies' space, enhance efficiency
 
         std::mt19937 rng(42);
         std::uniform_real_distribution<float> dist(-range, range);
