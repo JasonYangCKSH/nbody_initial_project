@@ -1,5 +1,5 @@
 #pragma once
-#include "Barnes-hutOctree.hpp"  // only referring Oct(boundary)
+#include "Barnes-HutOctree.hpp"  // only referring Oct(boundary)
 #include <vector>
 class NeighborSearchNode {
 private:
@@ -11,7 +11,7 @@ public:
 
 
 
-class NeighBorSearchOctree {
+class NeighborSearchOctree {
 private:
     std::vector<NeighborSearchNode> NSnodes;
     std::vector<int> NSparents;
