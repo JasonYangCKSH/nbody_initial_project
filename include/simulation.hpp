@@ -1,5 +1,4 @@
-#ifndef SIMULATION_HPP
-#define SIMULATION_HPP
+#pragma once
 #include <vector>
 #include <glm/glm.hpp>
 #include <utility>
@@ -143,4 +142,3 @@ private:
     }
 
 };
-#endif

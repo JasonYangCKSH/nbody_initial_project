@@ -4,8 +4,7 @@
 // 記錄各個切分的空間的質量(mass)與質心(center of mass)，
 // 不存放body本身。
 // ***************************************************
-#ifndef BARNESHUTOCTREE_HPP
-#define BARNESHUTOCTREE_HPP
+#pragma once
 #include <glm/glm.hpp>
 #include <limits>
 #include <array>
@@ -251,4 +250,3 @@ public:
     }
 
 };
-#endif
