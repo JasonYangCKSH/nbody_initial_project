@@ -1,5 +1,4 @@
-#ifndef NEIGHBOR_SEARCH_HPP
-#define NEIGHBOR_SEARCH_HPP
+#pragma once
 #include <glm/glm.hpp>
 #include <vector>
 #include <unordered_map>
@@ -105,4 +104,3 @@ private:
     }
 
 };
-#endif 
