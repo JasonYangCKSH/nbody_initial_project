@@ -6,12 +6,7 @@
 #include <unordered_map>
 #include "octree.hpp" 
 #include "neighbor_search.hpp"
-enum CollideDS{
-    BRUTE_FORCE,
-    UNIFORM_GRID,
-    OCTREE,
-    NONE
-};
+
 class Simulation {
 public:
     float dt;  // time step
@@ -21,15 +16,15 @@ public:
     
     Octree octree;  // Barnes-Hut octree for efficient force calculation
     Oct boundary;
-    CollideDS ds;
+    NeighborMethod method;
     float cellSize;
 
     
     std::unordered_map<int, std::vector<int>> mapGrid;  // UNIFORM_GRID
     std::vector<std::pair<int, int>> sortBasedGrid; // entries for GRID
 
-    Simulation(float _dt, float theta, float epsilon, CollideDS _ds, float body_radius) :
-        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), ds(_ds), cellSize(body_radius) {}
+    Simulation(float _dt, float theta, float epsilon, NeighborMethod _method, float body_radius) :
+        dt(_dt), frame(0), bodies(0), octree(theta, epsilon), boundary(), method(_method), cellSize(body_radius) {}
     void step() {
         this->iterate();  // update positions and velocities
         this->collide(); // collision detection (find neighbor) 
@@ -81,7 +76,7 @@ private:
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
 
-        switch(ds) {
+        switch(method) {
             
             case BRUTE_FORCE:
                 // O(n^2)
