@@ -15,6 +15,7 @@ class NeighBorSearchOctree {
 private:
     std::vector<NeighborSearchNode> NSnodes;
     std::vector<int> NSparents;
+    static const int ROOT = 0;
 public:
 
 
