@@ -5,7 +5,7 @@
 #include "Barnes-HutOctree.hpp"
 #include "simulation.hpp"
 #include "senario.hpp"
-auto now() {
+std::chrono::time_point now() {
     return std::chrono::high_resolution_clock::now();
 }
 double ms(double start, double end) {
