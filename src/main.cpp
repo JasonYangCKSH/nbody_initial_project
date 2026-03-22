@@ -37,7 +37,7 @@ int main() {
     
     NeighborMethod neighbor_method = NeighborMethod::OCTREE;
     int mode;
-    std::cout << "please input mode(1, 2, 3): ";
+    std::cout << "please input Data structure(1, 2, 3): ";
     std::cin >> mode;
     if (mode == 1) neighbor_method = NeighborMethod::BRUTE_FORCE;
     if (mode == 2) neighbor_method = NeighborMethod::UNIFORM_GRID;
