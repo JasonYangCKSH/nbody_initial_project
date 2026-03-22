@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <cmath>
 #include "body.hpp"
+#include "NeighborSearchOctree.hpp"
 enum class NeighborMethod {
     BRUTE_FORCE,
     UNIFORM_GRID,
