@@ -35,41 +35,49 @@ int main() {
     float theta = 0.5f;
     float epsilon = 0.1f;
     
-    NeighborMethod neighbor_method = NeighborMethod::OCTREE;
-    int mode;
-    std::cout << "please input Data structure(1, 2, 3): ";
-    std::cin >> mode;
-    if (mode == 1) neighbor_method = NeighborMethod::BRUTE_FORCE;
-    if (mode == 2) neighbor_method = NeighborMethod::UNIFORM_GRID;
-    if (mode == 3) neighbor_method = NeighborMethod::OCTREE;
-    
-    std::vector<Body> bodies;
+    NeighborMethod neighbor_method = NeighborMethod::BRUTE_FORCE;
+    std::vector<Body> bodies = Senario::UniformRandom(N, range, mass, radius);
+    while(true) {
+        bodies.clear();
+        int mode;
+        std::cout << "please input Data structure(1, 2, 3): ";
+        std::cin >> mode;
+        if (mode == 1) neighbor_method = NeighborMethod::BRUTE_FORCE;
+        if (mode == 2) neighbor_method = NeighborMethod::UNIFORM_GRID;
+        if (mode == 3) neighbor_method = NeighborMethod::OCTREE;
+        
+        
 
-    // choose a senario to form the example test bench
-    int mode2;
-    std::cout << "please input testbench(1, 2, 3): ";
-    std::cin >> mode2;
-    if (mode2 == 1)
-        bodies = Senario::UniformRandom(N, range, mass, radius);
-    if (mode2 == 2)
-        bodies = Senario::Clustered(N, 10, 100.0f, 5.0f, 1.0f, 0.5f);
-    if (mode2 == 3)
-        bodies = Senario::ExtremeClustered(N, mass, radius);
+        // choose a senario to form the example test bench
+        
+        int mode2;
+        std::cout << "please input testbench(1, 2, 3): ";
+        std::cin >> mode2;
+        if (mode2 == 1) {
+            bodies = Senario::UniformRandom(N, range, mass, radius);
+        }
+        if (mode2 == 2) {
+            bodies = Senario::Clustered(N, 10, 100.0f, 5.0f, 1.0f, 0.5f);
+        }
+        if (mode2 == 3) {
+            bodies = Senario::ExtremeClustered(N, mass, radius);
+        }
+        // start to simulate the moving part
+        Simulation sim(dt, theta, epsilon, bodies, neighbor_method);
+        std::cout << "---brute force simulation started---\n";
+        std::cout << "N: " << N << std::endl;
+        int frame = 100;
+        std::cout << "Frame: " << frame << std::endl;
+        auto start = now();
+        for (int i = 0; i < frame; i++) {
+            sim.step();
+            PrintProgress(i + 1, frame);
+        }
+        auto end = now();
+        std::cout << "\ntime spend: "<< ms(start, end) << " ms\n";
 
-    // start to simulate the moving part
-    Simulation sim(dt, theta, epsilon, bodies, neighbor_method);
-    std::cout << "---simulation started---\n";
-    std::cout << "N: " << N << std::endl;
-    int frame = 100;
-    std::cout << "Frame: " << frame << std::endl;
-    auto start = now();
-    for (int i = 0; i < frame; i++) {
-        sim.step();
-        PrintProgress(i + 1, frame);
+        std::cout << "---simulation ended---\n";
     }
-    auto end = now();
-    std::cout << "\ntime spend: "<< ms(start, end) << " ms\n";
 
-    std::cout << "---simulation ended---\n";
     return 0;
 }
