@@ -103,9 +103,9 @@ private:
     std::vector<NeighborPair> OctreeSearch(const std::vector<Body>& bodies) {
         std::vector<NeighborPair> pairs;
         NSOctree nsOctree;
-        // rebuild an octree
+        // 1.rebuild an octree
         nsOctree.Build(bodies);
-
+        // 2. search neighbor
         std::vector<int> neighbors;
         for (int i = 0; i < (int)bodies.size(); i++) {
             neighbors.clear();
