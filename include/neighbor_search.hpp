@@ -103,6 +103,7 @@ private:
     std::vector<NeighborPair> OctreeSearch(const std::vector<Body>& bodies) {
         std::vector<NeighborPair> pairs;
         NSOctree nsOctree;
+        // rebuild an octree
         nsOctree.Build(bodies);
 
         std::vector<int> neighbors;

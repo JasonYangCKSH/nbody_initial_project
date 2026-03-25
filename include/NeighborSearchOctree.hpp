@@ -29,7 +29,7 @@ class NSOctree {
 private:
     std::vector<NSNode> nsNodes;
     std::vector<int> nsParents;
-    std::vector<glm::vec3> positions;
+    std::vector<glm::vec3> positions;  // bodies' positions
     static const int ROOT = 0;
     // Find the center of this node based on its index
     glm::vec3 GetCenter(int nodeIdx) const {
