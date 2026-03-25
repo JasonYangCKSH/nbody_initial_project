@@ -134,7 +134,7 @@ private:
 public:
 
     void Build(const std::vector<Body>& bodies) {
-        // step1: catch all position
+        // step1: reset bodies' position
         positions.clear();
         // step2: insert body's position step by step
         for (int i = 0; i < (int)bodies.size(); i++)
