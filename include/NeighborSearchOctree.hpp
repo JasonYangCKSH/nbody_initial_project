@@ -47,18 +47,15 @@ private:
         return idx;
     }
     void Insert(int nodeIdx, int bodyIdx) {
-        // case 1：Branch Node -> 往對應子節點走
-        while (!nsNodes[nodeIdx].isLeaf()) {
-            int octant = FindOctant(nodeIdx, positions[bodyIdx]);
+        // step1: isBranch
+        while (!nsNode[nodeIdx].isLeaf()) {
+            int octant = FindOctant(nodeIdx, positions[nodyIdx]);
             nodeIdx = nsNodes[nodeIdx].firstChild + octant;
         }
-
-        // case 2：空 Leaf -> 直接放入
+        // step2: isLeaf
         nsNodes[nodeIdx].bodiesIndicesVector.push_back(bodyIdx);
-
-        // case 3：超過容量 -> 分裂
-        if ((int)nsNodes[nodeIdx].bodiesIndicesVector.size() 
-                > NSNode::MAX_LEAF_CAPACITY) {
+        // step3: if nsNodes is over its capacity
+        if (nsNode[nodesIdx].bodiesIndicesVector.size() > NSNode::MAX_LEAF_CAPACITY) {
             Subdivide(nodeIdx);
         }
     }
@@ -130,6 +127,9 @@ public:
         // step2: insert body's position step by step
         for (int i = 0; i < (int)bodies.size(); i++)
             positions.push_back(bodies[i].pos);
+
+
+        // step3: reset nsNodes & nsParents(tree itself)
         nsNodes.clear();
         nsParents.clear();
         NSNode root;
@@ -140,7 +140,7 @@ public:
             root.SetAABBMax(glm::max(root.GetAABBMax(), pos));
         }
         nsNodes.push_back(root);
-        // step3: insert every body step by step
+        // step4: insert every body step by step
         for (int i = 0; i < (int)positions.size(); i++) {
             this->Insert(ROOT, i);
         }
