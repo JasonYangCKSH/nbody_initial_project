@@ -84,15 +84,15 @@ private:
             child.nextSibling = (i < 7) ? (firstChildIdx + i + 1) : parentNextSibling;
             nsNodes.push_back(child);  
         }
-        std::vector<int> tempBodiesIndiceVector = nsNodes[nodeIdx].bodiesIndicesVector;
-        nsNodes[nodeIdx].bodiesIndicesVector.clear(); // since nsNode[nodeIdx] is no longer a leaf
+        //std::vector<int> tempBodiesIndiceVector = nsNodes[nodeIdx].bodiesIndicesVector;
+        
 
-        for (int idx: tempBodiesIndiceVector) {
+        for (int idx: nsNodes[nodeIdx].bodiesIndicesVector) {
             int octant = FindOctant(nodeIdx, positions[idx]);
             nsNodes[firstChildIdx + octant].bodiesIndicesVector.push_back(idx);
         }
         
-
+        nsNodes[nodeIdx].bodiesIndicesVector.clear(); // since nsNode[nodeIdx] is no longer a leaf
 
 
 
