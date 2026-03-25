@@ -119,7 +119,7 @@ private:
             // Branch：往子節點遞迴
             int childIdx = nsNodes[nodeIdx].firstChild;
             for (int i = 0; i < 8; i++)
-                RangeQuery(childIdx + i, pos, r2, queryIdx, out);
+                RangeQuery(childIdx + i, pos, r2, queryIdx, out); // dfs
         }
     }
     bool SphereOverlaps(int nodeIdx, const glm::vec3& pos, float r2) const {
