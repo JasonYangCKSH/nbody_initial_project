@@ -64,7 +64,7 @@ int main() {
         }
         // start to simulate the moving part
         Simulation sim(dt, theta, epsilon, bodies, neighbor_method);
-        std::cout << "---brute force simulation started---\n";
+        std::cout << "---simulation started---\n";
         std::cout << "N: " << N << std::endl;
         int frame = 100;
         std::cout << "Frame: " << frame << std::endl;
