@@ -60,6 +60,17 @@ private:
         }
     }
     void Subdivide(int nodeIdx) {
+
+        glm::vec3 cMin = nsNode[nodeIdx].aabb_min;
+        glm::vec3 cMax = nsNode[nodeIdx].aabb_max;
+        int parentNextSibling = nsNode[nodeIdx].nextSilbing;
+
+        nsParent.push_back(nodeIdx);
+
+        int firstChildIdx = (int)nsNode.size();
+
+
+        /*
         //  先把需要的資料全部取出來，再做 push_back
         glm::vec3 cMin = nsNodes[nodeIdx].aabb_min;
         glm::vec3 cMax = nsNodes[nodeIdx].aabb_max;
@@ -89,6 +100,7 @@ private:
             int octant = FindOctant(nodeIdx, positions[bIdx]);
             nsNodes[firstChildIdx + octant].bodiesIndicesVector.push_back(bIdx);
         }
+        */
     }
     void RangeQuery(int nodeIdx, const glm::vec3& pos, float r2, int queryIdx,
                     std::vector<int>& out) const {
