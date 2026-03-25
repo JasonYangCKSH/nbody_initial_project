@@ -63,6 +63,7 @@ private:
 
         glm::vec3 cMin = nsNode[nodeIdx].aabb_min;
         glm::vec3 cMax = nsNode[nodeIdx].aabb_max;
+        // load out parent next sibling first
         int parentNextSibling = nsNode[nodeIdx].nextSilbing;
 
         nsParent.push_back(nodeIdx);
