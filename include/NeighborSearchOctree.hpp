@@ -82,27 +82,17 @@ private:
             child.aabb_max.x = (i & 1) ? cMax.x : center.x;
             child.aabb_max.y = (i & 2) ? cMax.y : center.y;
             child.aabb_max.z = (i & 4) ? cMax.z : center.z;
-
-        }
-        
-        
-        /*
-
-
-
-        glm::vec3 center = (cMin + cMax) * 0.5f;
-        for (int i = 0; i < 8; i++) {
-            NSNode child;
-            child.aabb_min.x = (i & 1) ? center.x : cMin.x;
-            child.aabb_min.y = (i & 2) ? center.y : cMin.y;
-            child.aabb_min.z = (i & 4) ? center.z : cMin.z;
-            child.aabb_max.x = (i & 1) ? cMax.x : center.x;
-            child.aabb_max.y = (i & 2) ? cMax.y : center.y;
-            child.aabb_max.z = (i & 4) ? cMax.z : center.z;
             child.nextSibling = (i < 7) ? (firstChildIdx + i + 1) : parentNextSibling;
             nsNodes.push_back(child);  
         }
+        
+        
+        
 
+
+
+
+        /*
         // 重新分配粒子（注意：此時 nsNodes[nodeIdx] 仍需存取，但 push_back 已結束）
         std::vector<int> toRedistribute = nsNodes[nodeIdx].bodiesIndicesVector;
         nsNodes[nodeIdx].bodiesIndicesVector.clear();
