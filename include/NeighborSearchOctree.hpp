@@ -68,17 +68,27 @@ private:
         nsParent.push_back(nodeIdx);
 
         int firstChildIdx = (int)nsNode.size();
+        // origin: 0 after updated: firstChildIdx
+        nsNodes[nodeIdx].firstChild = firstChildIdx;
 
 
-        /*
-        //  先把需要的資料全部取出來，再做 push_back
-        glm::vec3 cMin = nsNodes[nodeIdx].aabb_min;
-        glm::vec3 cMax = nsNodes[nodeIdx].aabb_max;
-        int parentNextSibling = nsNodes[nodeIdx].nextSibling;
+        glm::vec3 cneter = GetCenter(nodeIdx);
+        for (int i = 0; i < 8; i++) {
+            NSnode child;
+            child.aabb_min.x = (i & 1) ? center.x : cMin.x;
+            child.aabb_min.y = (i & 2) ? center.y : cMin.y;
+            child.aabb_min.z = (i & 4) ? center.z : cMin.z;
+
+            child.aabb_max.x = (i & 1) ? cMax.x : center.x;
+            child.aabb_max.y = (i & 2) ? cMax.y : center.y;
+            child.aabb_max.z = (i & 4) ? cMax.z : center.z;
+
+        }
         
-        nsParents.push_back(nodeIdx);
-        int firstChildIdx = (int)nsNodes.size();
-        nsNodes[nodeIdx].firstChild = firstChildIdx;  // 先設好
+        
+        /*
+
+
 
         glm::vec3 center = (cMin + cMax) * 0.5f;
         for (int i = 0; i < 8; i++) {
