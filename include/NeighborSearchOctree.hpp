@@ -8,8 +8,8 @@ struct NSNode {
     glm::vec3 aabb_min;  
     glm::vec3 aabb_max;
     // --------------------------------------------------------
-    int firstChild;
-    int nextSibling;
+    int firstChild;  // to record the info of NSnode's child index
+    int nextSibling; // to record its sibling's index
     std::vector<int> bodiesIndicesVector;
     static constexpr int MAX_LEAF_CAPACITY = 8;  
 
@@ -31,12 +31,13 @@ private:
     std::vector<int> nsParents;
     std::vector<glm::vec3> positions;
     static const int ROOT = 0;
+    // Find the center of this node based on its index
     glm::vec3 GetCenter(int nodeIdx) const {
         return (nsNodes[nodeIdx].GetAABBMin() + 
                 nsNodes[nodeIdx].GetAABBMax()) * 0.5f;
     }
 
-    // 判斷 pos 落在哪個 octant（0~7）
+    // Determine which Octant the "pos" fall into
     int FindOctant(int nodeIdx, const glm::vec3& pos) const {
         glm::vec3 center = GetCenter(nodeIdx);
         int idx = 0;
