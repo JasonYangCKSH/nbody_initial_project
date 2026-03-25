@@ -110,7 +110,7 @@ private:
         for (int i = 0; i < (int)bodies.size(); i++) {
             neighbors.clear();
             // 
-            nsOctree.Query(i, cell_size, neighbors);
+            nsOctree.Query(i, bodies[i].radius, neighbors);
             for (int j : neighbors)
                 if (i < j)
                     pairs.push_back({i, j});
