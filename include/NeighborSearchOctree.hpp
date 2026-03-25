@@ -84,7 +84,6 @@ private:
             child.nextSibling = (i < 7) ? (firstChildIdx + i + 1) : parentNextSibling;
             nsNodes.push_back(child);  
         }
-        //std::vector<int> tempBodiesIndiceVector = nsNodes[nodeIdx].bodiesIndicesVector;
         
 
         for (int idx: nsNodes[nodeIdx].bodiesIndicesVector) {
