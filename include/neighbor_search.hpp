@@ -109,6 +109,7 @@ private:
         std::vector<int> neighbors;
         for (int i = 0; i < (int)bodies.size(); i++) {
             neighbors.clear();
+            // cell_size == radius
             nsOctree.Query(i, cell_size, neighbors);
             for (int j : neighbors)
                 if (i < j)
