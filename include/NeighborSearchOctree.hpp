@@ -48,34 +48,34 @@ private:
     }
     void Insert(int nodeIdx, int bodyIdx) {
         // step1: isBranch
-        while (!nsNode[nodeIdx].isLeaf()) {
-            int octant = FindOctant(nodeIdx, positions[nodyIdx]);
+        while (!nsNodes[nodeIdx].isLeaf()) {
+            int octant = FindOctant(nodeIdx, positions[bodyIdx]);
             nodeIdx = nsNodes[nodeIdx].firstChild + octant;
         }
         // step2: isLeaf
         nsNodes[nodeIdx].bodiesIndicesVector.push_back(bodyIdx);
         // step3: if nsNodes is over its capacity
-        if (nsNode[nodesIdx].bodiesIndicesVector.size() > NSNode::MAX_LEAF_CAPACITY) {
+        if (nsNodes[nodeIdx].bodiesIndicesVector.size() > NSNode::MAX_LEAF_CAPACITY) {
             Subdivide(nodeIdx);
         }
     }
     void Subdivide(int nodeIdx) {
 
-        glm::vec3 cMin = nsNode[nodeIdx].aabb_min;
-        glm::vec3 cMax = nsNode[nodeIdx].aabb_max;
+        glm::vec3 cMin = nsNodes[nodeIdx].aabb_min;
+        glm::vec3 cMax = nsNodes[nodeIdx].aabb_max;
         // load out parent next sibling first
-        int parentNextSibling = nsNode[nodeIdx].nextSilbing;
+        int parentNextSibling = nsNodes[nodeIdx].nextSibling;
 
-        nsParent.push_back(nodeIdx);
+        nsParents.push_back(nodeIdx);
 
-        int firstChildIdx = (int)nsNode.size();
+        int firstChildIdx = (int)nsNodes.size();
         // origin: 0 after updated: firstChildIdx
         nsNodes[nodeIdx].firstChild = firstChildIdx;
 
 
-        glm::vec3 cneter = GetCenter(nodeIdx);
+        glm::vec3 center = (cMin + cMax) * 0.5f;
         for (int i = 0; i < 8; i++) {
-            NSnode child;
+            NSNode child;
             child.aabb_min.x = (i & 1) ? center.x : cMin.x;
             child.aabb_min.y = (i & 2) ? center.y : cMin.y;
             child.aabb_min.z = (i & 4) ? center.z : cMin.z;
@@ -86,27 +86,21 @@ private:
             child.nextSibling = (i < 7) ? (firstChildIdx + i + 1) : parentNextSibling;
             nsNodes.push_back(child);  
         }
-        std::vector<int> tempBodiesIndiceVector = nsNode[nodeIdx].bodiesIndicesVector;
-        nsNode[nodeIdx].bodiesIndicesVector.clear(); // since nsNode[nodeIdx] is no longer a leaf
+        std::vector<int> tempBodiesIndiceVector = nsNodes[nodeIdx].bodiesIndicesVector;
+        nsNodes[nodeIdx].bodiesIndicesVector.clear(); // since nsNode[nodeIdx] is no longer a leaf
 
         for (int idx: tempBodiesIndiceVector) {
-            int octant = FindOctant(nodeIdx, position[idx]);
-            nsNode[firstChildIdx + octant].bodiesIndicesVector.push_back(idx);
+            int octant = FindOctant(nodeIdx, positions[idx]);
+            nsNodes[firstChildIdx + octant].bodiesIndicesVector.push_back(idx);
         }
         
 
 
 
 
-        /*
-        // 重新分配粒子（注意：此時 nsNodes[nodeIdx] 仍需存取，但 push_back 已結束）
-        std::vector<int> toRedistribute = nsNodes[nodeIdx].bodiesIndicesVector;
-        nsNodes[nodeIdx].bodiesIndicesVector.clear();
-        for (int bIdx : toRedistribute) {
-            int octant = FindOctant(nodeIdx, positions[bIdx]);
-            nsNodes[firstChildIdx + octant].bodiesIndicesVector.push_back(bIdx);
-        }
-        */
+        
+
+        
     }
     void RangeQuery(int nodeIdx, const glm::vec3& pos, float r2, int queryIdx,
                     std::vector<int>& out) const {
