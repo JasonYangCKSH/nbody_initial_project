@@ -28,7 +28,6 @@ struct NSNode {
 class NSOctree {
 private:
     std::vector<NSNode> nsNodes;
-    std::vector<int> nsParents;
     std::vector<glm::vec3> positions;  // bodies' positions
     static const int ROOT = 0;
     // Find the center of this node based on its index
@@ -66,7 +65,6 @@ private:
         // load out parent next sibling first
         int parentNextSibling = nsNodes[nodeIdx].nextSibling;
 
-        nsParents.push_back(nodeIdx);
 
         int firstChildIdx = (int)nsNodes.size();
         // origin: 0 after updated: firstChildIdx
@@ -141,9 +139,8 @@ public:
             positions.push_back(bodies[i].pos);
 
 
-        // step3: reset nsNodes & nsParents(tree itself)
+        // step3: reset nsNodes(tree itself)
         nsNodes.clear();
-        nsParents.clear();
         NSNode root;
         root.SetAABBMin(positions[0]);
         root.SetAABBMax(positions[0]);
