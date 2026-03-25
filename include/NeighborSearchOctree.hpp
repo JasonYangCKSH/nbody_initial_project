@@ -86,8 +86,13 @@ private:
             child.nextSibling = (i < 7) ? (firstChildIdx + i + 1) : parentNextSibling;
             nsNodes.push_back(child);  
         }
-        
-        
+        std::vector<int> tempBodiesIndiceVector = nsNode[nodeIdx].bodiesIndicesVector;
+        nsNode[nodeIdx].bodiesIndicesVector.clear(); // since nsNode[nodeIdx] is no longer a leaf
+
+        for (int idx: tempBodiesIndiceVector) {
+            int octant = FindOctant(nodeIdx, position[idx]);
+            nsNode[firstChildIdx + octant].bodiesIndicesVector.push_back(idx);
+        }
         
 
 
