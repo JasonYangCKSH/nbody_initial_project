@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <cmath>
+#include <cstdint>
 #include "body.hpp"
 #include "NeighborSearchOctree.hpp"
 enum class NeighborMethod {
@@ -56,8 +57,17 @@ private:
 
 
      // 2. Uniform Grid
-    int HashCell(int x, int y, int z) const {
-        return x * 15485863 ^ y * 32452843 ^ z * 49979687;
+
+    uint64_t HashCell(int x, int y, int z) {
+        uint64_t h = (uint64_t)x;
+        h = h *  0x9E3779B97F4A7C15ULL + (uint64_t)y;
+        h = h * 0x9E3779B97F4A7C15ULL + (uint64_t)z;
+        h ^= (h >> 30);
+        h *= 0xBF58476D1CE4E5B9ULL;
+        h ^= (h >> 27);
+        h *= 0x94D049BB133111EBULL;
+        h ^= (h >> 31);        
+        return h;
     }
     glm::ivec3 BodyToCell(int pos_x, int pos_y, int pos_z) const {
         return {
