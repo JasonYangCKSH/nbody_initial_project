@@ -57,7 +57,7 @@ private:
 
      // 2. Uniform Grid
     int HashCell(int x, int y, int z) const {
-        return x * 73856093 ^ y * 19349669 ^ z * 83492791;
+        return x * 15485863 ^ y * 32452843 ^ z * 49979687;
     }
     glm::ivec3 BodyToCell(int pos_x, int pos_y, int pos_z) const {
         return {
