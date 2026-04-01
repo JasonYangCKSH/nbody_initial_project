@@ -69,7 +69,7 @@ private:
         h ^= (h >> 31);        
         return h;
     }
-    glm::ivec3 BodyToCell(int pos_x, int pos_y, int pos_z) const {
+    glm::vec3 BodyToCell(int pos_x, int pos_y, int pos_z) const {
         return {
             (int)std::floor(pos_x / cell_size),
             (int)std::floor(pos_y / cell_size),
@@ -82,7 +82,7 @@ private:
 
         // 1. Build Cell, insert every Body into its corresponding cell
         for (int i = 0; i < (int)bodies.size(); i++) {
-            glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
+            glm::vec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
             grid[HashCell(cell.x, cell.y, cell.z)].push_back(i);
         }
 
