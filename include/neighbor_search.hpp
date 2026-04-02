@@ -69,7 +69,7 @@ private:
         h ^= (h >> 31);        
         return h;
     }
-    glm::vec3 BodyToCell(int pos_x, int pos_y, int pos_z) const {
+    glm::ivec3 BodyToCell(int pos_x, int pos_y, int pos_z) const {
         return {
             (int)std::floor(pos_x / cell_size),
             (int)std::floor(pos_y / cell_size),
@@ -77,22 +77,23 @@ private:
         };
     }
     std::vector<NeighborPair> UniformGrid(const std::vector<Body>& bodies) {
-        std::vector<NeighborPair> pairs;
-        std::unordered_map<int, std::vector<int>> grid;
+        //std::vector<NeighborPair> pairs;
+        //std::unordered_map<int, std::vector<int>> grid;
 
         // 1. Build Cell, insert every Body into its corresponding cell
         for (int i = 0; i < (int)bodies.size(); i++) {
-            glm::vec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
-            grid[HashCell(cell.x, cell.y, cell.z)].push_back(i);
+            //glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
+            //grid[HashCell(cell.x, cell.y, cell.z)].push_back(i);
         }
 
         // 2. Query: for every Body, search its neighbor 27 cells
         for (int i = 0; i < (int)bodies.size(); i++) {
+            /*
             glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
             for (int dx = -1; dx <= 1; dx++)
                 for (int dy = -1; dy <= 1; dy++)
                     for (int dz = -1; dz <= 1; dz++) {
-                        glm::ivec3 key = BodyToCell(cell.x + dx, cell.y + dy, cell.z + dz);
+                        glm::ivec3 key = cell + glm::ivec3(dx, dy, dz);
                         auto it = grid.find(HashCell(key.x, key.y, key.z)); 
                         if (it == grid.end()) continue;
                         for (int j : it->second) {
@@ -105,6 +106,7 @@ private:
                             pairs.push_back({i, j});       
                         } 
                     } 
+            */
         }
         return pairs;
     }
