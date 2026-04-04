@@ -35,7 +35,7 @@ public:
         radius.push_back(_radius);
     }
 
-    
+    // unsigned long int 
     size_t size() const {
         return posX.size();
     }
