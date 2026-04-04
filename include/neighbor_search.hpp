@@ -77,18 +77,18 @@ private:
         };
     }
     std::vector<NeighborPair> UniformGrid(const std::vector<Body>& bodies) {
-        //std::vector<NeighborPair> pairs;
-        //std::unordered_map<int, std::vector<int>> grid;
+        std::vector<NeighborPair> pairs;
+        std::unordered_map<int, std::vector<int>> grid;
 
         // 1. Build Cell, insert every Body into its corresponding cell
         for (int i = 0; i < (int)bodies.size(); i++) {
-            //glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
-            //grid[HashCell(cell.x, cell.y, cell.z)].push_back(i);
+            glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
+            grid[HashCell(cell.x, cell.y, cell.z)].push_back(i);
         }
 
         // 2. Query: for every Body, search its neighbor 27 cells
         for (int i = 0; i < (int)bodies.size(); i++) {
-            /*
+            
             glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
             for (int dx = -1; dx <= 1; dx++)
                 for (int dy = -1; dy <= 1; dy++)
@@ -106,7 +106,7 @@ private:
                             pairs.push_back({i, j});       
                         } 
                     } 
-            */
+            
         }
         return pairs;
     }
