@@ -1,0 +1,157 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>N-Body 3D (Three.js)</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    #view3d {
+      width: 100%;
+      height: 100%;
+      background: #e6e6e6;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h2>Planet Simulation 3D</h2>
+
+      <div class="row">
+        <label>Scenario</label>
+        <select id="scenario">
+          <option value="random">Random Cloud</option>
+          <option value="solar_stable">Stable Solar System (better orbits)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>Mode</label>
+        <select id="mode">
+          <option value="naive">Naive</option>
+          <option value="grid">Grid (3D Uniform Grid)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>Particle N: <b id="nLabel">120</b></label>
+        <input id="nRange" type="range" min="2" max="600" step="1" value="120" />
+      </div>
+
+      <div class="row">
+        <label>Cell Size: <b id="cellLabel">40</b></label>
+        <input id="cellRange" type="range" min="10" max="120" step="5" value="40" />
+      </div>
+
+      <div class="row">
+        <label>Speed: <b id="speedLabel">1.00x</b></label>
+        <input id="speedRange" type="range" min="0.1" max="4" step="0.1" value="1" />
+      </div>
+
+      <div class="row">
+        <label>Energy Loss: <b id="lossLabel">0.000</b></label>
+        <input id="lossRange" type="range" min="0" max="0.05" step="0.001" value="0" />
+      </div>
+
+      <div class="stat">
+        <div class="listHeader">
+          <b>Add Planet</b>
+          <button id="addPlanetBtn" class="miniBtn" type="button">Add</button>
+        </div>
+        <div class="addGrid">
+          <label class="small">x <input id="addX" type="number" step="1" value="0" /></label>
+          <label class="small">y <input id="addY" type="number" step="1" value="0" /></label>
+          <label class="small">z <input id="addZ" type="number" step="1" value="0" /></label>
+          <label class="small">vx <input id="addVx" type="number" step="0.1" value="0" /></label>
+          <label class="small">vy <input id="addVy" type="number" step="0.1" value="0" /></label>
+          <label class="small">vz <input id="addVz" type="number" step="0.1" value="0" /></label>
+          <label class="small">r <input id="addR" type="number" step="0.5" value="5" /></label>
+          <label class="small">rho <input id="addRho" type="number" step="0.1" value="1" /></label>
+          <label class="small">color <input id="addColor" type="color" value="#000000" /></label>
+          <label class="small">bright <input id="addBright" type="number" step="0.1" value="1" min="0.2" max="2" /></label>
+        </div>
+        <div class="small">Tip: r and rho decide mass automatically.</div>
+      </div>
+
+      <div class="btnRow">
+        <button id="resetBtn">Reset (Seed)</button>
+        <button id="pauseBtn">Pause</button>
+      </div>
+
+      <div class="stat">
+        <b>Stats</b>
+        <div class="statLine"><span>Frame Time (ms)</span><span id="ms">-</span></div>
+        <div class="statLine"><span>Interactions (ops)</span><span id="ops">-</span></div>
+        <div class="statLine"><span>Energy Index (EI)</span><span id="ei">-</span></div>
+        <div class="statLine"><span>Time Complexity</span><span id="tc">-</span></div>
+        <div class="statLine"><span>Total Energy</span><span id="energy">-</span></div>
+      </div>
+
+      <div class="stat">
+        <div class="listHeader">
+          <b>All Planets</b>
+          <button id="planetListToggleBtn" class="miniBtn" type="button">Hide</button>
+        </div>
+        <div id="planetListBody">
+          <div class="small" id="planetCount">0 planets</div>
+          <div id="planetList" class="planetList"></div>
+        </div>
+      </div>
+
+      <div class="stat" id="editorBox" style="display:none;">
+        <b>Particle Editor</b>
+        <div class="small">Click a sphere in the 3D view to edit it.</div>
+
+        <div class="row" style="margin-top:10px;">
+          <label>Selected: <b id="selName">#-</b></label>
+        </div>
+
+        <div class="row">
+          <label>Radius r: <b id="rVal">-</b></label>
+          <input id="rInput" type="range" min="1" max="30" step="0.5" value="5" />
+        </div>
+
+        <div class="row">
+          <label>Density rho: <b id="rhoVal">-</b></label>
+          <input id="rhoInput" type="range" min="0.1" max="10" step="0.1" value="1" />
+        </div>
+
+        <div class="row">
+          <label>Mass m: <b id="mVal">-</b></label>
+          <input id="mInput" type="number" step="0.1" value="1" />
+        </div>
+
+        <div class="row">
+          <label>Color</label>
+          <input id="colorInput" type="color" value="#000000" />
+        </div>
+
+        <div class="row">
+          <label>Brightness: <b id="brightVal">1.0</b></label>
+          <input id="brightInput" type="range" min="0.2" max="2" step="0.05" value="1" />
+        </div>
+      </div>
+
+      <div class="hint">
+        Tips:<br />
+        1) Drag to rotate the camera, and scroll to zoom.<br />
+        2) Click a sphere to open the editor panel.<br />
+        3) Grid mode uses a 3D uniform grid and checks only nearby cells.
+      </div>
+    </div>
+
+    <div id="view3d"></div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module" src="main3d.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,34 @@
+    html, body { height: 100%; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Arial; margin: 0; overflow: hidden; }
+    .wrap { display: grid; grid-template-columns: clamp(280px, 24vw, 360px) minmax(0, 1fr); height: 100vh; }
+    .panel { padding: 16px; border-right: 1px solid #ddd; overflow-y: auto; min-width: 280px; box-sizing: border-box; }
+    .panel h2 { margin: 0 0 12px; }
+    .row { margin: 10px 0; }
+    label { display: block; margin-bottom: 6px; }
+    input[type="range"] { width: 100%; }
+    select, button, input[type="number"] { width: 100%; padding: 10px; box-sizing: border-box; }
+    .stat { background:#f7f7f7; padding: 10px; border-radius: 10px; margin-top: 10px; }
+    #view3d { min-width: 0; min-height: 0; overflow: hidden; }
+    canvas { width: 100%; height: 100%; display: block; background: #fff; }
+    .hint { color:#555; font-size: 13px; line-height: 1.4; }
+    .btnRow { display: flex; gap: 10px; }
+    .statLine { display: flex; justify-content: space-between; margin: 6px 0; }
+    .small { font-size: 12px; color: #666; }
+    .listHeader { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .miniBtn { width: auto; padding: 4px 10px; font-size: 12px; }
+    .planetList { margin-top: 8px; max-height: 220px; overflow: auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; }
+    .planetRow { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 6px 8px; font-size: 12px; border-bottom: 1px solid #eee; }
+    .planetRow:last-child { border-bottom: 0; }
+    .planetRow.active { background: #fff4dd; }
+    .planetSelectBtn { width: auto; padding: 2px 8px; font-size: 12px; }
+    .planetMeta { color: #666; font-variant-numeric: tabular-nums; }
+    .addGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; }
+    .addGrid input[type="number"], .addGrid input[type="color"] { width: 100%; padding: 6px; font-size: 12px; box-sizing: border-box; }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .wrap { grid-template-columns: 1fr; grid-template-rows: auto minmax(420px, 1fr); height: auto; min-height: 100vh; }
+      .panel { min-width: 0; border-right: 0; border-bottom: 1px solid #ddd; }
+      #view3d { height: min(70vh, 720px); }
+    }
+    
