@@ -1,18 +1,51 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <vector>
-class Body {
+class BodySystem {
 public:
-    float mass;
-    float radius;
-    std::vector<float> posX, posY, posZ;
-    std::vector<float> vecX, vecY, vecZ;
-    std::vector<float> accX, accY, accZ;
-    Body(): mass(0.0f), radius(0.0f), 
-            posX(0.0f), posY(0.0f), posZ(0.0f),
-            vecX(0.0f), vecY(0.0f), vecZ(0.0f),
-            accX(0.0f), accY(0.0f), accZ(0.0f){}
-    Body(glm::vec3 _pos, glm::vec3 _vel, glm::vec3 _acc, float _mass, float _radius) {
 
+    std::vector<float> mass;
+    std::vector<float> radius;
+
+
+    std::vector<float> posX, posY, posZ;
+    std::vector<float> velX, velY, velZ;
+    std::vector<float> accX, accY, accZ;
+
+    
+    BodySystem() {}
+
+    /**
+     * core constructor
+     */
+    void addBody(glm::vec3 _pos, glm::vec3 _vel, glm::vec3 _acc, float _mass, float _radius) {
+        posX.push_back(_pos.x);
+        posY.push_back(_pos.y);
+        posZ.push_back(_pos.z);
+
+        velX.push_back(_vel.x);
+        velY.push_back(_vel.y);
+        velZ.push_back(_vel.z);
+
+        accX.push_back(_acc.x);
+        accY.push_back(_acc.y);
+        accZ.push_back(_acc.z);
+
+        mass.push_back(_mass);
+        radius.push_back(_radius);
+    }
+
+    
+    size_t size() const {
+        return posX.size();
+    }
+
+    
+    void reserve(size_t n) {
+        posX.reserve(n); posY.reserve(n); posZ.reserve(n);
+        velX.reserve(n); velY.reserve(n); velZ.reserve(n);
+        accX.reserve(n); accY.reserve(n); accZ.reserve(n);
+        mass.reserve(n); 
+        radius.reserve(n);
     }
 };
