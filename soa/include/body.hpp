@@ -1,15 +1,18 @@
 #pragma once
+#include <glm/glm.hpp>
 #include <vector>
 class Body {
 public:
     float mass;
     float radius;
-    std::vector<float> posx, posy, posz;
-    std::vector<float> vecx, vecy, vecz;
-    std::vector<float> accx, accy, accz;
+    std::vector<float> posX, posY, posZ;
+    std::vector<float> vecX, vecY, vecZ;
+    std::vector<float> accX, accY, accZ;
     Body(): mass(0.0f), radius(0.0f), 
-            posx(0.0f), posy(0.0f), posz(0.0f),
-            vecx(0.0f), vecy(0.0f), vecz(0.0f),
-            accx(0.0f), accy(0.0f), accz(0.0f){}
+            posX(0.0f), posY(0.0f), posZ(0.0f),
+            vecX(0.0f), vecY(0.0f), vecZ(0.0f),
+            accX(0.0f), accY(0.0f), accZ(0.0f){}
+    Body(glm::vec3 _pos, glm::vec3 _vel, glm::vec3 _acc, float _mass, float _radius) {
 
+    }
 };
