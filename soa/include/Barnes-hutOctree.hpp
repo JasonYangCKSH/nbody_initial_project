@@ -8,5 +8,7 @@ class Oct{
 public:
     glm::vec3 center;
     float size;
-    
+    Oct new_containing(const BodySystem& bs) {
+
+    }
 };
