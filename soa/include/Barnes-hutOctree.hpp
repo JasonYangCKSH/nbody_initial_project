@@ -46,4 +46,15 @@ public:
                ((bs.posY[i] > center.y) << 1) | 
                ((bs.posZ[i] > center.z) << 2);
     }
+    Oct get_octant_boundary(int index) const {
+        Oct sub;
+        sub.size = size * 0.5f; 
+
+        float offsetX = ((index & 1) ? 0.5f : -0.5f) * sub.size;
+        float offsetY = ((index & 2) ? 0.5f : -0.5f) * sub.size;
+        float offsetZ = ((index & 4) ? 0.5f : -0.5f) * sub.size;
+
+        sub.center = center + glm::vec3(offsetX, offsetY, offsetZ);
+        return sub;
+    }
 };
