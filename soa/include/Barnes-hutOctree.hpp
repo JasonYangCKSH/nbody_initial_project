@@ -66,3 +66,11 @@ public:
         return children;
     } 
 };
+
+
+class Node {
+public:
+
+private:
+
+};
