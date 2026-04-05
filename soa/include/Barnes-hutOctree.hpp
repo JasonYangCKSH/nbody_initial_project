@@ -33,12 +33,17 @@ public:
 
         return *this;
     }
-    int findOctant(glm::vec3 pos) const {
-        int index = 0;
-        if (pos.x > center.x) index |= 1;
-        if (pos.y > center.y) index |= 2;
-        if (pos.z > center.z) index |= 4;
-        
-        return index;
+
+    inline int findOctant(const BodySystem& bs, size_t i) const {
+        // version 1
+        /*int index = 0;
+        if (bs.posX[i] > center.x) index |= 1;
+        if (bs.posY[i] > center.y) index |= 2;
+        if (bs.posZ[i] > center.z) index |= 4;
+        return index;*/
+        // version 2
+        return (bs.posX[i] > center.x) | 
+               ((bs.posY[i] > center.y) << 1) | 
+               ((bs.posZ[i] > center.z) << 2);
     }
 };
