@@ -57,4 +57,12 @@ public:
         sub.center = center + glm::vec3(offsetX, offsetY, offsetZ);
         return sub;
     }
+
+    std::array<Oct, 8> subdivide() const {
+        // 
+        std::array<Oct, 8> children;
+        for (int i = 0; i < 8; ++i)
+            children[i] = get_octant_boundary(i);
+        return children;
+    } 
 };
