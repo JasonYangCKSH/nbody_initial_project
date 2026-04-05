@@ -70,7 +70,26 @@ public:
 
 class Node {
 public:
+    // --------------這些都是index-----------------
+    int first_child;  // first child node's index
+    int next_sibling;  // next sibling
+    // -------------------------------------------
 
+    glm::vec3 com_pos;  // position of "center of mass"
+    float total_mass;  // total mass of all the particles in the node
+    Oct boundary;
+
+    // Constructor
+    Node(int next_index, Oct b) :
+        first_child(0), 
+        next_sibling(next_index),
+        com_pos(0.0f), 
+        total_mass(0.0f),
+        boundary(b) {}
+
+    bool isLeaf() const {return first_child == 0;}
+    bool isBranch() const {return first_child != 0;}
+    bool isEmpty() const {return total_mass < 1e-9f;}
 private:
 
 };

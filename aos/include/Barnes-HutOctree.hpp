@@ -96,7 +96,7 @@ public:
 
     bool isLeaf() const {return first_child == 0;}
     bool isBranch() const {return first_child != 0;}
-    bool isEmpty() const {return total_mass == 0;}
+    bool isEmpty() const {return total_mass < 1e-9f;}
 
 
 };
