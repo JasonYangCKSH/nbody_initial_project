@@ -7,7 +7,7 @@
 #include "body_system.hpp"
 
 // 僅作為臨時傳遞邊界資訊的輕量結構
-struct Boundary {
+struct Oct {
     glm::vec3 center;
     float size;
 };
@@ -46,7 +46,7 @@ public:
     }
 
     // 1. clear: 初始化 ROOT
-    void clear(Boundary root) {
+    void clear(Oct root) {
         first_child.clear(); next_sibling.clear();
         comX.clear(); comY.clear(); comZ.clear();
         mass.clear();
