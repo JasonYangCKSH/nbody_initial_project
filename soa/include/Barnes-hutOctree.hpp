@@ -98,4 +98,13 @@ public:
     float t_sq;  // theta squared
     float e_sq;  // epsilon squared
     // ------------------------------------
+
+
+    // -----NODE-------------------------------
+    std::vector<int> first_child;
+    std::vector<int> next_sibling;
+    std::vector<float> com_posX, com_posY, com_posZ;
+    std::vector<float> total_mass;
+    std::vector<float> centerX, centerY, centerZ, node_size;
+
 };
