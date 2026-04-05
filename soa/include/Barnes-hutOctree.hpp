@@ -91,3 +91,11 @@ public:
     bool isBranch() const {return first_child != 0;}
     bool isEmpty() const {return total_mass < 1e-9f;}
 };
+
+class Octree{
+public:
+    // ------使用平方來節省根號時間開銷------
+    float t_sq;  // theta squared
+    float e_sq;  // epsilon squared
+    // ------------------------------------
+};
