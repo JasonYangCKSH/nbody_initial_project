@@ -17,7 +17,7 @@
 auto now() { return std::chrono::high_resolution_clock::now(); }
 
 // 計算毫秒差
-double ms(auto start, auto end) {
+double ms(std::chrono::high_resolution_clock::time_point start, std::chrono::high_resolution_clock::time_point end) {
     return std::chrono::duration<double, std::milli>(end - start).count();
 }
 
@@ -83,8 +83,8 @@ int main() {
         else bodies = Senario::ExtremeClustered(N, mass, radius);
 
         // 3. 初始化兩套完全同步的模擬系統
-        // sim_ref 是「基準組」(永遠用 Brute Force)
-        // sim_test 是「實驗組」(用你選的優化演算法)
+        // sim_ref 是「實驗組」(永遠用 Brute Force)
+        // sim_test 是「對照組」(用你選的優化演算法)
         Simulation sim_ref(dt, theta, epsilon, bodies, NeighborMethod::BRUTE_FORCE);
         Simulation sim_test(dt, theta, epsilon, bodies, test_method);
 
@@ -111,13 +111,13 @@ int main() {
                 
             }
 
-            // B. 效能測量 (測量實驗組的 step 耗時)
+            // B. 效能測量 (測量對照組的 step 耗時)
             auto t_start = now();
             sim_test.step();
             auto t_end = now();
             total_test_time += ms(t_start, t_end);
 
-            // C. 基準組同步 (必須也跑 step，確保下一幀兩者的粒子座標依然一致)
+            // C. 實驗組同步 (必須也跑 step，確保下一幀兩者的粒子座標依然一致)
             sim_ref.step();
 
             PrintProgress(i + 1, test_frames);
