@@ -55,14 +55,14 @@ public:
         t_sq(theta * theta), e_sq(epsilon * epsilon) {}
 
     // 輔助函式：新增一個節點並返回其索引
-    int add_node(int next_sib, float cx, float cy, float cz, float sz) {
+    int add_node(int next_sib, float cx, float cy, float cz, float size) {
         int idx = first_child.size();
         first_child.push_back(0);
         next_sibling.push_back(next_sib);
         comX.push_back(0.0f); comY.push_back(0.0f); comZ.push_back(0.0f);
         total_mass.push_back(0.0f);
         centerX.push_back(cx); centerY.push_back(cy); centerZ.push_back(cz);
-        node_size.push_back(sz);
+        node_size.push_back(size);
         return idx;
     }
 
@@ -177,9 +177,9 @@ public:
             float dy = comY[idx] - ty;
             float dz = comZ[idx] - tz;
             float d_sq = dx*dx + dy*dy + dz*dz;
-            float sz = node_size[idx];
+            float size = node_size[idx];
 
-            if (first_child[idx] == 0 || (sz * sz < d_sq * t_sq)) {
+            if (first_child[idx] == 0 || (size * size < d_sq * t_sq)) {
                 if (d_sq > 0 && total_mass[idx] > 0) {
                     float dist = std::sqrt(d_sq);
                     float denom = (d_sq + e_sq) * dist;
