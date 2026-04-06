@@ -48,4 +48,10 @@ public:
         mass.reserve(n); 
         radius.reserve(n);
     }
+    void update(float dt) {
+        for (int i = 0; i < posX.size(); i++) {
+            vecX[i] = accX[i] * dt; vecY[i] = accY[i] * dt; vecZ[i] = accZ[i] * dt;
+            posX[i] = vecX[i] * dt; posY[i] = vecY[i] * dt; posZ[i] = vecZ[i] * dt;
+        }
+    }
 };
