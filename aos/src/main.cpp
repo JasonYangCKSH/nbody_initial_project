@@ -82,7 +82,7 @@ int main() {
         else if (sc_mode == 2) bodies = Senario::Clustered(N, 10, range, 5.0f, mass, radius);
         else if (sc_mode == 3) bodies = Senario::ExtremeClustered(N, mass, radius);
         else if (sc_mode == 4) {
-            N = 5;
+            //N = 5;
             bodies = Senario::NormalTestBench();
         }
         // 3. 初始化兩套完全同步的模擬系統
