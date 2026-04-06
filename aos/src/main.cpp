@@ -106,6 +106,8 @@ int main() {
             if (set_ref != set_test && accuracy_passed) {
                 accuracy_passed = false;
                 error_frame = i;
+                std::cout << "=========error!=======\n";
+                break;
                 // 這裡不中斷，讓它跑完看效能，但記錄錯誤
             }
 
