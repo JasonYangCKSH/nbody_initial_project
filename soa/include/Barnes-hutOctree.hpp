@@ -83,7 +83,7 @@ public:
     // 3. insert: 針對 BodySystem 的單個粒子插入
     void insert(const BodySystem& bs, size_t b_idx) {
         float px = bs.posX[b_idx], py = bs.posY[b_idx], pz = bs.posZ[b_idx];
-        float m = bs.total_mass[b_idx];
+        float m = bs.mass[b_idx];
         int node_idx = ROOT;
 
         // 往下找葉子
