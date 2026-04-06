@@ -74,14 +74,17 @@ int main() {
         else { test_method = NeighborMethod::OCTREE; method_name = "Octree"; }
 
         // 2. 選擇測試情境
-        std::cout << "\nSelect Scenario:\n(1) Uniform Random\n(2) Clustered\n(3) Extreme Clustered\nChoice: ";
+        std::cout << "\nSelect Scenario:\n(1) Uniform Random\n(2) Clustered\n(3) Extreme Clustered\n(4) Normal Test Bench\nChoice: ";
         int sc_mode; std::cin >> sc_mode;
         
         std::vector<Body> bodies;
         if (sc_mode == 1) bodies = Senario::UniformRandom(N, range, mass, radius);
         else if (sc_mode == 2) bodies = Senario::Clustered(N, 10, range, 5.0f, mass, radius);
-        else bodies = Senario::ExtremeClustered(N, mass, radius);
-
+        else if (sc_mode == 3) bodies = Senario::ExtremeClustered(N, mass, radius);
+        else if (sc_mode == 4) {
+            N = 5;
+            bodies = Senario::NormalTestBench();
+        }
         // 3. 初始化兩套完全同步的模擬系統
         // sim_ref 是「實驗組」(永遠用 Brute Force)
         // sim_test 是「對照組」(用你選的優化演算法)
