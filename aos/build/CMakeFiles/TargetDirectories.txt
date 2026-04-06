@@ -1,0 +1,3 @@
+/home/jason/nbody_initial_project/aos/build/CMakeFiles/a.dir
+/home/jason/nbody_initial_project/aos/build/CMakeFiles/edit_cache.dir
+/home/jason/nbody_initial_project/aos/build/CMakeFiles/rebuild_cache.dir
