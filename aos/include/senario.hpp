@@ -74,4 +74,16 @@ namespace Senario {
         }
         return bodies;
     }
+    std::vector<Body> NormalTestBench() {
+        std::vector<Body> bodies;
+        //bodies.reserve(5);
+        //1
+        bodies.push_back(Body(glm::vec3(-1.0f, 0, 0), glm::vec3( 0.5f, 0, 0), glm::vec3(0), 1.0f, 1.0f));
+        bodies.push_back(Body(glm::vec3( 1.0f, 0, 0), glm::vec3(-0.5f, 0, 0), glm::vec3(0), 1.0f, 1.0f));
+        //2
+        bodies.push_back(Body(glm::vec3(0, 5.0f, 0), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+        bodies.push_back(Body(glm::vec3(0.5f, 5.2f, 0), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+        bodies.push_back(Body(glm::vec3(0.2f, 4.8f, 0), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+        return bodies;
+    }
 };
