@@ -29,6 +29,11 @@ private:
     }
     void attract() {
         boundary = Oct().new_containing();
+        octree.clear(boundary);
+        for (int i = 0; i < bs.posX.size(); i++) {
+            octree.insert(bs, i);
+        }
+
     }
     void collide() {
 
