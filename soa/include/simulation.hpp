@@ -24,4 +24,16 @@ public:
         frame++;
     }
 private:
+    void iterate() {
+
+    }
+    void collide() {
+
+    }
+    void attract() {
+
+    }
+    void resolve() {
+        
+    }
 };
