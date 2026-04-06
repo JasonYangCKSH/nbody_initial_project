@@ -80,26 +80,7 @@ namespace Senario {
         //1
         bodies.push_back(Body(glm::vec3(-1.0f, 0, 0), glm::vec3( 0.5f, 0, 0), glm::vec3(0), 1.0f, 1.0f));
         //bodies.push_back(Body(glm::vec3( 1.0f, 0, 0), glm::vec3(-0.5f, 0, 0), glm::vec3(0), 1.0f, 1.0f));
-        //2
-        //bodies.push_back(Body(glm::vec3(0, 5.0f, 0), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
-        //bodies.push_back(Body(glm::vec3(0.5f, 5.2f, 0), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
-        //bodies.push_back(Body(glm::vec3(0.2f, 4.8f, 0), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
-        /*
-        // 案例 1：水平相鄰但有間隙 (距離 2.1 > 半徑和 2.0)
-        // 測試：基本的距離判斷是否精確
-        bodies.push_back(Body(glm::vec3(-1.05f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
-        bodies.push_back(Body(glm::vec3( 1.05f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
 
-        // 案例 2：對角線相鄰 (距離 sqrt(2^2 + 2^2) = 2.82 > 2.0)
-        // 測試：勾股定理計算是否正確
-        bodies.push_back(Body(glm::vec3(10.0f, 10.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
-        bodies.push_back(Body(glm::vec3(12.0f, 12.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
-
-        // 案例 3：極遠距離 (完全位在不同的 Grid Cell)
-        // 測試：空間分割是否正確將它們隔離，不產生任何 Pair 檢查
-        bodies.push_back(Body(glm::vec3(-50.0f, -50.0f, -50.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
-        bodies.push_back(Body(glm::vec3( 50.0f,  50.0f,  50.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
-        */
         
         
         return bodies;
