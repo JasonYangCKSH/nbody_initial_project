@@ -87,7 +87,7 @@ public:
         int node_idx = ROOT;
 
         // 往下找葉子
-        while (first_child[node_idx] != 0) {
+        while (first_child[node_idx] != ROOT) {
             int q = (px > centerX[node_idx]) | ((py > centerY[node_idx]) << 1) | ((pz > centerZ[node_idx]) << 2);
             node_idx = first_child[node_idx] + q;
         }
