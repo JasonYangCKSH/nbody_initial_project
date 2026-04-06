@@ -4,12 +4,33 @@
 #include <array>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include "body_system.hpp"
 
 // 僅作為臨時傳遞邊界資訊的輕量結構
 struct Oct {
     glm::vec3 center;
     float size;
+    Oct new_containing(const BodySystem& bs) {
+        float min_x = std::numeric_limits<float>::max();
+        float min_y = std::numeric_limits<float>::max();
+        float min_z = std::numeric_limits<float>::max();
+        float max_x = std::numeric_limits<float>::lowest();
+        float max_y = std::numeric_limits<float>::lowest();
+        float max_z = std::numeric_limits<float>::lowest();
+
+        for (int i = 0; i < bs.posX.size(); i++) {
+            min_x = std::min(min_x, bs.posX[i]);
+            min_y = std::min(min_y, bs.posY[i]);
+            min_z = std::min(min_z, bs.posZ[i]);
+            max_x = std::max(max_x, bs.posX[i]);
+            max_y = std::max(max_y, bs.posY[i]);
+            max_z = std::max(max_z, bs.posZ[i]);
+        }
+        center = glm::vec3(min_x + max_x, min_y + max_y, min_z + max_z) * 0.5f;
+        size = std::max({max_x - min_x, max_y - min_y, max_z - min_z});
+        return *this;
+    }
 };
 
 class Octree {

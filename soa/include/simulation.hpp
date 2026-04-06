@@ -27,12 +27,13 @@ private:
     void iterate() {
         bs.update(dt);
     }
+    void attract() {
+        boundary = Oct().new_containing();
+    }
     void collide() {
 
     }
-    void attract() {
 
-    }
     void resolve() {
 
     }
