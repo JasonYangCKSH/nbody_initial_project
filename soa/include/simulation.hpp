@@ -17,5 +17,11 @@ public:
 
     Simulation(float _dt, float theta, float epsilon, const BodySystem& _bs): dt(_dt), frame(0), 
     bs(_bs), octree(theta, epsilon), boundary(){}
+    void step() {
+        this->iterate();
+        this->collide();
+        this->attract();
+        frame++;
+    }
 private:
 };
