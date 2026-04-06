@@ -38,7 +38,7 @@ public:
     std::vector<NeighborPair> get_neighbor_pairs() {
         return ns.FindPairs(bodies);
     }
-    void apply_resolution(const std::vector<NeighborPair>& pairs) {
+    void apply_resolutions(const std::vector<NeighborPair>& pairs) {
         for (auto& [i, j] : pairs) {
             this->resolve(i, j);
         }

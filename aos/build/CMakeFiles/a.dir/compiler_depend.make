@@ -165,6 +165,7 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
   /usr/include/c++/10/bits/basic_string.tcc \
   /usr/include/c++/10/bits/char_traits.h \
   /usr/include/c++/10/bits/charconv.h \
+  /usr/include/c++/10/bits/codecvt.h \
   /usr/include/c++/10/bits/concept_check.h \
   /usr/include/c++/10/bits/cpp_type_traits.h \
   /usr/include/c++/10/bits/cxxabi_forced.h \
@@ -185,8 +186,11 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
   /usr/include/c++/10/bits/iterator_concepts.h \
   /usr/include/c++/10/bits/locale_classes.h \
   /usr/include/c++/10/bits/locale_classes.tcc \
+  /usr/include/c++/10/bits/locale_conv.h \
   /usr/include/c++/10/bits/locale_facets.h \
   /usr/include/c++/10/bits/locale_facets.tcc \
+  /usr/include/c++/10/bits/locale_facets_nonio.h \
+  /usr/include/c++/10/bits/locale_facets_nonio.tcc \
   /usr/include/c++/10/bits/localefwd.h \
   /usr/include/c++/10/bits/memoryfwd.h \
   /usr/include/c++/10/bits/move.h \
@@ -198,12 +202,14 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
   /usr/include/c++/10/bits/postypes.h \
   /usr/include/c++/10/bits/predefined_ops.h \
   /usr/include/c++/10/bits/ptr_traits.h \
+  /usr/include/c++/10/bits/quoted_string.h \
   /usr/include/c++/10/bits/random.h \
   /usr/include/c++/10/bits/random.tcc \
   /usr/include/c++/10/bits/range_access.h \
   /usr/include/c++/10/bits/range_cmp.h \
   /usr/include/c++/10/bits/refwrap.h \
   /usr/include/c++/10/bits/specfun.h \
+  /usr/include/c++/10/bits/sstream.tcc \
   /usr/include/c++/10/bits/std_abs.h \
   /usr/include/c++/10/bits/std_function.h \
   /usr/include/c++/10/bits/stl_algo.h \
@@ -229,6 +235,7 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
   /usr/include/c++/10/bits/string_view.tcc \
   /usr/include/c++/10/bits/stringfwd.h \
   /usr/include/c++/10/bits/uniform_int_dist.h \
+  /usr/include/c++/10/bits/unique_ptr.h \
   /usr/include/c++/10/bits/unordered_map.h \
   /usr/include/c++/10/bits/uses_allocator.h \
   /usr/include/c++/10/bits/vector.tcc \
@@ -260,11 +267,13 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
   /usr/include/c++/10/ext/type_traits.h \
   /usr/include/c++/10/functional \
   /usr/include/c++/10/initializer_list \
+  /usr/include/c++/10/iomanip \
   /usr/include/c++/10/ios \
   /usr/include/c++/10/iosfwd \
   /usr/include/c++/10/iostream \
   /usr/include/c++/10/istream \
   /usr/include/c++/10/limits \
+  /usr/include/c++/10/locale \
   /usr/include/c++/10/new \
   /usr/include/c++/10/numeric \
   /usr/include/c++/10/optional \
@@ -276,6 +285,7 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
   /usr/include/c++/10/random \
   /usr/include/c++/10/ratio \
   /usr/include/c++/10/set \
+  /usr/include/c++/10/sstream \
   /usr/include/c++/10/stdexcept \
   /usr/include/c++/10/stdlib.h \
   /usr/include/c++/10/streambuf \
@@ -305,6 +315,7 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
+  /usr/include/libintl.h \
   /usr/include/limits.h \
   /usr/include/linux/errno.h \
   /usr/include/linux/limits.h \
@@ -414,8 +425,10 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
   /usr/include/x86_64-linux-gnu/c++/10/bits/error_constants.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/gthr.h \
+  /usr/include/x86_64-linux-gnu/c++/10/bits/messages_members.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/opt_random.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/os_defines.h \
+  /usr/include/x86_64-linux-gnu/c++/10/bits/time_members.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -446,19 +459,17 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /usr/lib/gcc/x86_64-linux-gnu/10/include/emmintrin.h:
 
-/usr/include/x86_64-linux-gnu/sys/types.h:
-
 /usr/include/x86_64-linux-gnu/sys/select.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/opt_random.h:
+
+/usr/include/x86_64-linux-gnu/c++/10/bits/messages_members.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/error_constants.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/ctype_inline.h:
-
-/usr/include/x86_64-linux-gnu/c++/10/bits/ctype_base.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/c++allocator.h:
 
@@ -586,6 +597,10 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /usr/include/limits.h:
 
+/usr/include/x86_64-linux-gnu/c++/10/bits/ctype_base.h:
+
+/usr/include/libintl.h:
+
 /usr/include/features.h:
 
 /usr/include/stdint.h:
@@ -636,6 +651,10 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /usr/include/c++/10/stdexcept:
 
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
+/usr/include/c++/10/sstream:
+
 /usr/include/c++/10/set:
 
 /usr/include/c++/10/ratio:
@@ -651,6 +670,16 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /usr/include/c++/10/numeric:
 
 /usr/include/c++/10/new:
+
+/usr/include/c++/10/locale:
+
+/usr/include/c++/10/istream:
+
+/usr/include/c++/10/ios:
+
+/usr/include/x86_64-linux-gnu/c++/10/bits/cpu_defines.h:
+
+/usr/include/c++/10/initializer_list:
 
 /home/jason/nbody_initial_project/aos/include/glm/detail/qualifier.hpp:
 
@@ -673,6 +702,8 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
 
 /home/jason/nbody_initial_project/aos/include/glm/detail/func_vector_relational.inl:
+
+/usr/include/c++/10/bits/unique_ptr.h:
 
 /usr/include/c++/10/ext/alloc_traits.h:
 
@@ -774,9 +805,15 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /home/jason/nbody_initial_project/aos/include/glm/detail/type_mat4x2.hpp:
 
+/usr/include/c++/10/limits:
+
+/home/jason/nbody_initial_project/aos/include/glm/mat4x2.hpp:
+
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
 
 /home/jason/nbody_initial_project/aos/include/glm/ext/vector_double3.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/10/bits/time_members.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/atomic_word.h:
 
@@ -842,12 +879,6 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /home/jason/nbody_initial_project/aos/include/glm/detail/type_mat2x4.inl:
 
-/home/jason/nbody_initial_project/aos/include/glm/ext/vector_int4.hpp:
-
-/home/jason/nbody_initial_project/aos/include/glm/detail/func_common.inl:
-
-/usr/include/c++/10/ios:
-
 /home/jason/nbody_initial_project/aos/include/glm/detail/_fixes.hpp:
 
 /home/jason/nbody_initial_project/aos/include/glm/ext/vector_float2.hpp:
@@ -867,6 +898,10 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /usr/include/c++/10/bits/specfun.h:
 
 /usr/include/c++/10/bits/refwrap.h:
+
+/usr/include/c++/10/iosfwd:
+
+/usr/include/c++/10/ext/new_allocator.h:
 
 /home/jason/nbody_initial_project/aos/include/glm/ext/matrix_double2x3_precision.hpp:
 
@@ -936,10 +971,6 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /home/jason/nbody_initial_project/aos/include/glm/vector_relational.hpp:
 
-/usr/include/c++/10/pstl/glue_numeric_defs.h:
-
-/home/jason/nbody_initial_project/aos/include/glm/ext/vector_int3.hpp:
-
 /usr/include/c++/10/cmath:
 
 /usr/include/c++/10/bits/range_access.h:
@@ -947,6 +978,8 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /home/jason/nbody_initial_project/aos/include/Barnes-HutOctree.hpp:
 
 /home/jason/nbody_initial_project/aos/include/glm/ext/matrix_double4x4.hpp:
+
+/usr/include/c++/10/iomanip:
 
 /usr/include/c++/10/bits/random.tcc:
 
@@ -975,6 +1008,12 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /home/jason/nbody_initial_project/aos/include/glm/glm.hpp:
 
 /home/jason/nbody_initial_project/aos/include/glm/ext/matrix_double3x4.hpp:
+
+/usr/include/c++/10/pstl/glue_numeric_defs.h:
+
+/home/jason/nbody_initial_project/aos/include/glm/ext/vector_int3.hpp:
+
+/usr/include/c++/10/bits/locale_facets_nonio.tcc:
 
 /home/jason/nbody_initial_project/aos/include/glm/detail/func_exponential.inl:
 
@@ -1012,6 +1051,8 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /home/jason/nbody_initial_project/aos/include/glm/ext/matrix_double4x4_precision.hpp:
 
+/usr/include/c++/10/bits/locale_conv.h:
+
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
 /home/jason/nbody_initial_project/aos/include/glm/ext/matrix_float2x3.hpp:
@@ -1027,6 +1068,8 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /home/jason/nbody_initial_project/aos/include/glm/ext/vector_uint4_sized.hpp:
 
 /usr/include/c++/10/bits/range_cmp.h:
+
+/usr/include/c++/10/bits/sstream.tcc:
 
 /home/jason/nbody_initial_project/aos/include/glm/ext/matrix_float3x2_precision.hpp:
 
@@ -1048,13 +1091,13 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /home/jason/nbody_initial_project/aos/src/main.cpp:
 
+/usr/include/c++/10/bits/codecvt.h:
+
 /home/jason/nbody_initial_project/aos/include/glm/detail/type_half.inl:
 
 /home/jason/nbody_initial_project/aos/include/glm/fwd.hpp:
 
 /home/jason/nbody_initial_project/aos/include/glm/integer.hpp:
-
-/usr/include/c++/10/istream:
 
 /home/jason/nbody_initial_project/aos/include/glm/detail/type_half.hpp:
 
@@ -1146,6 +1189,10 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 
 /usr/include/c++/10/bits/iterator_concepts.h:
 
+/usr/include/c++/10/iostream:
+
+/usr/include/c++/10/bits/quoted_string.h:
+
 /home/jason/nbody_initial_project/aos/include/body.hpp:
 
 /usr/include/c++/10/bits/functexcept.h:
@@ -1165,6 +1212,12 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /usr/include/c++/10/bits/locale_classes.h:
 
 /usr/include/c++/10/bits/locale_classes.tcc:
+
+/home/jason/nbody_initial_project/aos/include/glm/ext/vector_int4.hpp:
+
+/home/jason/nbody_initial_project/aos/include/glm/detail/func_common.inl:
+
+/usr/include/c++/10/bits/locale_facets_nonio.h:
 
 /usr/include/c++/10/bits/memoryfwd.h:
 
@@ -1195,8 +1248,6 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /usr/include/c++/10/bits/stl_bvector.h:
 
 /usr/include/c++/10/bits/stl_iterator.h:
-
-/usr/include/c++/10/iostream:
 
 /usr/include/c++/10/bits/stl_iterator_base_funcs.h:
 
@@ -1269,15 +1320,3 @@ CMakeFiles/a.dir/src/main.cpp.o: /home/jason/nbody_initial_project/aos/src/main.
 /usr/include/c++/10/ext/numeric_traits.h:
 
 /usr/include/c++/10/ext/string_conversions.h:
-
-/usr/include/x86_64-linux-gnu/c++/10/bits/cpu_defines.h:
-
-/usr/include/c++/10/initializer_list:
-
-/usr/include/c++/10/ext/new_allocator.h:
-
-/usr/include/c++/10/iosfwd:
-
-/home/jason/nbody_initial_project/aos/include/glm/mat4x2.hpp:
-
-/usr/include/c++/10/limits:
