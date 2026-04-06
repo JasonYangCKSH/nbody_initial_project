@@ -35,7 +35,14 @@ public:
         this->attract(); // calculate gravitational forces and update accelerations (barnes-hut來提高效能)
         frame++;
     }
-
+    std::vector<NeighborPair> get_neighbor_pairs() {
+        return ns.FindPairs(bodies);
+    }
+    void apply_resolution(const std::vector<NeighborPair>& pairs) {
+        for (auto& [i, j] : pairs) {
+            this->resolve(i, j);
+        }
+    }
 private:
     // Kinematics "Update"
     void iterate() {
@@ -59,14 +66,7 @@ private:
             body.acc = octree.calculate_acc(body.pos);
         
     }
-    std::vector<NeighborPair> get_neighbor_pairs() {
-        return ns.FindPairs(bodies);
-    }
-    void apply_resolution(const std::vector<NeighborPair>& pairs) {
-        for (auto& [i, j] : pairs) {
-            this->resolve(i, j);
-        }
-    }
+
     // Broad-phase collision detection and narrow-phase resolutionsss
     void collide() {
         auto pairs = ns.FindPairs(bodies);
