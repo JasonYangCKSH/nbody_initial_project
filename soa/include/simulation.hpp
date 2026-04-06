@@ -14,5 +14,12 @@ public:
     // Barnes-Hut 
     Octree octree;
     Oct boundary;
+
+    Simulation(float _dt, float theta, float epsilon): dt(_dt), frame(0), 
+    octree(theta, epsilon), boundary(){
+
+
+        
+    }
 private:
 };
