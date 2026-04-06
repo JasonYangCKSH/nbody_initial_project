@@ -58,6 +58,7 @@ public:
     }
 
     // 2. subdivide: 產生 8 個子節點
+    // Atomic operation
     int subdivide(int node_idx) {
         parents.push_back(node_idx);
         int first_child_idx = first_child.size();
