@@ -19,17 +19,11 @@ public:
      * core constructor
      */
     void addBody(glm::vec3 _pos, glm::vec3 _vel, glm::vec3 _acc, float _mass, float _radius) {
-        posX.push_back(_pos.x);
-        posY.push_back(_pos.y);
-        posZ.push_back(_pos.z);
+        posX.push_back(_pos.x); posY.push_back(_pos.y);posZ.push_back(_pos.z);
 
-        velX.push_back(_vel.x);
-        velY.push_back(_vel.y);
-        velZ.push_back(_vel.z);
+        velX.push_back(_vel.x); velY.push_back(_vel.y); velZ.push_back(_vel.z);
 
-        accX.push_back(_acc.x);
-        accY.push_back(_acc.y);
-        accZ.push_back(_acc.z);
+        accX.push_back(_acc.x); accY.push_back(_acc.y); accZ.push_back(_acc.z);
 
         mass.push_back(_mass);
         radius.push_back(_radius);
