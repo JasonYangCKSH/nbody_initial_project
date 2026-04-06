@@ -25,7 +25,7 @@ public:
     }
 private:
     void iterate() {
-
+        bs.update(dt);
     }
     void collide() {
 
@@ -34,6 +34,6 @@ private:
 
     }
     void resolve() {
-        
+
     }
 };
