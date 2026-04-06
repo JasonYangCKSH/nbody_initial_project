@@ -22,7 +22,7 @@ public:
     std::vector<int>   first_child;
     std::vector<int>   next_sibling;
     std::vector<float> comX, comY, comZ;
-    std::vector<float> mass;
+    std::vector<float> total_mass;
     std::vector<float> centerX, centerY, centerZ, node_size;
 
     // 用於向上傳遞質量的輔助索引
@@ -39,7 +39,7 @@ public:
         first_child.push_back(0);
         next_sibling.push_back(next_sib);
         comX.push_back(0.0f); comY.push_back(0.0f); comZ.push_back(0.0f);
-        mass.push_back(0.0f);
+        total_mass.push_back(0.0f);
         centerX.push_back(cx); centerY.push_back(cy); centerZ.push_back(cz);
         node_size.push_back(sz);
         return idx;
@@ -49,7 +49,7 @@ public:
     void clear(Oct root) {
         first_child.clear(); next_sibling.clear();
         comX.clear(); comY.clear(); comZ.clear();
-        mass.clear();
+        total_mass.clear();
         centerX.clear(); centerY.clear(); centerZ.clear();
         node_size.clear();
         parents.clear();
@@ -82,7 +82,7 @@ public:
     // 3. insert: 針對 BodySystem 的單個粒子插入
     void insert(const BodySystem& bs, size_t b_idx) {
         float px = bs.posX[b_idx], py = bs.posY[b_idx], pz = bs.posZ[b_idx];
-        float m = bs.mass[b_idx];
+        float m = bs.total_mass[b_idx];
         int node_idx = ROOT;
 
         // 往下找葉子
@@ -92,17 +92,17 @@ public:
         }
 
         // Case: 空葉子
-        if (mass[node_idx] < 1e-9f) {
+        if (total_mass[node_idx] < 1e-9f) {
             comX[node_idx] = px; comY[node_idx] = py; comZ[node_idx] = pz;
-            mass[node_idx] = m;
+            total_mass[node_idx] = m;
             return;
         }
 
         // Case: 已有粒子
         float ex = comX[node_idx], ey = comY[node_idx], ez = comZ[node_idx];
-        float em = mass[node_idx];
+        float em = total_mass[node_idx];
         if (px == ex && py == ey && pz == ez) {
-            mass[node_idx] += m;
+            total_mass[node_idx] += m;
             return;
         }
 
@@ -116,9 +116,9 @@ public:
                 node_idx = child_start + q_old;
             } else {
                 comX[child_start + q_old] = ex; comY[child_start + q_old] = ey; comZ[child_start + q_old] = ez;
-                mass[child_start + q_old] = em;
+                total_mass[child_start + q_old] = em;
                 comX[child_start + q_new] = px; comY[child_start + q_new] = py; comZ[child_start + q_new] = pz;
-                mass[child_start + q_new] = m;
+                total_mass[child_start + q_new] = m;
                 return;
             }
         }
@@ -132,13 +132,13 @@ public:
             float m_sum = 0, wx = 0, wy = 0, wz = 0;
 
             for (int i = 0; i < 8; ++i) {
-                float cm = mass[c_start + i];
+                float cm = total_mass[c_start + i];
                 m_sum += cm;
                 wx += comX[c_start + i] * cm;
                 wy += comY[c_start + i] * cm;
                 wz += comZ[c_start + i] * cm;
             }
-            mass[p_idx] = m_sum;
+            total_mass[p_idx] = m_sum;
             if (m_sum > 0) {
                 comX[p_idx] = wx / m_sum; comY[p_idx] = wy / m_sum; comZ[p_idx] = wz / m_sum;
             }
@@ -158,10 +158,10 @@ public:
             float sz = node_size[idx];
 
             if (first_child[idx] == 0 || (sz * sz < d_sq * t_sq)) {
-                if (d_sq > 0 && mass[idx] > 0) {
+                if (d_sq > 0 && total_mass[idx] > 0) {
                     float dist = std::sqrt(d_sq);
                     float denom = (d_sq + e_sq) * dist;
-                    float factor = mass[idx] / denom;
+                    float factor = total_mass[idx] / denom;
                     acc.x += dx * factor;
                     acc.y += dy * factor;
                     acc.z += dz * factor;
