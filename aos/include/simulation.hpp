@@ -63,7 +63,7 @@ private:
         auto pairs = ns.FindPairs(bodies);
         for (auto& [i, j] : pairs)
             this->resolve(i, j);
-        std::cout << " Pairs: " << pairs.size();
+        //std::cout << " Pairs: " << pairs.size();
     }
     // Resolve collision between body i (index) and body j (index)
     void resolve(int i, int j) {
