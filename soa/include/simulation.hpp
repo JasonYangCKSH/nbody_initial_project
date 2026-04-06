@@ -10,5 +10,9 @@ public:
     float dt;
     int frame;
     BodySystem bs;
+
+    // Barnes-Hut 
+    Octree octree;
+    Oct boundary;
 private:
 };
