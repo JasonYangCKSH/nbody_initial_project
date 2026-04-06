@@ -16,10 +16,6 @@ public:
     Oct boundary;
 
     Simulation(float _dt, float theta, float epsilon, const BodySystem& _bs): dt(_dt), frame(0), 
-    bs(_bs), octree(theta, epsilon), boundary(){
-
-
-
-    }
+    bs(_bs), octree(theta, epsilon), boundary(){}
 private:
 };
