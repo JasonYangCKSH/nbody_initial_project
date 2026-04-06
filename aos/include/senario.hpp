@@ -80,9 +80,6 @@ namespace Senario {
         //1
         bodies.push_back(Body(glm::vec3(-1.0f, 0, 0), glm::vec3( 0.5f, 0, 0), glm::vec3(0), 1.0f, 1.0f));
         bodies.push_back(Body(glm::vec3( 1.0f, 0, 0), glm::vec3(-0.5f, 0, 0), glm::vec3(0), 1.0f, 1.0f));
-
-        
-        
         return bodies;
     }
 };
