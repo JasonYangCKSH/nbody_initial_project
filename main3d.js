@@ -3,53 +3,198 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
 
 (() => {
+  // ======= UI Element References =======
+  // Scenario selection dropdown
   const scenarioSel = document.getElementById("scenario");
+  // Simulation mode selector (naive/grid)
   const modeSel = document.getElementById("mode");
+  // Particle count slider
   const nRange = document.getElementById("nRange");
+  // Particle count label
   const nLabel = document.getElementById("nLabel");
+  // Grid cell size slider
   const cellRange = document.getElementById("cellRange");
+  // Grid cell size label
   const cellLabel = document.getElementById("cellLabel");
+  // Simulation speed slider
   const speedRange = document.getElementById("speedRange");
+  // Simulation speed label
   const speedLabel = document.getElementById("speedLabel");
+  // Energy loss slider
   const lossRange = document.getElementById("lossRange");
+  // Energy loss label
   const lossLabel = document.getElementById("lossLabel");
+  // Add planet button
   const addPlanetBtn = document.getElementById("addPlanetBtn");
+  // Input fields for new planet position
   const addX = document.getElementById("addX");
   const addY = document.getElementById("addY");
   const addZ = document.getElementById("addZ");
+  // Input fields for new planet velocity
   const addVx = document.getElementById("addVx");
   const addVy = document.getElementById("addVy");
   const addVz = document.getElementById("addVz");
+  // Input fields for new planet radius and density
   const addR = document.getElementById("addR");
   const addRho = document.getElementById("addRho");
+  // Reset simulation button
   const resetBtn = document.getElementById("resetBtn");
+  // Pause/resume button
   const pauseBtn = document.getElementById("pauseBtn");
 
+  // ======= Performance Display Elements =======
+  // Milliseconds per frame display
   const msEl = document.getElementById("ms");
+  // Operations per frame display
   const opsEl = document.getElementById("ops");
+  // Efficiency index display
   const eiEl = document.getElementById("ei");
+  // Time complexity display
   const tcEl = document.getElementById("tc");
+  // Total energy display
   const energyEl = document.getElementById("energy");
+  // Planet editor panel
   const editorBox = document.getElementById("editorBox");
+  // Selected planet name display
   const selName = document.getElementById("selName");
+  // Planet property input fields
   const rInput = document.getElementById("rInput");
   const rhoInput = document.getElementById("rhoInput");
   const mInput = document.getElementById("mInput");
+  // Planet property value displays
   const rVal = document.getElementById("rVal");
   const rhoVal = document.getElementById("rhoVal");
   const mVal = document.getElementById("mVal");
+  // Color and brightness inputs
   const colorInput = document.getElementById("colorInput");
   const brightInput = document.getElementById("brightInput");
   const brightVal = document.getElementById("brightVal");
+  // Planet list toggle button and panel
   const planetListToggleBtn = document.getElementById("planetListToggleBtn");
   const planetListBody = document.getElementById("planetListBody");
+  // Planet count display
   const planetCountEl = document.getElementById("planetCount");
+  // Planet list container
   const planetListEl = document.getElementById("planetList");
+  // Additional inputs for new planet
   const addColor = document.getElementById("addColor");
   const addBright = document.getElementById("addBright");
 
+  // ======= Login UI Elements =======
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const loginStatus = document.getElementById("loginStatus");
+  const modalLogin = document.getElementById("modalLogin");
+  const adminPassword = document.getElementById("adminPassword");
+  const submitLogin = document.getElementById("submitLogin");
+  const cancelLogin = document.getElementById("cancelLogin");
+  const closeLoginModal = document.getElementById("closeLoginModal");
+
+  // ======= Authorization & Authentication =======
+  let isAdmin = false;
+  const ADMIN_PASSWORD = "123"; 
+  
+  // 管理員專用功能的元素ID
+  const adminElements = [
+    "scenario", // Scenario selection
+    "nRange", "nLabel", // Particle count
+    "cellRange", "cellLabel", // Cell size
+    "lossRange", "lossLabel", // Energy loss
+    "resetBtn", // Reset button
+    "addPlanetBtn", "addX", "addY", "addZ", "addVx", "addVy", "addVz", "addR", "addRho", "addColor", "addBright", // Add planet
+    "rInput", "rhoInput", "mInput", "colorInput", "brightInput", // Planet editor
+    "editorBox" // Planet editor panel
+  ];
+
   // ======= Three.js setup =======
   const view = document.getElementById("view3d");
+
+  // ======= Authorization Functions =======
+  function updateAdminUIVisibility() {
+    // 根據管理員狀態更新UI可見性
+    adminElements.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = isAdmin ? "" : "none";
+        el.disabled = !isAdmin;
+      }
+    });
+  }
+
+  function handleLogin() {
+    const password = adminPassword.value;
+    if (password === ADMIN_PASSWORD) {
+      isAdmin = true;
+      adminPassword.value = "";
+      modalLogin.style.display = "none";
+      
+      // 更新登入/登出按鈕
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "block";
+      loginStatus.textContent = "✓ 已登入為管理員";
+      loginStatus.style.color = "#4CAF50";
+      
+      updateAdminUIVisibility();
+    } else {
+      alert("密碼錯誤！");
+      adminPassword.value = "";
+    }
+  }
+
+  function handleLogout() {
+    isAdmin = false;
+    modalLogin.style.display = "none";
+    
+    // 更新登入/登出按鈕
+    loginBtn.style.display = "block";
+    logoutBtn.style.display = "none";
+    loginStatus.textContent = "未登入";
+    loginStatus.style.color = "#666";
+    
+    // 隱藏編輯框
+    editorBox.style.display = "none";
+    
+    updateAdminUIVisibility();
+  }
+
+  // 登入事件監聽
+  if (loginBtn) {
+    loginBtn.addEventListener("click", () => {
+      modalLogin.style.display = "flex";
+      adminPassword.focus();
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", handleLogout);
+  }
+
+  if (submitLogin) {
+    submitLogin.addEventListener("click", handleLogin);
+  }
+
+  if (adminPassword) {
+    adminPassword.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") handleLogin();
+    });
+  }
+
+  if (cancelLogin) {
+    cancelLogin.addEventListener("click", () => {
+      modalLogin.style.display = "none";
+      adminPassword.value = "";
+    });
+  }
+
+  if (closeLoginModal) {
+    closeLoginModal.addEventListener("click", () => {
+      modalLogin.style.display = "none";
+      adminPassword.value = "";
+    });
+  }
+
+  // 初始化 - 隱藏所有管理員功能
+  updateAdminUIVisibility();
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xe6e6e6);
@@ -593,7 +738,9 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   }
 
   function addPlanetFromInputs() {
+    // Check if all required input elements exist
     if (!addX || !addY || !addZ || !addVx || !addVy || !addVz || !addR || !addRho) return;
+    // Get and validate input values
     const x = Number(addX.value);
     const y = Number(addY.value);
     const z = Number(addZ.value);
@@ -602,10 +749,12 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     const vz = Number(addVz.value);
     const r = Math.max(0.1, Number(addR.value));
     const rho = Math.max(0.0001, Number(addRho.value));
+    // Calculate mass from density and radius
     const m = rho * volumeFromR(r);
     const color = addColor ? parseInt(addColor.value.replace("#", ""), 16) : 0x000000;
     const bright = addBright ? Math.max(0.2, Number(addBright.value)) : 1;
 
+    // Add new particle to the array
     particles.push({
       x: Number.isFinite(x) ? x : 0,
       y: Number.isFinite(y) ? y : 0,
@@ -619,23 +768,33 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       bright,
     });
 
+    // Set the newly added particle as selected
     selectedIndex = particles.length - 1;
+    // Update the editor UI with the new particle's data
     syncEditorFromParticle(particles[selectedIndex], selectedIndex);
 
+    // Update the particle count slider if it exists
     if (nRange) {
+      // If current particle count exceeds slider max, update max
       if (particles.length > Number(nRange.max)) {
         nRange.max = String(particles.length);
       }
+      // Set slider value to current particle count
       nRange.value = String(particles.length);
+      // Update the label text
       nLabel.textContent = String(particles.length);
     }
 
+    // Rebuild 3D spheres for rendering
     rebuildSpheres();
+    // Rebuild particle trails
     rebuildTrails();
+    // Update the planet list UI
     renderPlanetList();
   }
 
   function stepNaive3D() {
+    // Perform one full timestep using naive N-body simulation
     let ops = computeAccelerationsNaive();
     leapfrogKickDrift();
     ops += computeAccelerationsNaive();
@@ -651,29 +810,36 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     return ops;
   }
   function computeAccelerationsNaive() {
+    // Get gravity and softening constants
     const grav = getGravityConstant();
     const soften = getSofteningValue();
     let ops = 0;
+    // Reset accelerations for all particles
     for (const p of particles) { p.ax = p.ay = p.az = 0; }
 
     const N = particles.length;
+    // Calculate forces between all pairs of particles
     for (let i = 0; i < N; i++) {
       const a = particles[i];
       for (let j = i + 1; j < N; j++) {
         const b = particles[j];
 
+        // Calculate distance vector
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         const dz = b.z - a.z;
 
+        // Calculate squared distance with softening
         const dist2 = dx*dx + dy*dy + dz*dz + soften;
         const inv = 1 / Math.sqrt(dist2);
 
+        // Calculate gravitational force
         const f = grav * inv * inv;
         const fx = f * dx * inv;
         const fy = f * dy * inv;
         const fz = f * dz * inv;
 
+        // Apply force to both particles (Newton's 3rd law)
         a.ax += fx * b.m; a.ay += fy * b.m; a.az += fz * b.m;
         b.ax -= fx * a.m; b.ay -= fy * a.m; b.az -= fz * a.m;
 
@@ -772,12 +938,15 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   }
 
   function leapfrogKickDrift() {
+    // Leapfrog integration: update velocity (kick) then position (drift)
     const dtScaled = dt * timeScale;
     const half = dtScaled * 0.5;
     const useBounds = !isStableSolarScenario();
     for (const p of particles) {
+      // Update velocity by half timestep using current acceleration
       p.vx += p.ax * half; p.vy += p.ay * half; p.vz += p.az * half;
 
+      // Update position using updated velocity (scaled by 60 for time units)
       p.x += p.vx * 60 * dtScaled;
       p.y += p.vy * 60 * dtScaled;
       p.z += p.vz * 60 * dtScaled;
@@ -785,7 +954,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       const r = p.r || 2;
 
       if (useBounds) {
-        // 3D box boundary bounce
+        // Bounce off 3D box boundaries (elastic collision)
         if (p.x < -BOX_LIMIT + r) { p.x = -BOX_LIMIT + r; p.vx *= -1; }
         if (p.x >  BOX_LIMIT - r) { p.x =  BOX_LIMIT - r; p.vx *= -1; }
         if (p.y < -BOX_LIMIT + r) { p.y = -BOX_LIMIT + r; p.vy *= -1; }
@@ -797,11 +966,13 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   }
 
   function leapfrogKick() {
+    // Complete the Leapfrog integration: update velocity by another half timestep
     const dtScaled = dt * timeScale;
     const half = dtScaled * 0.5;
     const lossFactor = Math.max(0, 1 - getEffectiveEnergyLoss() * dtScaled * 60);
     const dampingFactor = getDampingFactor();
     for (const p of particles) {
+      // Update velocity with damping and energy loss
       p.vx = (p.vx + p.ax * half) * dampingFactor * lossFactor;
       p.vy = (p.vy + p.ay * half) * dampingFactor * lossFactor;
       p.vz = (p.vz + p.az * half) * dampingFactor * lossFactor;
@@ -845,6 +1016,10 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
           const rho = (rhoA * mA + rhoB * mB) / mT;
           const r = Math.cbrt((3 * mT) / (4 * Math.PI * rho));
 
+          // 融合後的顏色取質量較大的星球的顏色
+          const color = (mA > mB) ? a.color : b.color;
+          const bright = (mA > mB) ? (a.bright ?? 1) : (b.bright ?? 1);
+
           const keep = i;
           const drop = j;
 
@@ -853,6 +1028,8 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
             vx, vy, vz,
             ax: 0, ay: 0, az: 0,
             r, rho, m: mT,
+            color,
+            bright,
           };
           particles.splice(drop, 1);
 
@@ -964,13 +1141,22 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   const mouse = new THREE.Vector2();
 
   function focusCameraOnPlanet(p) {
-    const target = new THREE.Vector3(p.x, p.y, p.z);
-    const offset = camera.position.clone().sub(controls.target);
-    focusStartPos = camera.position.clone();
-    focusStartTarget = controls.target.clone();
-    focusEndTarget = target;
-    focusEndPos = target.clone().add(offset);
-    focusT = 0;
+    // 設定相機目標為星球位置
+    controls.target.set(p.x, p.y, p.z);
+    
+    // 設定相機位置為星球上方一定距離
+    // 你可以調整這些數值來改變視角
+    const distance = 300;  // 相機距離星球的距離
+    const height = 150;    // 相機的高度偏移
+    
+    camera.position.set(
+      p.x,           // X 位置與星球相同
+      p.y + height,  // Y 位置在星球上方
+      p.z + distance // Z 位置在星球前方
+    );
+    
+    // 重置平滑過渡變數
+    focusT = 1;
   }
 
   let focusEndPos = null;
@@ -993,7 +1179,10 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     if (hits.length > 0) {
       const idx = hits[0].object.userData.index;
       selectedIndex = idx;
-      syncEditorFromParticle(particles[idx], idx);
+      // 只有管理員才能編輯星球
+      if (isAdmin) {
+        syncEditorFromParticle(particles[idx], idx);
+      }
       focusCameraOnPlanet(particles[idx]);
     } else {
       selectedIndex = -1;
@@ -1078,17 +1267,36 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   }
 
   function loop() {
+    // Get current particle count and settings
     const N = particles.length;
     const cellSize = +cellRange.value;
     timeScale = Math.max(0.01, +speedRange.value || 1);
     energyLoss = Math.max(0, +lossRange.value || 0);
 
+    // 如果有選定的星球，讓相機跟隨
+    if (selectedIndex >= 0 && selectedIndex < particles.length) {
+      const p = particles[selectedIndex];
+      const distance = 300;
+      const height = 150;
+      
+      camera.position.set(
+        p.x,
+        p.y + height,
+        p.z + distance
+      );
+      controls.target.set(p.x, p.y, p.z);
+    }
+
+    // Measure performance start time
     const t0 = performance.now();
     let ops = 0;
 
+    // If not paused, perform physics simulation
     if (!paused) {
+      // Choose simulation method based on mode
       if (modeSel.value === "naive") ops = stepNaive3D();
       else ops = stepGrid3D(cellSize);
+      // Handle collisions and merging if occurred
       if (handleCollisionsAndMerge()) {
         rebuildSpheres();
         rebuildTrails();
@@ -1096,9 +1304,11 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       }
     }
 
+    // Measure performance end time
     const t1 = performance.now();
     const ms = t1 - t0;
 
+    // Update performance metrics
     ensureBaseline(N, ops, modeSel.value);
     updateTrails(!paused);
     updateSpheresTransform();
@@ -1107,6 +1317,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     if (gridHelper && gridHelper.visible) updateGridCellsVisual();
     renderer.render(scene, camera);
 
+    // Update UI display elements
     msEl.textContent = paused ? "paused" : ms.toFixed(2);
     opsEl.textContent = paused ? "-" : ops.toString();
     eiEl.textContent = paused ? "-" : (modeSel.value === "naive" ? "100%" : computeEI(N, ops));
@@ -1119,14 +1330,18 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       }
     }
 
+    // Schedule next frame
     requestAnimationFrame(loop);
   }
 
   // ======= reset / pause =======
   function resetAll() {
+    // Update cell size label
     cellLabel.textContent = cellRange.value;
+    // Update scenario-specific UI elements
     updateScenarioUI();
 
+    // Initialize particles based on scenario
     if (isSolarScenario()) {
       initSolarSystemPreset();
     } else {
@@ -1134,10 +1349,12 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       initParticles(N, 12345);
     }
 
+    // Rebuild visual elements
     rebuildSpheres();
     rebuildTrails();
     renderPlanetList();
 
+    // Reset performance baseline
     lastNaiveOpsBaseline = null;
     lastNForBaseline = null;
   }
@@ -1165,7 +1382,10 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       if (!Number.isFinite(idx) || idx < 0 || idx >= particles.length) return;
 
       selectedIndex = idx;
-      syncEditorFromParticle(particles[idx], idx);
+      // 只有管理員才能編輯星球
+      if (isAdmin) {
+        syncEditorFromParticle(particles[idx], idx);
+      }
       renderPlanetList();
     });
   }

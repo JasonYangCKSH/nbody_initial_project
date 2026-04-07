@@ -24,6 +24,27 @@
     .planetMeta { color: #666; font-variant-numeric: tabular-nums; }
     .addGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; }
     .addGrid input[type="number"], .addGrid input[type="color"] { width: 100%; padding: 6px; font-size: 12px; box-sizing: border-box; }
+    
+    /* 登入面板樣式 */
+    .loginPanel { background: #f0f0f0; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+    .loginBtnStyle { width: 100%; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; }
+    .loginBtnStyle:hover { background: #45a049; }
+    
+    /* 模態框樣式 */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+    .modalContent { background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); width: 90%; max-width: 400px; }
+    .modalHeader { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #eee; }
+    .modalHeader h3 { margin: 0; }
+    .closeBtn { width: auto; padding: 4px 8px; background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+    .closeBtn:hover { color: #000; }
+    .modalBody { padding: 16px; }
+    .modalBody input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+    .modalFooter { display: flex; gap: 10px; padding: 16px; border-top: 1px solid #eee; }
+    .btnPrimary { width: 100%; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; }
+    .btnPrimary:hover { background: #45a049; }
+    .btnSecondary { width: 100%; padding: 10px; background: #ddd; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; }
+    .btnSecondary:hover { background: #ccc; }
+    .divider { height: 1px; background: #e9e9e9; margin: 12px 0; }
 
     @media (max-width: 900px) {
       body { overflow: auto; }
