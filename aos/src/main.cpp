@@ -38,10 +38,8 @@ void PrintProgress(int current, int total, int bar_width = 20) {
 std::set<std::pair<int, int>> NormalizePairs(const std::vector<NeighborPair>& pairs) {
     std::set<std::pair<int, int>> s;
     for (const auto& p : pairs) {
-        int a = p.i;
-        int b = p.j;
-        if (a > b) std::swap(a, b);
-        s.insert({a, b});
+        if (p.i > p.j) std::swap(p.i, p.j);
+        s.insert({p.i, p.j});
     }
     return s;
 }
