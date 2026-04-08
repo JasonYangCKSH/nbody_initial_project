@@ -23,12 +23,14 @@ double ms(std::chrono::high_resolution_clock::time_point start, std::chrono::hig
 
 // 進度條顯示
 void PrintProgress(int current, int total, int bar_width = 20) {
+    /*
     float percent = (float)current / (float)total;
     int filled = (int)(bar_width * percent);
     std::cout << "\r[";
     for (int i = 0; i < bar_width; i++) std::cout << (i < filled ? '=' : ' ');
     std::cout << "] " << (int)(percent * 100) << "% (" << current << "/" << total << " frames)";
     std::cout.flush();
+    */
 }
 
 // 將碰撞對標準化並轉為 set，以便進行精確比對
@@ -55,7 +57,7 @@ int main() {
     float dt = 0.01f;
     float theta = 0.5f;
     float epsilon = 0.1f;
-    int test_frames = 100;
+    int test_frames = 2;
 
     while (true) {
         std::cout << "\n\n==========================================" << std::endl;
@@ -102,7 +104,12 @@ int main() {
             // A. 正確性比對 (在執行 step 之前，先看兩者找出的 Pairs 是否相同)
             auto pairs_ref = sim_ref.get_neighbor_pairs();
             auto pairs_test = sim_test.get_neighbor_pairs();
-
+            for (const auto& p: pairs_ref) {
+                std::cout << i << ": bru(" << p.i << ", " << p.j << ")\n";
+            }
+            for (const auto& p: pairs_test) {
+                std::cout << i << ": ds(" << p.i << ", " << p.j << ")\n";
+            }            
             auto set_ref = NormalizePairs(pairs_ref);
             auto set_test = NormalizePairs(pairs_test);
 

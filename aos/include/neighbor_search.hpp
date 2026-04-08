@@ -50,6 +50,7 @@ private:
                 if (std::abs(d.z) > combinedRadius) continue;
 
                 pairs.push_back({i, j});
+                //std::cout <<"Brute Force: ("<< i << ", " << j <<")"<< std::endl; 
             }
         }
         return pairs;
@@ -84,6 +85,7 @@ private:
         for (int i = 0; i < (int)bodies.size(); i++) {
             glm::ivec3 cell = BodyToCell(bodies[i].pos.x, bodies[i].pos.y, bodies[i].pos.z);
             grid[HashCell(cell.x, cell.y, cell.z)].push_back(i);
+
         }
 
         // 2. Query: for every Body, search its neighbor 27 cells
@@ -103,7 +105,8 @@ private:
                             if (std::abs(d.x) > combinedRadius) continue;
                             if (std::abs(d.y) > combinedRadius) continue;
                             if (std::abs(d.z) > combinedRadius) continue;        
-                            pairs.push_back({i, j});       
+                            pairs.push_back({i, j});
+                            //std::cout <<"Uniform grid: ("<< i << ", " << j <<")"<< std::endl;       
                         } 
                     } 
             
@@ -124,8 +127,10 @@ private:
             // 
             nsOctree.Query(i, bodies[i].radius, neighbors);
             for (int j : neighbors)
-                if (i < j)
+                if (i < j) {
                     pairs.push_back({i, j});
+                    //std::cout <<"Octree: ("<< i << ", " << j <<")"<< std::endl;
+                }
         }
         return pairs;
     }
