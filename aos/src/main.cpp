@@ -48,7 +48,7 @@ std::set<std::pair<int, int>> NormalizePairs(const std::vector<NeighborPair>& pa
 
 int main() {
     // 實驗參數設定
-    int N = 2000;          // 驗證模式下 N 不建議太大（因 Brute Force 較慢）
+    int N = 2000;         
     float range = 100.0f;
     float mass = 1.0f;
     float radius = 0.5f;
