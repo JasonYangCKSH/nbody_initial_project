@@ -76,11 +76,24 @@ namespace Senario {
     }
     std::vector<Body> NormalTestBench() {
         std::vector<Body> bodies;
-        //bodies.reserve(5);
-        //1
-        bodies.push_back(Body(glm::vec3(1.0f, 0, 0), glm::vec3( -15.0f, 0, 0), glm::vec3(0), 1.0f, 1.0f));
-        bodies.push_back(Body(glm::vec3( -1.0f, 0, 0), glm::vec3(15.0f, 0, 0), glm::vec3(0), 1.0f, 1.0f));
-        bodies.push_back(Body(glm::vec3( 0, 1.0f, 0), glm::vec3(0, -15.0f, 0), glm::vec3(0), 1.0f, 1.0f));
+ 
+        // Case 1: 明確會碰撞的一對 (distance = 1.5, combinedRadius = 2.0)
+        bodies.push_back(Body(glm::vec3(0.0f,  0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+       
+        bodies.push_back(Body(glm::vec3(1.5f,  0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+
+        // Case 2: 明確不會碰撞的一對 (distance = 5.0, combinedRadius = 2.0)
+        bodies.push_back(Body(glm::vec3(10.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+        bodies.push_back(Body(glm::vec3(15.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+
+        // Case 3: 邊界情況，距離剛好等於 combinedRadius (distance = 2.0, combinedRadius = 2.0)
+        bodies.push_back(Body(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+        bodies.push_back(Body(glm::vec3(2.0f, 10.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+
+        // Case 4: 跨格子的碰撞，測試鄰格查詢是否正確
+        bodies.push_back(Body(glm::vec3(-1.1f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+        bodies.push_back(Body(glm::vec3( 0.1f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 1.0f));
+
         return bodies;
     }
 };

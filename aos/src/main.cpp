@@ -58,7 +58,7 @@ int main() {
     float dt = 0.01f;
     float theta = 0.5f;
     float epsilon = 0.1f;
-    int test_frames = 2;
+    int test_frames = 100;
 
     while (true) {
         std::cout << "\n\n==========================================" << std::endl;
