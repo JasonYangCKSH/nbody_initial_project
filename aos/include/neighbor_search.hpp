@@ -86,12 +86,14 @@ private:
         gridMap.resize(nx * ny * nz);
        
         for (int i = 0; i < (int)bodies.size(); i++){
+           
             float posX = bodies[i].pos.x - x_min;
             float posY = bodies[i].pos.y - y_min;
             float posZ = bodies[i].pos.z - z_min;
-            int cx = std::min((int)std::floor(posX / cell_size), nx - 1);
-            int cy = std::min((int)std::floor(posY / cell_size), ny - 1);
-            int cz = std::min((int)std::floor(posZ / cell_size), nz - 1);
+            int cx = std::max(0, std::min((int)std::floor(posX / cell_size), nx - 1));
+            int cy = std::max(0, std::min((int)std::floor(posY / cell_size), ny - 1));
+            int cz = std::max(0, std::min((int)std::floor(posZ / cell_size), nz - 1));
+    
             // insert
             int index = cx * ny * nz + cy * nz + cz;
             gridMap[index].push_back(i);
@@ -101,9 +103,9 @@ private:
             float posX = bodies[i].pos.x - x_min;
             float posY = bodies[i].pos.y - y_min;
             float posZ = bodies[i].pos.z - z_min;
-            int cx = std::min((int)std::floor(posX / cell_size), nx - 1);
-            int cy = std::min((int)std::floor(posY / cell_size), ny - 1);
-            int cz = std::min((int)std::floor(posZ / cell_size), nz - 1);
+            int cx = std::max(0, std::min((int)std::floor(posX / cell_size), nx - 1));
+            int cy = std::max(0, std::min((int)std::floor(posY / cell_size), ny - 1));
+            int cz = std::max(0, std::min((int)std::floor(posZ / cell_size), nz - 1));
             for (int dx = -1; dx <= 1; dx++)
             for (int dy = -1; dy <= 1; dy++)
             for (int dz = -1; dz <= 1; dz++) {
