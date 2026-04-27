@@ -1,6 +1,15 @@
 ﻿
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";//不是每個人都要先安裝 Three.js。 只要他打開網頁時有網路，瀏覽器就會去 jsDelivr 下載 Three.js。
 import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+/*
+Three.js 可以幫你做：
+場景 scene
+相機 camera
+渲染器 renderer
+球體 sphere
+光源 light
+滑鼠旋轉視角 OrbitControls
+*/
 
 (() => {
   // ======= UI Element References =======
@@ -105,7 +114,25 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     "rInput", "rhoInput", "mInput", "colorInput", "brightInput", // Planet editor
     "editorBox" // Planet editor panel
   ];
+/*{
+  x: 位置X,
+  y: 位置Y,
+  z: 位置Z,
 
+  vx: 速度X,
+  vy: 速度Y,
+  vz: 速度Z,
+
+  ax: 加速度X,
+  ay: 加速度Y,
+  az: 加速度Z,
+
+  r: 半徑,
+  rho: 密度,
+  m: 質量,
+  color: 顏色,
+  bright: 亮度
+} */
   // ======= Three.js setup =======
   const view = document.getElementById("view3d");
 
@@ -249,7 +276,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       idOf(cx, cy, cz) {
         return cx + cy * nx + cz * nx * ny;
       },
-      toCellIndex(v, n) {
+      toCellIndex(v, n) {//把位置轉換成格子索引
         const i = Math.floor((v + BOX_LIMIT) / cellSize);
         return Math.min(n - 1, Math.max(0, i));
       },
@@ -461,27 +488,27 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     return Boolean(scenarioSel) && scenarioSel.value === "solar_stable";
   }
 
-  function getGravityConstant() {
+  function getGravityConstant() { //如果是穩定的太陽系，就用比較小的 G，讓行星不會飛出去了
     return isStableSolarScenario() ? 0.12 : G;
   }
 
-  function getSofteningValue() {
+  function getSofteningValue() {//如果是穩定的太陽系，就用比較小的軟化參數，讓行星之間的引力更真實
     return isStableSolarScenario() ? 0.1 : softening;
   }
 
-  function volumeFromR(r) {
+  function volumeFromR(r) { //從半徑算出體積
     return (4 / 3) * Math.PI * r * r * r; // 3D sphere volume
   }
 
-  function mulberry32(seed) {
+  function mulberry32(seed) {//一個簡單的隨機數生成器，給定一個種子，會產生一系列看起來隨機的數字
     return function () {
-      let t = (seed += 0x6d2b79f5);
+      let t = (seed += 0x6d2b79f5);//這行代碼對種子進行了一些位運算和乘法，來產生一個新的數字 t。這個過程會改變 t 的值，使得每次調用這個函數時都會得到不同的結果。
       t = Math.imul(t ^ (t >>> 15), t | 1);
       t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
   }
-  function initParticles(N, seed = 12345) {
+  function initParticles(N, seed = 12345) { //隨機生出很多星球
     const rand = mulberry32(seed);
     const box = 350; // Spawn range for initial 3D positions.
 
@@ -606,7 +633,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   const baseMat = new THREE.MeshStandardMaterial({ color: 0x000000 });
   const selMat = new THREE.MeshStandardMaterial({ color: 0xffb020 });
 
-  function rebuildSpheres() {
+  function rebuildSpheres() {//把資料變成真的 3D 球
     for (const s of spheres) {
       scene.remove(s);
       s.geometry.dispose();
@@ -615,7 +642,11 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     spheres.length = 0;
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
-      const geo = new THREE.SphereGeometry(p.r, 18, 18);
+      const geo = new THREE.SphereGeometry(p.r, 18, 18); 
+      /* 後面的 18, 18 是幹嘛？ 3D 球其實不是完美圓球。 它是很多小三角形拼起來的。
+      切越少 → 球看起來比較粗糙
+      切越多 → 球看起來越圓，但比較耗效能*/
+
       const particleMat = baseMat.clone();
       particleMat.transparent = true;
       particleMat.opacity = 1;
@@ -627,6 +658,11 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       scene.add(mesh);
     }
   }
+/*
+particle = 星球資料表
+SphereGeometry = 球的形狀
+Mesh = 真的放到 3D 世界的球 
+*/
 
   function clearTrails() {
     for (const t of trailLines) {
@@ -718,6 +754,11 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   const G = 35;
   const softening = 25;
   const dt = 0.016;
+  /*
+    1 / 60 秒 因為螢幕常見是 60 FPS。
+    1 秒 60 張畫面
+    1 張畫面約 0.0167 秒
+  */
   const damping = 0.997;
 
   function getDampingFactor() {
@@ -756,7 +797,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
 
     // Add new particle to the array
     particles.push({
-      x: Number.isFinite(x) ? x : 0,
+      x: Number.isFinite(x) ? x : 0, //新增星球的 x 輸入框是空的，轉成 Number 可能會出問題。
       y: Number.isFinite(y) ? y : 0,
       z: Number.isFinite(z) ? z : 0,
       vx: Number.isFinite(vx) ? vx : 0,
@@ -831,9 +872,16 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
 
         // Calculate squared distance with softening
         const dist2 = dx*dx + dy*dy + dz*dz + soften;
-        const inv = 1 / Math.sqrt(dist2);
+        const inv = 1 / Math.sqrt(dist2);  //距離的反比，後面會用到
+        /*
+        如果兩顆星球太靠近，
+        吸引力可能變超大，
+        程式會爆衝，
+        所以加一點緩衝。
+        */
 
-        // Calculate gravitational force
+        // Calculate gravitational force  F = G × m1 × m2 / r²   
+        // F = m × a
         const f = grav * inv * inv;
         const fx = f * dx * inv;
         const fy = f * dy * inv;
@@ -937,6 +985,13 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     return ops;
   }
 
+  /*leapfrogKickDrift
+    位置會影響吸引力
+    吸引力會影響加速度
+    加速度會影響速度
+    速度會影響位置
+    位置變了又會影響吸引力
+   */
   function leapfrogKickDrift() {
     // Leapfrog integration: update velocity (kick) then position (drift)
     const dtScaled = dt * timeScale;
@@ -947,13 +1002,13 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       p.vx += p.ax * half; p.vy += p.ay * half; p.vz += p.az * half;
 
       // Update position using updated velocity (scaled by 60 for time units)
-      p.x += p.vx * 60 * dtScaled;
-      p.y += p.vy * 60 * dtScaled;
+      p.x += p.vx * 60 * dtScaled; // 因為我們的速度單位是「每秒」，而 dt 是以秒為單位的，所以乘以 60 來對齊時間尺度。
+      p.y += p.vy * 60 * dtScaled; //dtScaled = dt × speed -> dt = 0.016 -> 60 × 0.016 ≈ 1
       p.z += p.vz * 60 * dtScaled;
 
       const r = p.r || 2;
 
-      if (useBounds) {
+      if (useBounds) { //如果星球撞到左邊牆壁，就把 x 方向速度反過來
         // Bounce off 3D box boundaries (elastic collision)
         if (p.x < -BOX_LIMIT + r) { p.x = -BOX_LIMIT + r; p.vx *= -1; }
         if (p.x >  BOX_LIMIT - r) { p.x =  BOX_LIMIT - r; p.vx *= -1; }
@@ -1001,7 +1056,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
           if (mT <= 0) continue;
 
           // Conservation of momentum
-          const vx = (a.vx * mA + b.vx * mB) / mT;
+          const vx = (a.vx * mA + b.vx * mB) / mT;   //p = m × v → v = p / m
           const vy = (a.vy * mA + b.vy * mB) / mT;
           const vz = (a.vz * mA + b.vz * mB) / mT;
 
@@ -1137,7 +1192,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     updatePlanetListVisibility();
   }
 
-  const raycaster = new THREE.Raycaster();
+  const raycaster = new THREE.Raycaster(); //用來把滑鼠點擊位置轉換成 3D 空間中的射線，然後檢測這條射線和哪些物體相交，從而實現點擊選擇星球的功能。
   const mouse = new THREE.Vector2();
 
   function focusCameraOnPlanet(p) {
@@ -1173,6 +1228,12 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
 
+/*1. 先取得 3D 畫布在網頁上的位置和大小。
+2. 把滑鼠在瀏覽器的位置，換成滑鼠在畫布裡的位置。
+3. 把 x 從 0~寬度，轉成 -1~+1。
+4. 把 y 從 0~高度，轉成 +1~-1。
+5. 這樣 Three.js 的 Raycaster 才知道你點的是 3D 畫面的哪個方向。
+ */
     raycaster.setFromCamera(mouse, camera);
     const hits = raycaster.intersectObjects(spheres, false);
 
@@ -1379,7 +1440,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       const btn = e.target.closest("[data-planet-index]");
       if (!btn) return;
       const idx = Number(btn.dataset.planetIndex);
-      if (!Number.isFinite(idx) || idx < 0 || idx >= particles.length) return;
+      if (!Number.isFinite(idx) || idx < 0 || idx >= particles.length) return; 
 
       selectedIndex = idx;
       // 只有管理員才能編輯星球
