@@ -95,7 +95,7 @@ private:
             int cz = std::max(0, std::min((int)std::floor(posZ / cell_size), nz - 1));
     
             // insert
-            int index = cx * ny * nz + cy * nz + cz;
+            int index = (cx * ny + cy) * nz + cz;
             gridMap[index].push_back(i);
         }
         // Step2: find neighbor cell, and neighbor body
@@ -113,7 +113,7 @@ private:
                 if (cy + dy < 0 || cy + dy >= ny) continue;
                 if (cz + dz < 0 || cz + dz >= nz) continue;
                 //todo
-                int neighbor_index = (cx + dx) * ny * nz + (cy+ dy) * nz + (cz + dz);
+                int neighbor_index = ((cx + dx) * ny + (cy + dy)) * nz + (cz + dz);
                 for (int j : gridMap[neighbor_index]) {
                     if (j <= i) continue;
                     float combinedRadius = bodies[i].radius + bodies[j].radius;
