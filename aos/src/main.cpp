@@ -105,12 +105,12 @@ int main() {
             // A. 正確性比對 (在執行 step 之前，先看兩者找出的 Pairs 是否相同)
             auto pairs_ref = sim_ref.get_neighbor_pairs();
             auto pairs_test = sim_test.get_neighbor_pairs();
-            /*for (const auto& p: pairs_ref) {
+            for (const auto& p: pairs_ref) {
                 std::cout << i << ": bru(" << p.i << ", " << p.j << ")\n";
             }
             for (const auto& p: pairs_test) {
                 std::cout << i << ": ds(" << p.i << ", " << p.j << ")\n";
-            }*/           
+            }        
             auto set_ref = NormalizePairs(pairs_ref);
             auto set_test = NormalizePairs(pairs_test);
 
