@@ -86,9 +86,8 @@ private:
             throw std::runtime_error("Invalid cell size.");
         }
         
-        // Ensure cell size is large enough to contain any two touching particles
-        // For adjacent cell neighbors, we need cellsize >= 2 * maxRadius to be safe
-        cellsize = std::max(cellsize, 2.0f * maxRadius * 1.1f); // 10% safety margin
+    
+        cellsize = std::max(cellsize, 2.0f * maxRadius); 
 
     
         int hashTableSize = static_cast<int>(bodies.size()) * 2;
