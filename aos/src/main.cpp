@@ -110,7 +110,7 @@ int main() {
             }
             for (const auto& p: pairs_test) {
                 std::cout << i << ": ds(" << p.i << ", " << p.j << ")\n";
-            }  */          
+            }*/           
             auto set_ref = NormalizePairs(pairs_ref);
             auto set_test = NormalizePairs(pairs_test);
 
