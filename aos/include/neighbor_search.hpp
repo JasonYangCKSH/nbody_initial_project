@@ -21,8 +21,8 @@ class NeighborSearch {
 public:
 
 
-    NeighborSearch(): method(), cell_size(0.0f){}
-    explicit NeighborSearch(NeighborMethod nm, float _cell_size = 0.0f): method(nm), cell_size(_cell_size){}
+    NeighborSearch(): method(){}
+    explicit NeighborSearch(NeighborMethod nm): method(nm){}
 
     std::vector<NeighborPair> FindPairs(const std::vector<Body>& bodies) {
         switch (method) {
@@ -35,7 +35,6 @@ public:
 
 private:
     NeighborMethod method;
-    float cell_size;  // uniform_grid 專用
 
     // 1. Brute Force
     std::vector<NeighborPair> BruteForce(const std::vector<Body>& bodies) {
@@ -53,78 +52,143 @@ private:
         return pairs;
     }
 
+    int HashCoord(int cellx, int celly, int cellz, int numofcells) {
+        unsigned int h = ((unsigned int)cellx * 92837111u)
+                    ^ ((unsigned int)celly * 689287499u)
+                    ^ ((unsigned int)cellz * 283923481u);
+        return (int)(h % (unsigned int)numofcells);
+    }
 
-     // 2. Uniform Grid
+    // 2. Uniform Grid
     std::vector<NeighborPair> UniformGrid(const std::vector<Body>& bodies) {
+        
         // [cell_size] is important
         if (bodies.empty()) return {};
-        this->cell_size = 0.0f;
         std::vector<NeighborPair> pairs;
-
-        // Step1: build Cell and set up Cell size + insert body to cell
-        float x_min = bodies[0].pos.x, x_max = x_min;
-        float y_min = bodies[0].pos.y, y_max = y_min;
-        float z_min = bodies[0].pos.z, z_max = z_min;
+        // 1. initialize cellsize
+        float cellsize = 0.0f;
+        float maxRadius = 0.0f;
+        float x_min = bodies[0].pos.x, x_max = bodies[0].pos.x;
+        float y_min = bodies[0].pos.y, y_max = bodies[0].pos.y;
+        float z_min = bodies[0].pos.z, z_max = bodies[0].pos.z;
         for (const auto& b: bodies) {
             x_min = std::min(x_min, b.pos.x);
-            x_max = std::max(x_max, b.pos.x);
             y_min = std::min(y_min, b.pos.y);
-            y_max = std::max(y_max, b.pos.y);
             z_min = std::min(z_min, b.pos.z);
+            x_max = std::max(x_max, b.pos.x);
+            y_max = std::max(y_max, b.pos.y);
             z_max = std::max(z_max, b.pos.z);
-            this->cell_size = std::max(this->cell_size, 2.0f * b.radius);
+
+            maxRadius = std::max(maxRadius, b.radius);
+            cellsize = std::max(cellsize, 2 * b.radius);
         }
-        if (this->cell_size <= 0.0f) throw std::runtime_error("--cell_size went wrong--");
+        if (cellsize <= 0.0f) {
+            throw std::runtime_error("Invalid cell size.");
+        }
         
-        
-        // -------------------------------------
-        std::vector<std::vector<int>> gridMap;
-        // -------------------------------------
-        int nx = std::max(1, (int)std::ceil((x_max - x_min) / this->cell_size));
-        int ny = std::max(1, (int)std::ceil((y_max - y_min) / this->cell_size));
-        int nz = std::max(1, (int)std::ceil((z_max - z_min) / this->cell_size));
-        gridMap.resize(nx * ny * nz);
-       
-        for (int i = 0; i < (int)bodies.size(); i++){
-           
-            float posX = bodies[i].pos.x - x_min;
-            float posY = bodies[i].pos.y - y_min;
-            float posZ = bodies[i].pos.z - z_min;
-            int cx = std::max(0, std::min((int)std::floor(posX / cell_size), nx - 1));
-            int cy = std::max(0, std::min((int)std::floor(posY / cell_size), ny - 1));
-            int cz = std::max(0, std::min((int)std::floor(posZ / cell_size), nz - 1));
+        // Ensure cell size is large enough to contain any two touching particles
+        // For adjacent cell neighbors, we need cellsize >= 2 * maxRadius to be safe
+        cellsize = std::max(cellsize, 2.0f * maxRadius * 1.1f); // 10% safety margin
+
     
-            // insert
-            int index = (cx * ny + cy) * nz + cz;
-            gridMap[index].push_back(i);
+        int hashTableSize = static_cast<int>(bodies.size()) * 2;
+        assert(bodies.size() < (size_t)INT_MAX / 2);
+
+
+        std::vector<int> hashTable(hashTableSize);
+        std::fill(hashTable.begin(), hashTable.end(), 0);
+
+        // Step 1: Count particles per hashed cell
+        for (size_t i = 0; i < static_cast<size_t> (bodies.size()); i++) {
+            int cx = static_cast<int>(std::floor((bodies[i].pos.x - x_min) / cellsize));
+            int cy = static_cast<int>(std::floor((bodies[i].pos.y - y_min) / cellsize));
+            int cz = static_cast<int>(std::floor((bodies[i].pos.z - z_min) / cellsize));
+
+            int hash = HashCoord(cx, cy, cz, hashTableSize);
+
+            hashTable[hash]++;
         }
-        // Step2: find neighbor cell, and neighbor body
-        for (int i = 0; i < (int)bodies.size(); i++) {
-            float posX = bodies[i].pos.x - x_min;
-            float posY = bodies[i].pos.y - y_min;
-            float posZ = bodies[i].pos.z - z_min;
-            int cx = std::max(0, std::min((int)std::floor(posX / cell_size), nx - 1));
-            int cy = std::max(0, std::min((int)std::floor(posY / cell_size), ny - 1));
-            int cz = std::max(0, std::min((int)std::floor(posZ / cell_size), nz - 1));
+
+        // Step2: prefix sum
+        int start = 0;
+        for (int i = 0; i < hashTableSize; i++) {
+            int count = hashTable[i];
+            hashTable[i] = start;
+            start += count;
+        }
+        
+        // Step 3: Fill particle map + store exact cell coordinates
+        std::vector<int> particleMap(bodies.size());
+        std::vector<int> currentOffset = hashTable;
+
+        std::vector<int> particleCellX(bodies.size());
+        std::vector<int> particleCellY(bodies.size());
+        std::vector<int> particleCellZ(bodies.size());
+
+        for (size_t i = 0; i < bodies.size(); i++) {
+            int cx = static_cast<int>(std::floor((bodies[i].pos.x - x_min) / cellsize));
+            int cy = static_cast<int>(std::floor((bodies[i].pos.y - y_min) / cellsize));
+            int cz = static_cast<int>(std::floor((bodies[i].pos.z - z_min) / cellsize));
+
+            int hash = HashCoord(cx, cy, cz, hashTableSize);
+
+            particleMap[currentOffset[hash]] = static_cast<int>(i);
+            particleCellX[i] = cx;
+            particleCellY[i] = cy;
+            particleCellZ[i] = cz;
+
+            currentOffset[hash]++;
+        }
+
+        // Step 4: Neighbor search
+        for (size_t i = 0; i < bodies.size(); i++) {
+            int cx = particleCellX[i];
+            int cy = particleCellY[i];
+            int cz = particleCellZ[i];
+
             for (int dx = -1; dx <= 1; dx++)
             for (int dy = -1; dy <= 1; dy++)
             for (int dz = -1; dz <= 1; dz++) {
-                if (cx + dx < 0 || cx + dx >= nx) continue;
-                if (cy + dy < 0 || cy + dy >= ny) continue;
-                if (cz + dz < 0 || cz + dz >= nz) continue;
-                //todo
-                int neighbor_index = ((cx + dx) * ny + (cy + dy)) * nz + (cz + dz);
-                for (int j : gridMap[neighbor_index]) {
-                    if (j <= i) continue;
+
+                int ncx = cx + dx;
+                int ncy = cy + dy;
+                int ncz = cz + dz;
+
+                int neighborHash = HashCoord(ncx, ncy, ncz, hashTableSize);
+
+                int startIndex = hashTable[neighborHash];
+                // Fixed: safely calculate endIndex by finding next non-empty bucket
+                int endIndex = static_cast<int>(bodies.size());
+                for (int k = neighborHash + 1; k < hashTableSize; k++) {
+                    if (hashTable[k] > startIndex) {
+                        endIndex = hashTable[k];
+                        break;
+                    }
+                }
+
+                for (int k = startIndex; k < endIndex; k++) {
+                    int j = particleMap[k];
+
+                    if (j <= static_cast<int>(i)) continue;
+
+                    // Verify exact cell match (avoid hash collisions)
+                    if (particleCellX[j] != ncx ||
+                        particleCellY[j] != ncy ||
+                        particleCellZ[j] != ncz) {
+                        continue;
+                    }
+
                     float combinedRadius = bodies[i].radius + bodies[j].radius;
                     glm::vec3 d = bodies[j].pos - bodies[i].pos;
-                    float dist2 = d.x*d.x + d.y*d.y + d.z*d.z;
-                    if (dist2 <= combinedRadius * combinedRadius) pairs.push_back({i, j});
+                    float dist2 = d.x * d.x + d.y * d.y + d.z * d.z;
+
+                    if (dist2 <= combinedRadius * combinedRadius) {
+                        pairs.push_back({ static_cast<int>(i), j });
+                    }
                 }
             }
         }
         return pairs;
-
     }
 
     // 3. Octree
