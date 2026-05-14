@@ -5,7 +5,7 @@
 // A
 void Simulation::GenerateSimple() {
     bodies.clear();
-    //        pos                    vel        acc       mass  radius
+    // pos|vel|acc|mass|radius
     bodies.push_back(Body(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
     bodies.push_back(Body(glm::vec3(0.8f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
     bodies.push_back(Body(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
