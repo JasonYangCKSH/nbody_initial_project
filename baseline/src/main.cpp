@@ -1,8 +1,9 @@
-#include <glm/glm.hpp>
 #include <iostream>
-#include <vector>
-#include "Simulation.hpp"
-
+#include "simulation.hpp"
 int main() {
-    Simulation sim;
+    Simulation sim(1.0f); // searchRadius = 1.0
+    sim.GenerateSimple();
+    auto pairs = sim.BruteForce();
+    sim.PrintPairsResult(pairs);
+    return 0;
 }
