@@ -29,5 +29,6 @@ public:
     const std::vector<Body>& GetBodies() const { return bodies; }
     int GetBodiesSize() const { return bodies.size();}
     void PrintPairsResult(const std::vector<NeighborPair>& pairs) const;
+    
 };
 
