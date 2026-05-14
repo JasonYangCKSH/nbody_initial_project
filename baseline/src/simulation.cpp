@@ -1,6 +1,9 @@
 #include "simulation.hpp"
 #include <cmath>
-
+#include <iostream>
+#include <iomanip>
+// A
+// B
 std::vector<NeighborPair> Simulation::BruteForce() {
     if (bodies.empty()) return {};
     
@@ -17,4 +20,21 @@ std::vector<NeighborPair> Simulation::BruteForce() {
         }
     }
     return pairs;
+}
+
+// C
+
+void Simulation::PrintPairsResult(const std::vector<NeighborPair>& pairs) const {
+    std::cout << std::left 
+            << std::setw(15) << "INDEX_I" 
+            << std::setw(15) << "INDEX_J" 
+            << "DISTANCE" << "\n";
+    std::cout << std::string(45, '-') << "\n";
+
+    for (const auto& pair : pairs) {
+        std::cout << std::left 
+                << "INDEX: [" << std::setw(4) << pair.i << "], "
+                << "[" << std::setw(4) << pair.j << "]; "
+                << "DISTANCE: {" << std::fixed << std::setprecision(4) << pair.distance << "};\n";
+    }
 }
