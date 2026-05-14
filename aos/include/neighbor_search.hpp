@@ -117,7 +117,7 @@ private:
         }
         
         // Step 3: Fill particle map + store exact cell coordinates
-        std::vector<int> particleMap(bodies.size());
+        std::vector<int> particleMap(bodies.size()); // index: 
         std::vector<int> currentOffset = hashTable;
 
         std::vector<int> particleCellX(bodies.size());
