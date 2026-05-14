@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <glm/glm.hpp>
 // A
 void Simulation::GenerateSimple() {
     bodies.clear();
@@ -12,6 +13,8 @@ void Simulation::GenerateSimple() {
     bodies.push_back(Body(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
 }
 // B
+
+// 1. Brute Force
 std::vector<NeighborPair> Simulation::BruteForce() {
     if (bodies.empty()) return {};
     
@@ -28,6 +31,19 @@ std::vector<NeighborPair> Simulation::BruteForce() {
     }
     return pairs;
 }
+
+// 2. Uniform Grid
+#define NUM_OF_CELL 1024
+struct Cell {
+    Cell (int posx, int posy, int posz): pos(posx, posy, posz){}
+    glm::ivec3 pos;
+};
+
+
+
+
+
+// 3. Octree
 
 // C
 
