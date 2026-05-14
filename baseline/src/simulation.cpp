@@ -6,7 +6,7 @@
 void Simulation::GenerateSimple() {
     bodies.clear();
     // pos|vel|acc|mass|radius
-    bodies.push_back(Body(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
+    bodies.push_back(Body(glm::vec3(0.707f, 0.707f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
     bodies.push_back(Body(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
     bodies.push_back(Body(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
     bodies.push_back(Body(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f));
@@ -23,8 +23,7 @@ std::vector<NeighborPair> Simulation::BruteForce() {
             glm::vec3 d = bodies[j].pos - bodies[i].pos;
             float dist2 = d.x*d.x + d.y*d.y + d.z*d.z;
             if (dist2 > h2) continue;
-            float dist = std::sqrt(dist2);
-            pairs.push_back({i, j, dist});
+            pairs.push_back({i, j, dist2});
         }
     }
     return pairs;
@@ -43,6 +42,6 @@ void Simulation::PrintPairsResult(const std::vector<NeighborPair>& pairs) const 
         std::cout << std::left 
                 << "INDEX: [" << std::setw(4) << pair.i << "], "
                 << "[" << std::setw(4) << pair.j << "]; "
-                << "DISTANCE: {" << std::fixed << std::setprecision(4) << pair.distance << "};\n";
+                << "DISTANCE: {" << std::fixed << std::setprecision(4) << std::sqrt(pair.distance2)<< "};\n";
     }
 }

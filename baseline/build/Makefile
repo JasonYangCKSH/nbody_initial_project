@@ -117,24 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named baseline
+# Target rules for targets named a
 
 # Build rule for target.
-baseline: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 baseline
-.PHONY : baseline
+a : cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 a
+.PHONY : a
 
 # fast build rule for target.
-baseline/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/baseline.dir/build.make CMakeFiles/baseline.dir/build
-.PHONY : baseline/fast
+a/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/build
+.PHONY : a/fast
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/baseline.dir/build.make CMakeFiles/baseline.dir/src/main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -142,7 +142,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/baseline.dir/build.make CMakeFiles/baseline.dir/src/main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -150,7 +150,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/baseline.dir/build.make CMakeFiles/baseline.dir/src/main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 src/simulation.o: src/simulation.cpp.o
@@ -158,7 +158,7 @@ src/simulation.o: src/simulation.cpp.o
 
 # target to build an object file
 src/simulation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/baseline.dir/build.make CMakeFiles/baseline.dir/src/simulation.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/src/simulation.cpp.o
 .PHONY : src/simulation.cpp.o
 
 src/simulation.i: src/simulation.cpp.i
@@ -166,7 +166,7 @@ src/simulation.i: src/simulation.cpp.i
 
 # target to preprocess a source file
 src/simulation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/baseline.dir/build.make CMakeFiles/baseline.dir/src/simulation.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/src/simulation.cpp.i
 .PHONY : src/simulation.cpp.i
 
 src/simulation.s: src/simulation.cpp.s
@@ -174,7 +174,7 @@ src/simulation.s: src/simulation.cpp.s
 
 # target to generate assembly for a file
 src/simulation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/baseline.dir/build.make CMakeFiles/baseline.dir/src/simulation.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/a.dir/build.make CMakeFiles/a.dir/src/simulation.cpp.s
 .PHONY : src/simulation.cpp.s
 
 # Help Target
@@ -185,7 +185,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... baseline"
+	@echo "... a"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

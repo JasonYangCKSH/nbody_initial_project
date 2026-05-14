@@ -8,7 +8,7 @@
 
 struct NeighborPair {
     int i, j; // 2 bodies' index
-    float distance;
+    float distance2;
 };
 
 class Simulation {
