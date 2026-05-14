@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # exe file
 add_executable( baseline
     src/main.cpp
+    src/simulation.cpp
 )
 
 # /include path (body.hpp, simulation.hpp, glm)
