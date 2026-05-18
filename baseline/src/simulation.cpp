@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <array>
+#include <random>
 // A
 void Simulation::GenerateSimple() {
     bodies.clear();
@@ -24,6 +25,23 @@ void Simulation::GenerateSimple() {
 
     // --- 負座標：測試 floor 是否正確 ---
     bodies.push_back(Body(glm::vec3(-0.3f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f)); // 7
+}
+
+void Simulation::GenerateRandom(int n, float rangeMin, float rangeMax) {
+    bodies.clear();
+    std::mt19937 rng(42);
+    std::uniform_real_distribution<float> posDist(rangeMin, rangeMax);
+    std::uniform_real_distribution<float> massDist(0.5f, 2.0f);
+    std::uniform_real_distribution<float> radiusDist(0.1f, 0.3f);
+
+
+    for (int i = 0; i < n; i++) {
+        glm::vec3 pos(posDist(rng), posDist(rng), posDist(rng));
+        float mass   = massDist(rng);
+        float radius = radiusDist(rng);
+        bodies.push_back(Body(pos, glm::vec3(0), glm::vec3(0), mass, radius));
+    }
+
 }
 // B
 
