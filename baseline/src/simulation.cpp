@@ -64,52 +64,50 @@ std::vector<NeighborPair> Simulation::BruteForce() {
 }
 
 // 2. Uniform Grid
-#define NUM_OF_CELL 1024
 struct Cell {
     Cell (int posx, int posy, int posz): pos(posx, posy, posz){}
     glm::ivec3 pos;
 };
-int ComputeHashBucketIndex(Cell cell) {
-    const int h1 = 0x8da6b343;  // prime
-    const int h2 = 0xd8163841;  // prime 
-    const int h3 = 0xcb1ab31f;  // prime
+int ComputeHashBucketIndex(Cell cell, int numBuckets) {
+    const int h1 = 0x8da6b343;
+    const int h2 = 0xd8163841;
+    const int h3 = 0xcb1ab31f;
     int n = h1 * cell.pos.x + h2 * cell.pos.y + h3 * cell.pos.z;
-    n = n % NUM_OF_CELL;
-    if (n < 0) n += NUM_OF_CELL;
+    n = n % numBuckets;
+    if (n < 0) n += numBuckets;
     return n;
 }
 std::vector<NeighborPair> Simulation::UniformGrid() {
-    std::array<std::vector<int>, NUM_OF_CELL> table;
+    // adaptive bucket 數量：粒子數的 2 倍，選接近的質數
+    int numBuckets = bodies.size() * 2;
+    std::vector<std::vector<int>> table(numBuckets);
 
+    // build phase
     for (int i = 0; i < (int)bodies.size(); i++) {
         int ix = (int)std::floor(bodies[i].pos.x / searchRadius);
         int iy = (int)std::floor(bodies[i].pos.y / searchRadius);
         int iz = (int)std::floor(bodies[i].pos.z / searchRadius);
         Cell cell(ix, iy, iz);
-        int bucket = ComputeHashBucketIndex(cell);
+        int bucket = ComputeHashBucketIndex(cell, numBuckets);
         table[bucket].push_back(i);
-        //std::cout << "body "<<i<< ":[" << bucket << "]\n";
     }
 
-    
-
+    // query phase
     std::vector<NeighborPair> pairs;
     float h2 = searchRadius * searchRadius;
 
     for (int i = 0; i < (int)bodies.size(); i++) {
-        // convert original position to cell position
         int ix = (int)std::floor(bodies[i].pos.x / searchRadius);
         int iy = (int)std::floor(bodies[i].pos.y / searchRadius);
         int iz = (int)std::floor(bodies[i].pos.z / searchRadius);
 
-        
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     Cell neighbor(ix+dx, iy+dy, iz+dz);
-                    int bucket = ComputeHashBucketIndex(neighbor);
+                    int bucket = ComputeHashBucketIndex(neighbor, numBuckets);
                     for (int j : table[bucket]) {
-                        if (j <= i) continue; 
+                        if (j <= i) continue;
                         glm::vec3 d = bodies[j].pos - bodies[i].pos;
                         float dist2 = d.x*d.x + d.y*d.y + d.z*d.z;
                         if (dist2 > h2) continue;
@@ -120,7 +118,6 @@ std::vector<NeighborPair> Simulation::UniformGrid() {
         }
     }
     return pairs;
-
 }
 
 
