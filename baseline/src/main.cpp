@@ -22,11 +22,11 @@ int main() {
 
     //--------------Print out result-----------------------------
     std::cout << "\nBrute Force Result:\n";
-    sim.PrintPairsResult(pairs);
+    //sim.PrintPairsResult(pairs);
     std::chrono::duration<double, std::milli> elapsed = end - start;
     std::cout << "Time Spend: " << elapsed.count() << " ms\n";
     std::cout << "\nUniform Grid Result:\n";
-    sim.PrintPairsResult(pairs2);
+    //sim.PrintPairsResult(pairs2);
     std::chrono::duration<double, std::milli> elapsed2 = end2 - start2;
     std::cout << "Time Spend: " << elapsed2.count() << " ms\n";
     //------------------------------------------------------------

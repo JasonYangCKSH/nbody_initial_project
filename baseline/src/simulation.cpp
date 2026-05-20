@@ -70,9 +70,9 @@ struct Cell {
     glm::ivec3 pos;
 };
 int ComputeHashBucketIndex(Cell cell) {
-    const int h1 = 0x8da6b343;
-    const int h2 = 0xd8163841;
-    const int h3 = 0xcb1ab31f;
+    const int h1 = 0x8da6b343;  // prime
+    const int h2 = 0xd8163841;  // prime 
+    const int h3 = 0xcb1ab31f;  // prime
     int n = h1 * cell.pos.x + h2 * cell.pos.y + h3 * cell.pos.z;
     n = n % NUM_OF_CELL;
     if (n < 0) n += NUM_OF_CELL;
@@ -97,6 +97,7 @@ std::vector<NeighborPair> Simulation::UniformGrid() {
     float h2 = searchRadius * searchRadius;
 
     for (int i = 0; i < (int)bodies.size(); i++) {
+        // convert original position to cell position
         int ix = (int)std::floor(bodies[i].pos.x / searchRadius);
         int iy = (int)std::floor(bodies[i].pos.y / searchRadius);
         int iz = (int)std::floor(bodies[i].pos.z / searchRadius);
