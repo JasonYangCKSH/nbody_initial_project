@@ -19,7 +19,7 @@ int main() {
         sim.GenerateRandom(bodyNum, -15.0f, 15.0f);
         // case1: brute force
         auto start = std::chrono::high_resolution_clock::now();
-        std::cout << "Brute Force Processing...\n";
+        std::cout << "\nBrute Force Processing...\n";
         auto pairs = sim.BruteForce();
         auto end = std::chrono::high_resolution_clock::now();
         
