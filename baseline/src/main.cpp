@@ -9,7 +9,7 @@ int main() {
     
     Simulation sim(1.0f); // searchRadius = 1.0 = 2 * body_radius, which is something to do with body's radius(0.5)
     
-    std::vector<int> bodyNumVec = {2000,  4000, 6000,  8000, 10000, 12000, 14000, 16000};
+    std::vector<int> bodyNumVec = {2000,  4000, 6000,  8000, 10000, 12000, 14000/*, 16000*/};
     
     
     std::ofstream of1("../graph/bruteforce.csv");

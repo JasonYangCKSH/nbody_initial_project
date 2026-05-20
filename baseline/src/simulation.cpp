@@ -78,7 +78,7 @@ int ComputeHashBucketIndex(Cell cell, int numBuckets) {
     return n;
 }
 std::vector<NeighborPair> Simulation::UniformGrid() {
-    // adaptive bucket 數量：粒子數的 2 倍，選接近的質數
+    
     int numBuckets = bodies.size() * 2;
     std::vector<std::vector<int>> table(numBuckets);
 
