@@ -1,0 +1,13 @@
+{
+  "name": "planet-simulation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static front-end with backend physics step computing next positions for planetary simulation.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.4"
+  }
+}
