@@ -25,6 +25,8 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   let energyLoss = 0;
   let energyFrameCounter = 0;
   let isAdmin = false;
+  let collisionMode = "merge";
+  let activeViewIndex = 0;
   const ADMIN_PASSWORD = "123";
 
   // ======= SHARED UI REFERENCES =======
@@ -33,11 +35,18 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   const nLabel = document.getElementById("nLabel");
   const cellRange = document.getElementById("cellRange");
   const cellLabel = document.getElementById("cellLabel");
+  const randomSizeMass = document.getElementById("randomSizeMass");
+  const activeViewSel = document.getElementById("activeViewSel");
+  const activeViewMode = document.getElementById("activeViewMode");
+  const activeCellRange = document.getElementById("activeCellRange");
+  const activeCellLabel = document.getElementById("activeCellSizeLabel");
   const modeSel = document.getElementById("mode");
+  const collisionModeSel = document.getElementById("collisionMode");
   const speedRange = document.getElementById("speedRange");
   const speedLabel = document.getElementById("speedLabel");
   const lossRange = document.getElementById("lossRange");
   const lossLabel = document.getElementById("lossLabel");
+  const speedLimitNotice = document.getElementById("speedLimitNotice");
   const resetBtn = document.getElementById("resetBtn");
   const pauseBtn = document.getElementById("pauseBtn");
   const msEl = document.getElementById("ms");
@@ -498,6 +507,28 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     return isStableSolarScenario() ? 0.1 : softening;
   }
 
+  function updateActiveViewControls() {
+    if (!activeViewSel || !activeViewMode || !activeCellRange || !activeCellLabel) return;
+    activeViewSel.value = String(activeViewIndex);
+    const view = views[activeViewIndex];
+    if (!view) return;
+    activeViewMode.value = view.config.mode;
+    activeCellRange.value = String(view.config.cellSize);
+    activeCellLabel.textContent = String(view.config.cellSize);
+  }
+
+  function applyActiveViewConfig() {
+    const view = views[activeViewIndex];
+    if (!view) return;
+    view.config.mode = activeViewMode.value || "naive";
+    view.config.cellSize = Number(activeCellRange.value);
+    if (view.gridHelper) {
+      view.rebuildGridHelper();
+    }
+    view.updateGridVisibility();
+    if (view.gridHelper) view.updateGridCellsVisual();
+  }
+
   function volumeFromR(r) {
     return (4 / 3) * Math.PI * r * r * r;
   }
@@ -514,10 +545,13 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
   function initParticles(N, seed = 12345) {
     const rand = mulberry32(seed);
     const box = 350;
+    const uniformR = 4;
+    const uniformRho = 1;
+    const useRandomSizeMass = Boolean(randomSizeMass && randomSizeMass.checked);
     particles = [];
     for (let i = 0; i < N; i++) {
-      const r = 2 + rand() * 6;
-      const rho = 1;
+      const r = useRandomSizeMass ? 2 + rand() * 6 : uniformR;
+      const rho = useRandomSizeMass ? 1 : uniformRho;
       const m = rho * volumeFromR(r);
       const hue = rand();
       const sat = 0.45 + rand() * 0.4;
@@ -729,7 +763,40 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     return isStableSolarScenario() ? 0 : energyLoss;
   }
 
+  function getSafeTimeScale(cellSize, desiredTimeScale) {
+    if (particles.length === 0) return desiredTimeScale;
+
+    let maxSpeed = 0;
+    let minRadius = Infinity;
+    for (const p of particles) {
+      const speed = Math.hypot(p.vx || 0, p.vy || 0, p.vz || 0);
+      if (speed > maxSpeed) maxSpeed = speed;
+      const radius = Math.max(0.1, p.r || 0.1);
+      if (radius < minRadius) minRadius = radius;
+    }
+    if (maxSpeed <= 0) return desiredTimeScale;
+
+    const maxMoveByRadius = minRadius * 0.4;
+    const maxMoveByCell = Math.max(1, cellSize * 0.5);
+    const safeDistance = Math.min(maxMoveByRadius, maxMoveByCell);
+
+    const safeTimeScale = safeDistance / (maxSpeed * dt);
+    return Math.max(0.01, Math.min(desiredTimeScale, safeTimeScale));
+  }
+
+  function updateSpeedLimitNotice(desiredTimeScale, appliedTimeScale) {
+    if (!speedLimitNotice) return;
+    if (appliedTimeScale < desiredTimeScale) {
+      speedLimitNotice.textContent = `Speed auto-limited to ${appliedTimeScale.toFixed(2)}x to avoid tunneling / missed collisions`;
+    } else {
+      speedLimitNotice.textContent = "\u00A0";
+    }
+  }
+
   function handleCollisionsAndMerge() {
+    if (collisionMode === "bounce") {
+      return handleCollisionsAndBounce();
+    }
     if (isStableSolarScenario()) return false;
     if (particles.length < 2) return false;
     let merged = false;
@@ -786,11 +853,77 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     return merged;
   }
 
+  function handleCollisionsAndBounce() {
+    if (isStableSolarScenario()) return false;
+    if (particles.length < 2) return false;
+    let bounced = false;
+
+    for (let i = 0; i < particles.length; i++) {
+      const a = particles[i];
+      for (let j = i + 1; j < particles.length; j++) {
+        const b = particles[j];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const dz = b.z - a.z;
+        const dist2 = dx * dx + dy * dy + dz * dz;
+        const minDist = (a.r || 0) + (b.r || 0);
+
+        if (dist2 <= minDist * minDist && dist2 > 0) {
+          const dist = Math.sqrt(dist2);
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const nz = dz / dist;
+          const overlap = minDist - dist;
+          const invMassA = a.m > 0 ? 1 / a.m : 0;
+          const invMassB = b.m > 0 ? 1 / b.m : 0;
+          const invMassTotal = invMassA + invMassB;
+
+          if (invMassTotal > 0) {
+            const pushA = overlap * (invMassA / invMassTotal);
+            const pushB = overlap * (invMassB / invMassTotal);
+            a.x -= nx * pushA;
+            a.y -= ny * pushA;
+            a.z -= nz * pushA;
+            b.x += nx * pushB;
+            b.y += ny * pushB;
+            b.z += nz * pushB;
+          }
+
+          const rvx = b.vx - a.vx;
+          const rvy = b.vy - a.vy;
+          const rvz = b.vz - a.vz;
+          const relVel = rvx * nx + rvy * ny + rvz * nz;
+          if (relVel >= 0) {
+            bounced = true;
+            continue;
+          }
+
+          const restitution = 1.0;
+          const impulseMagnitude = -(1 + restitution) * relVel / invMassTotal;
+          const impulseX = impulseMagnitude * nx;
+          const impulseY = impulseMagnitude * ny;
+          const impulseZ = impulseMagnitude * nz;
+
+          a.vx -= impulseX * invMassA;
+          a.vy -= impulseY * invMassA;
+          a.vz -= impulseZ * invMassA;
+          b.vx += impulseX * invMassB;
+          b.vy += impulseY * invMassB;
+          b.vz += impulseZ * invMassB;
+          bounced = true;
+        }
+      }
+    }
+
+    return bounced;
+  }
+
   async function stepBackend3D(cellSize) {
     const payload = {
       dimension: "3d",
       particles,
       mode: modeSel.value,
+      collisionMode,
       cellSize,
       timeScale,
       energyLoss,
@@ -799,6 +932,24 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
       G,
       softening,
     };
+    if (collisionMode === "bounce") {
+      let ops = 0;
+      if (modeSel.value === "naive") {
+        ops = computeAccelerationsNaive();
+      } else {
+        ops = computeAccelerationsGrid(cellSize);
+      }
+      leapfrogKickDrift();
+      if (modeSel.value === "naive") {
+        ops += computeAccelerationsNaive();
+      } else {
+        ops += computeAccelerationsGrid(cellSize);
+      }
+      leapfrogKick();
+      const merged = handleCollisionsAndMerge();
+      return { ops, merged };
+    }
+
     try {
       const result = await window.stepSimulation(payload);
       if (Array.isArray(result.particles)) {
@@ -1057,9 +1208,12 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     let ops = 0;
     let merged = false;
 
-    timeScale = Math.max(0.01, +speedRange.value || 1);
+    const desiredTimeScale = Math.max(0.01, +speedRange.value || 1);
     energyLoss = Math.max(0, +lossRange.value || 0);
     const cellSize = Number(cellRange.value);
+
+    timeScale = getSafeTimeScale(cellSize, desiredTimeScale);
+    updateSpeedLimitNotice(desiredTimeScale, timeScale);
 
     if (!paused) {
       const result = await stepBackend3D(cellSize);
@@ -1142,9 +1296,12 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     panelContainer.style.gap = "0";
 
     // checkbox 事件
-    document.querySelectorAll(".panelCheck").forEach((cb, i) => {
+    document.querySelectorAll(".panelCheck").forEach((cb) => {
+      const index = Number(cb.dataset.panel);
+      if (!Number.isFinite(index) || index < 0 || index >= panelVisibility.length) return;
+      panelVisibility[index] = cb.checked;
       cb.addEventListener("change", () => {
-        panelVisibility[i] = cb.checked;
+        panelVisibility[index] = cb.checked;
         updatePanelVisibility();
       });
     });
@@ -1167,9 +1324,30 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     // 事件监听
     nRange.addEventListener("input", () => { if (!isSolarScenario()) nLabel.textContent = nRange.value; });
     cellRange.addEventListener("input", () => { cellLabel.textContent = cellRange.value; views.forEach(v => v.rebuildGridHelper()); });
+    if (activeViewSel) {
+      activeViewSel.addEventListener("change", () => {
+        activeViewIndex = Number(activeViewSel.value);
+        updateActiveViewControls();
+      });
+    }
+    if (activeViewMode) {
+      activeViewMode.addEventListener("change", applyActiveViewConfig);
+    }
+    if (activeCellRange) {
+      activeCellRange.addEventListener("input", () => {
+        activeCellLabel.textContent = String(activeCellRange.value);
+        applyActiveViewConfig();
+      });
+    }
     speedRange.addEventListener("input", updateSpeedLabel);
     lossRange.addEventListener("input", updateLossLabel);
     if (scenarioSel) scenarioSel.addEventListener("change", resetAll);
+    if (collisionModeSel) {
+      collisionModeSel.value = collisionMode;
+      collisionModeSel.addEventListener("change", () => {
+        collisionMode = collisionModeSel.value;
+      });
+    }
     resetBtn.addEventListener("click", resetAll);
     if (addPlanetBtn) addPlanetBtn.addEventListener("click", addPlanetFromInputs);
 
@@ -1266,6 +1444,7 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     updateLossLabel();
     updateScenarioUI();
     updatePanelVisibility();
+    updateActiveViewControls();
     resetAll();
     loop();
   }

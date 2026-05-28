@@ -68,8 +68,16 @@
       </div>
 
       <div class="row">
+        <label>Collision</label>
+        <select id="collisionMode">
+          <option value="bounce">Bounce</option>
+          <option value="merge">Merge</option>
+        </select>
+      </div>
+
+      <div class="row">
         <label>Particle N: <b id="nLabel">120</b></label>
-        <input id="nRange" type="range" min="2" max="600" step="1" value="120" />
+        <input id="nRange" type="range" min="2" max="999" step="1" value="120" />
       </div>
 
       <div class="row">
@@ -78,9 +86,37 @@
       </div>
 
       <div class="row">
+        <label><input id="randomSizeMass" type="checkbox" checked /> Random size/mass</label>
+      </div>
+
+      <div class="divider"></div>
+      <div class="row">
+        <label>Active Panel</label>
+        <select id="activeViewSel">
+          <option value="0">View 1</option>
+          <option value="1">View 2</option>
+          <option value="2">View 3</option>
+          <option value="3">View 4</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Panel Mode</label>
+        <select id="activeViewMode">
+          <option value="naive">Naive</option>
+          <option value="grid">Grid</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Panel Cell Size: <b id="activeCellSizeLabel">40</b></label>
+        <input id="activeCellRange" type="range" min="10" max="120" step="5" value="40" />
+      </div>
+      <div class="divider"></div>
+
+      <div class="row">
         <label>Speed: <b id="speedLabel">1.00x</b></label>
         <input id="speedRange" type="range" min="0.1" max="4" step="0.1" value="1" />
       </div>
+      <div class="small" id="speedLimitNotice" style="color:#d9534f; min-height:18px;">&nbsp;</div>
 
       <div class="row">
         <label>Energy Loss: <b id="lossLabel">0.000</b></label>
