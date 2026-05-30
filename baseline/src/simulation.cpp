@@ -52,11 +52,11 @@ std::vector<NeighborPair> Simulation::BruteForce() {
     std::vector<NeighborPair> pairs;
     float h2 = searchRadius * searchRadius;
 
-    for (int i = 0; i < (int)bodies.size(); i++) {
-        for (int j = i + 1; j < (int)bodies.size(); j++) {
+    for (int i = 0; i < (int)bodies.size(); i++) { // traverse each body
+        for (int j = i + 1; j < (int)bodies.size(); j++) { // j 初始化為 i+1，避免重複配對和自配對
             glm::vec3 d = bodies[j].pos - bodies[i].pos;
-            float dist2 = d.x*d.x + d.y*d.y + d.z*d.z;
-            if (dist2 > h2) continue;
+            float dist2 = d.x*d.x + d.y*d.y + d.z*d.z; // 計算內積(距離平方)
+            if (dist2 > h2) continue; // 
             pairs.push_back({i, j, dist2});
         }
     }
