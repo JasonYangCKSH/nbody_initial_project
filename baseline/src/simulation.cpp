@@ -168,8 +168,7 @@ void InsertParticle(OctreeNode* node, int particleIdx,
                    bodies, depth + 1, maxDepth);
 }
 OctreeNode* BuildOctree(const std::vector<Body>& bodies, 
-                         float searchRadius)
-{
+                         float searchRadius) {
     if (bodies.empty()) return nullptr;
 
     // 計算所有粒子的 bounding box
@@ -252,8 +251,7 @@ void QueryNeighbors(OctreeNode* node,
                        bodies, searchRadius, pairs);
     }
 }
-void DeleteOctree(OctreeNode* node)
-{
+void DeleteOctree(OctreeNode* node) {
     if (node == nullptr) return;
 
     // 遞迴刪除所有子節點
