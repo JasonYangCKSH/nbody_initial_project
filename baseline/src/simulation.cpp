@@ -79,7 +79,7 @@ int ComputeHashBucketIndex(Cell cell, int numBuckets) {
 }
 std::vector<NeighborPair> Simulation::UniformGrid() {
     
-    int numBuckets = bodies.size() * 2;
+    int numBuckets = 1024;
     std::vector<std::vector<int>> table(numBuckets);
 
     // build phase
@@ -125,9 +125,160 @@ std::vector<NeighborPair> Simulation::UniformGrid() {
 
 
 // 3. Octree
-std::vector<NeighborPair> Octree() {
+struct OctreeNode {
+    glm::vec3 center;      // 節點中心點
+    float halfWidth;       // 半邊長
+    OctreeNode* children[8]; // eight children
+    std::vector<int> objects; // 存放 particle index
 
-    
+    OctreeNode(glm::vec3 c, float hw) : center(c), halfWidth(hw) {
+        for (int i = 0; i < 8; i++) children[i] = nullptr;
+    }
+};
+void InsertParticle(OctreeNode* node, int particleIdx, 
+                    const std::vector<Body>& bodies, 
+                    int depth, int maxDepth) {
+    // 停止條件：達到最大深度，直接存入此節點
+    if (depth >= maxDepth) {
+        node->objects.push_back(particleIdx);
+        return;
+    }
+
+    glm::vec3 pos = bodies[particleIdx].pos;
+    glm::vec3 offset;
+    float step = node->halfWidth * 0.5f;
+
+    // 判斷粒子在哪個 octant
+    int index = 0;
+    if (pos.x > node->center.x) index |= 1;
+    if (pos.y > node->center.y) index |= 2;
+    if (pos.z > node->center.z) index |= 4;
+
+    // 如果子節點不存在，建立它
+    if (node->children[index] == nullptr) {
+        offset.x = (index & 1) ? step : -step;
+        offset.y = (index & 2) ? step : -step;
+        offset.z = (index & 4) ? step : -step;
+        node->children[index] = new OctreeNode(
+            node->center + offset, step);
+    }
+
+    // 遞迴插入子節點
+    InsertParticle(node->children[index], particleIdx, 
+                   bodies, depth + 1, maxDepth);
+}
+OctreeNode* BuildOctree(const std::vector<Body>& bodies, 
+                         float searchRadius)
+{
+    if (bodies.empty()) return nullptr;
+
+    // 計算所有粒子的 bounding box
+    glm::vec3 minPos = bodies[0].pos;
+    glm::vec3 maxPos = bodies[0].pos;
+
+    for (const auto& b : bodies) {
+        minPos = glm::min(minPos, b.pos);
+        maxPos = glm::max(maxPos, b.pos);
+    }
+
+    // 計算中心點與半邊長
+    glm::vec3 center = (minPos + maxPos) * 0.5f;
+    glm::vec3 diff = maxPos - minPos;
+    float halfWidth = diff.x;
+    if (diff.y > halfWidth) halfWidth = diff.y;
+    if (diff.z > halfWidth) halfWidth = diff.z;
+    halfWidth *= 0.5f;
+
+    // 加一點 padding 避免邊界粒子剛好落在邊上
+    halfWidth += searchRadius;
+
+    // 決定最大深度
+    // halfWidth / searchRadius 大概告訴我們需要幾層
+    int maxDepth = 0;
+    float size = halfWidth;
+    while (size > searchRadius && maxDepth < 8) {
+        size *= 0.5f;
+        maxDepth++;
+    }
+
+    // 建立根節點
+    OctreeNode* root = new OctreeNode(center, halfWidth);
+
+    // 把所有粒子插入
+    for (int i = 0; i < (int)bodies.size(); i++) {
+        InsertParticle(root, i, bodies, 0, maxDepth);
+    }
+
+    return root;
+}
+void QueryNeighbors(OctreeNode* node,
+                    int queryIdx,
+                    const std::vector<Body>& bodies,
+                    float searchRadius,
+                    std::vector<NeighborPair>& pairs) {
+    if (node == nullptr) return;
+
+    // 檢查此節點的 AABB 是否與查詢球相交
+    // 若節點與 searchRadius 球完全不重疊，直接剪枝
+    glm::vec3 queryPos = bodies[queryIdx].pos;
+    float dist2ToNode = 0.0f;
+
+    // 計算查詢點到節點 AABB 的最近距離平方
+    for (int i = 0; i < 3; i++) {
+        float v = queryPos[i];
+        float min = node->center[i] - node->halfWidth;
+        float max = node->center[i] + node->halfWidth;
+        if (v < min) dist2ToNode += (min - v) * (min - v);
+        if (v > max) dist2ToNode += (v - max) * (v - max);
+    }
+
+    // 若查詢球與節點完全不相交，跳過
+    if (dist2ToNode > searchRadius * searchRadius) return;
+
+    // 對此節點內的所有粒子做距離比較
+    float h2 = searchRadius * searchRadius;
+    for (int j : node->objects) {
+        if (j <= queryIdx) continue; // 避免重複配對
+        glm::vec3 d = bodies[j].pos - queryPos;
+        float dist2 = d.x*d.x + d.y*d.y + d.z*d.z;
+        if (dist2 <= h2) {
+            pairs.push_back({queryIdx, j, dist2});
+        }
+    }
+
+    // 遞迴查詢所有子節點
+    for (int i = 0; i < 8; i++) {
+        QueryNeighbors(node->children[i], queryIdx, 
+                       bodies, searchRadius, pairs);
+    }
+}
+void DeleteOctree(OctreeNode* node)
+{
+    if (node == nullptr) return;
+
+    // 遞迴刪除所有子節點
+    for (int i = 0; i < 8; i++) {
+        DeleteOctree(node->children[i]);
+    }
+
+    delete node;
+}
+std::vector<NeighborPair> Simulation::Octree() {
+    if (bodies.empty()) return {};
+
+    // 1. 建構 Octree
+    OctreeNode* root = BuildOctree(bodies, searchRadius);
+
+    // 2. 對每顆粒子查詢鄰居
+    std::vector<NeighborPair> pairs;
+    for (int i = 0; i < (int)bodies.size(); i++) {
+        QueryNeighbors(root, i, bodies, searchRadius, pairs);
+    }
+
+    // 3. 釋放記憶體
+    DeleteOctree(root);
+    return pairs;
+
 }
 // C
 
