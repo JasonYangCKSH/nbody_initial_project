@@ -84,10 +84,12 @@ std::vector<NeighborPair> Simulation::UniformGrid() {
 
     // build phase
     for (int i = 0; i < (int)bodies.size(); i++) {
+        // transform particle position(x, y, z) to cell position(ix, iy, iz)
         int ix = (int)std::floor(bodies[i].pos.x / searchRadius);
         int iy = (int)std::floor(bodies[i].pos.y / searchRadius);
         int iz = (int)std::floor(bodies[i].pos.z / searchRadius);
         Cell cell(ix, iy, iz);
+        // calculate hashbucket index and insert particle index into the bucket
         int bucket = ComputeHashBucketIndex(cell, numBuckets);
         table[bucket].push_back(i);
     }
@@ -123,7 +125,10 @@ std::vector<NeighborPair> Simulation::UniformGrid() {
 
 
 // 3. Octree
+std::vector<NeighborPair> Octree() {
 
+    
+}
 // C
 
 void Simulation::PrintPairsResult(const std::vector<NeighborPair>& pairs) const {
