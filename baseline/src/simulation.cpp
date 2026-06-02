@@ -221,10 +221,10 @@ void QueryNeighbors(OctreeNode* node, int queryIdx, const std::vector<Body>& bod
     }
     if (dist2ToNode > searchRadius * searchRadius) return;
     // ---------------------------------------------------
-    
+
     float h2 = searchRadius * searchRadius;
     for (int j : node->objects) {
-        if (j <= queryIdx) continue;
+        if (j <= queryIdx) continue; // 避免重覆
         glm::vec3 d = bodies[j].pos - queryPos;
         float dist2 = d.x*d.x + d.y*d.y + d.z*d.z;
         if (dist2 <= h2) {
