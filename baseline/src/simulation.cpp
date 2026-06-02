@@ -219,7 +219,7 @@ void QueryNeighbors(OctreeNode* node, int queryIdx, const std::vector<Body>& bod
         if (v < min) dist2ToNode += (min - v) * (min - v);
         if (v > max) dist2ToNode += (v - max) * (v - max);
     }
-    if (dist2ToNode > searchRaidus * searchRadius) return;
+    if (dist2ToNode > searchRadius * searchRadius) return;
 
     float h2 = searchRadius * searchRadius;
     for (int j : node->objects) {
