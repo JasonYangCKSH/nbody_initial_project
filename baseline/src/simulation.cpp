@@ -135,9 +135,12 @@ struct OctreeNode {
         for (int i = 0; i < 8; i++) children[i] = nullptr;
     }
 };
-void InsertParticle(OctreeNode* node, int particleIdx, 
-                    const std::vector<Body>& bodies, 
-                    int depth, int maxDepth) {
+void InsertParticle(OctreeNode* node, int particleIdx, const std::vector<Body>& bodies, int depth, int maxDepth) {
+
+
+
+
+/*
     // 停止條件：達到最大深度，直接存入此節點
     if (depth >= maxDepth) {
         node->objects.push_back(particleIdx);
@@ -166,6 +169,7 @@ void InsertParticle(OctreeNode* node, int particleIdx,
     // 遞迴插入子節點
     InsertParticle(node->children[index], particleIdx, 
                    bodies, depth + 1, maxDepth);
+*/
 }
 
 OctreeNode* BuildOctree(const std::vector<Body>& bodies, 
