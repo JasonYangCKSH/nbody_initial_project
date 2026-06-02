@@ -172,25 +172,38 @@ OctreeNode* BuildOctree(const std::vector<Body>& bodies,
                          float searchRadius) {
     if (bodies.empty()) return nullptr;
 
-    // 計算所有粒子的 bounding box
+    // set minPos, maxPos of the body
     glm::vec3 minPos = bodies[0].pos;
     glm::vec3 maxPos = bodies[0].pos;
-
-    for (const auto& b : bodies) {
+    for (const auto& b: bodies) {
         minPos = glm::min(minPos, b.pos);
         maxPos = glm::max(maxPos, b.pos);
     }
 
-    // 計算中心點與半邊長
+    // calculate: center position, halfWidth
     glm::vec3 center = (minPos + maxPos) * 0.5f;
     glm::vec3 diff = maxPos - minPos;
     float halfWidth = diff.x;
-    if (diff.y > halfWidth) halfWidth = diff.y;
-    if (diff.z > halfWidth) halfWidth = diff.z;
+    if (halfWidth < diff.y) halfWidth = diff.y;
+    if (halfWidth < diff.z) halfWidth = diff.z;
     halfWidth *= 0.5f;
 
-    // 加一點 padding 避免邊界粒子剛好落在邊上
+    // add some padding 
     halfWidth += searchRadius;
+
+    // determine the maxDepth
+    // (halfWidth / searchRadius)
+    int maxDepth = 0;
+    float size = halfWidth;
+    while (size > searchRadius && maxDepth < 8) {
+        size *= 0.5f;
+        maxDepth++;
+    }
+
+
+    /*
+
+
 
     // 決定最大深度
     // halfWidth / searchRadius 大概告訴我們需要幾層
@@ -210,6 +223,7 @@ OctreeNode* BuildOctree(const std::vector<Body>& bodies,
     }
 
     return root;
+    */
 }
 
 void QueryNeighbors(OctreeNode* node,
