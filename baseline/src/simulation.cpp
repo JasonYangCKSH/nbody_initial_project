@@ -82,7 +82,7 @@ int ComputeHashBucketIndex(Cell cell, int numBuckets) {
 }
 std::vector<NeighborPair> Simulation::UniformGrid() {
     
-    int numBuckets = 1024;
+    int numBuckets = std::max(1024, (int)bodies.size() * 2);
     std::vector<std::vector<int>> table(numBuckets);
 
     // build phase
