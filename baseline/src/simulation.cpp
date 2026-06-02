@@ -257,6 +257,7 @@ void DeleteOctree(OctreeNode* node) {
     }
 
     delete node;
+    node = nullptr;
 }
 std::vector<NeighborPair> Simulation::Octree() {
     if (bodies.empty()) return {};
