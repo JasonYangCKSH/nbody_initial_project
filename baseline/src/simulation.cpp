@@ -12,7 +12,10 @@ void Simulation::GenerateSimple() {
     // pos                              vel         acc         mass  radius
     // --- 群組 A：互相都是鄰居 ---
     bodies.push_back(Body(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f)); // 0
+
+    
     bodies.push_back(Body(glm::vec3(0.5f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f)); // 1
+    /*
     bodies.push_back(Body(glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f)); // 2
 
     // --- 群組 B：和 A 完全不相鄰 ---
@@ -24,7 +27,7 @@ void Simulation::GenerateSimple() {
     bodies.push_back(Body(glm::vec3(0.0f, 1.001f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f)); // 6 ✗ 剛好在外
 
     // --- 負座標：測試 floor 是否正確 ---
-    bodies.push_back(Body(glm::vec3(-0.3f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f)); // 7
+    bodies.push_back(Body(glm::vec3(-0.3f, 0.0f, 0.0f), glm::vec3(0), glm::vec3(0), 1.0f, 0.5f)); // 7*/
 }
 
 void Simulation::GenerateRandom(int n, float rangeMin, float rangeMax) {
