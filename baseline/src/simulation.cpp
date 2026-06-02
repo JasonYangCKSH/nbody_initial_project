@@ -139,7 +139,7 @@ void InsertParticle(OctreeNode* node, int particleIdx, const std::vector<Body>& 
 
     // end case: if reaching maxDepth
     if (depth >= maxDepth) {
-        node->object.push_back(particleIdx);
+        node->objects.push_back(particleIdx);
         return;
     }
     glm::vec3 pos = bodies[particleIdx].pos;
@@ -151,21 +151,16 @@ void InsertParticle(OctreeNode* node, int particleIdx, const std::vector<Body>& 
     if (pos.x > node->center.x) index |= 1;
     if (pos.y > node->center.y) index |= 2;
     if (pos.z > node->center.z) index |= 4;
-/*
 
-    // 如果子節點不存在，建立它
     if (node->children[index] == nullptr) {
         offset.x = (index & 1) ? step : -step;
         offset.y = (index & 2) ? step : -step;
         offset.z = (index & 4) ? step : -step;
-        node->children[index] = new OctreeNode(
-            node->center + offset, step);
-    }
+        node->children[index] = new OctreeNode(node->center + offset, step);
 
-    // 遞迴插入子節點
-    InsertParticle(node->children[index], particleIdx, 
-                   bodies, depth + 1, maxDepth);
-*/
+    }
+    InsertParticle(node->children[index], particleIdx, bodies, depth + 1, maxDepth);
+
 }
 
 OctreeNode* BuildOctree(const std::vector<Body>& bodies, 
