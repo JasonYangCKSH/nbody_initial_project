@@ -207,19 +207,11 @@ OctreeNode* BuildOctree(const std::vector<Body>& bodies,
 
 }
 
-void QueryNeighbors(OctreeNode* node,
-                    int queryIdx,
-                    const std::vector<Body>& bodies,
-                    float searchRadius,
-                    std::vector<NeighborPair>& pairs) {
+void QueryNeighbors(OctreeNode* node, int queryIdx, const std::vector<Body>& bodies, float searchRadius, std::vector<NeighborPair>& pairs) {
     if (node == nullptr) return;
-
-    // 檢查此節點的 AABB 是否與查詢球相交
-    // 若節點與 searchRadius 球完全不重疊，直接剪枝
     glm::vec3 queryPos = bodies[queryIdx].pos;
     float dist2ToNode = 0.0f;
 
-    // 計算查詢點到節點 AABB 的最近距離平方
     for (int i = 0; i < 3; i++) {
         float v = queryPos[i];
         float min = node->center[i] - node->halfWidth;
@@ -227,26 +219,21 @@ void QueryNeighbors(OctreeNode* node,
         if (v < min) dist2ToNode += (min - v) * (min - v);
         if (v > max) dist2ToNode += (v - max) * (v - max);
     }
+    if (dist2ToNode > searchRaidus * searchRadius) return;
 
-    // 若查詢球與節點完全不相交，跳過
-    if (dist2ToNode > searchRadius * searchRadius) return;
-
-    // 對此節點內的所有粒子做距離比較
     float h2 = searchRadius * searchRadius;
     for (int j : node->objects) {
-        if (j <= queryIdx) continue; // 避免重複配對
+        if (j <= queryIdx) continue;
         glm::vec3 d = bodies[j].pos - queryPos;
         float dist2 = d.x*d.x + d.y*d.y + d.z*d.z;
         if (dist2 <= h2) {
             pairs.push_back({queryIdx, j, dist2});
         }
     }
-
-    // 遞迴查詢所有子節點
     for (int i = 0; i < 8; i++) {
-        QueryNeighbors(node->children[i], queryIdx, 
-                       bodies, searchRadius, pairs);
+        QueryNeighbors(node->children[i], queryIdx, bodies, searchRadius, pairs);
     }
+
 }
 void DeleteOctree(OctreeNode* node) {
     if (node == nullptr) return;
