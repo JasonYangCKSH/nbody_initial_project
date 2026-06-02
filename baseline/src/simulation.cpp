@@ -221,6 +221,7 @@ void QueryNeighbors(OctreeNode* node, int queryIdx, const std::vector<Body>& bod
     }
     if (dist2ToNode > searchRadius * searchRadius) return;
     // ---------------------------------------------------
+    
     float h2 = searchRadius * searchRadius;
     for (int j : node->objects) {
         if (j <= queryIdx) continue;
