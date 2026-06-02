@@ -140,8 +140,8 @@ struct OctreeNode {
 };
 void InsertParticle(OctreeNode* node, int particleIdx, const std::vector<Body>& bodies, int depth, int maxDepth) {
 
-    // end case: if reaching maxDepth
-    if (depth >= maxDepth) {
+    // end case: if reaching its threshold
+    if (node->objects.size() < 20) {
         node->objects.push_back(particleIdx);
         return;
     }
