@@ -272,6 +272,7 @@ std::vector<NeighborPair> Simulation::Octree() {
     for (int i = 0; i < (int)bodies.size(); i++) {
         QueryNeighbors(root, i, bodies, searchRadius, pairs);
     }
+    
 
     // 3. 釋放記憶體
     DeleteOctree(root);
