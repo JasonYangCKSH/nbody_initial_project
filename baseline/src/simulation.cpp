@@ -200,30 +200,13 @@ OctreeNode* BuildOctree(const std::vector<Body>& bodies,
         maxDepth++;
     }
 
+    OctreeNode *root = new OctreeNode(center, halfWidth);
 
-    /*
-
-
-
-    // 決定最大深度
-    // halfWidth / searchRadius 大概告訴我們需要幾層
-    int maxDepth = 0;
-    float size = halfWidth;
-    while (size > searchRadius && maxDepth < 8) {
-        size *= 0.5f;
-        maxDepth++;
-    }
-
-    // 建立根節點
-    OctreeNode* root = new OctreeNode(center, halfWidth);
-
-    // 把所有粒子插入
     for (int i = 0; i < (int)bodies.size(); i++) {
         InsertParticle(root, i, bodies, 0, maxDepth);
     }
-
     return root;
-    */
+
 }
 
 void QueryNeighbors(OctreeNode* node,
