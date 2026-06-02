@@ -167,6 +167,7 @@ void InsertParticle(OctreeNode* node, int particleIdx,
     InsertParticle(node->children[index], particleIdx, 
                    bodies, depth + 1, maxDepth);
 }
+
 OctreeNode* BuildOctree(const std::vector<Body>& bodies, 
                          float searchRadius) {
     if (bodies.empty()) return nullptr;
@@ -210,6 +211,7 @@ OctreeNode* BuildOctree(const std::vector<Body>& bodies,
 
     return root;
 }
+
 void QueryNeighbors(OctreeNode* node,
                     int queryIdx,
                     const std::vector<Body>& bodies,
