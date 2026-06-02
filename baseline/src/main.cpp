@@ -10,7 +10,7 @@ int main() {
     Simulation sim(1.0f); // searchRadius = 1.0 = 2 * body_radius, which is something to do with body's radius(0.5)
     
     std::vector<int> bodyNumVec = {6000,  8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000};
-    
+    /*
     sim.GenerateSimple();
     //sim.GenerateRandom(10000, -15.0f, 15.0f);
     auto pairs = sim.BruteForce();
@@ -22,9 +22,9 @@ int main() {
     assert(pairs.size() == pairs2.size());
     assert(pairs.size() == pairs3.size());
     std::cout << "Done!\n";
+    */
     
     
-    /*
     std::ofstream of1("../graph/bruteforce.csv");
     std::ofstream of2("../graph/uniformgrid.csv");
     std::ofstream of3("../graph/octree.csv");
@@ -75,6 +75,6 @@ int main() {
     of1.close();
     of2.close();
     of3.close();
-    */
+    
     return 0;
 }
