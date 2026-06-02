@@ -137,25 +137,21 @@ struct OctreeNode {
 };
 void InsertParticle(OctreeNode* node, int particleIdx, const std::vector<Body>& bodies, int depth, int maxDepth) {
 
-
-
-
-/*
-    // 停止條件：達到最大深度，直接存入此節點
+    // end case: if reaching maxDepth
     if (depth >= maxDepth) {
-        node->objects.push_back(particleIdx);
+        node->object.push_back(particleIdx);
         return;
     }
-
     glm::vec3 pos = bodies[particleIdx].pos;
     glm::vec3 offset;
     float step = node->halfWidth * 0.5f;
-
-    // 判斷粒子在哪個 octant
+    
+    // set up the octant
     int index = 0;
     if (pos.x > node->center.x) index |= 1;
     if (pos.y > node->center.y) index |= 2;
     if (pos.z > node->center.z) index |= 4;
+/*
 
     // 如果子節點不存在，建立它
     if (node->children[index] == nullptr) {
