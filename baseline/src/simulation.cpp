@@ -211,7 +211,7 @@ void QueryNeighbors(OctreeNode* node, int queryIdx, const std::vector<Body>& bod
     if (node == nullptr) return;
     glm::vec3 queryPos = bodies[queryIdx].pos;
     float dist2ToNode = 0.0f;
-
+    // end case: -----------------------------------------
     for (int i = 0; i < 3; i++) {
         float v = queryPos[i];
         float min = node->center[i] - node->halfWidth;
@@ -220,7 +220,7 @@ void QueryNeighbors(OctreeNode* node, int queryIdx, const std::vector<Body>& bod
         if (v > max) dist2ToNode += (v - max) * (v - max);
     }
     if (dist2ToNode > searchRadius * searchRadius) return;
-
+    // ---------------------------------------------------
     float h2 = searchRadius * searchRadius;
     for (int j : node->objects) {
         if (j <= queryIdx) continue;
