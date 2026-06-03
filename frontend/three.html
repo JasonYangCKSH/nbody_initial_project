@@ -14,9 +14,12 @@
         <button id="collapseSidebarBtn" class="collapseSidebarBtn" type="button">
           收起面板
         </button>
-      <div class="panelToggle">
-        <label>Show Panels:</label>
-        <div class="panelCheckboxes">
+      <div class="panelToggle" id="panelToggle">
+        <div class="panelToggleHeader">
+          <label>Show Panels:</label>
+          <button id="togglePanelToggleBtn" class="panelToggleBtn" type="button">收起</button>
+        </div>
+        <div class="panelCheckboxes panelToggleBody" id="panelToggleBody">
           <label><input type="checkbox" class="panelCheck" data-panel="0" checked> View 1</label>
           <label><input type="checkbox" class="panelCheck" data-panel="1" checked> View 2</label>
           <label><input type="checkbox" class="panelCheck" data-panel="2" checked> View 3</label>

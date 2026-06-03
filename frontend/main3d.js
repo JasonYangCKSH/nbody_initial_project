@@ -180,20 +180,66 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
 
     buildGridBuckets(cellSize) {
       const info = this.getGridInfo(cellSize);
-      const buckets = new Map();
-      for (let i = 0; i < particles.length; i++) {
+
+      // Optional micro-benchmark flag (set to true temporarily to profile)
+      const BENCH = false;
+      if (BENCH) console.time("buildGridBuckets");
+
+      const N = particles.length;
+      // First pass: count particles per cellId (numeric id)
+      const counts = new Map();
+      const particleCellId = new Array(N);
+
+      for (let i = 0; i < N; i++) {
         const p = particles[i];
         const cx = info.toCellIndex(p.x, info.nx);
         const cy = info.toCellIndex(p.y, info.ny);
         const cz = info.toCellIndex(p.z, info.nz);
-        const k = info.key(cx, cy, cz);
-        let cell = buckets.get(k);
-        if (!cell) {
-          cell = { key: k, cx, cy, cz, indices: [] };
-          buckets.set(k, cell);
-        }
-        cell.indices.push(i);
+        const id = info.idOf(cx, cy, cz);
+        particleCellId[i] = id;
+        counts.set(id, (counts.get(id) || 0) + 1);
       }
+
+      // If there are no occupied cells, return empty Map
+      if (counts.size === 0) {
+        if (BENCH) console.timeEnd("buildGridBuckets");
+        return { info, buckets: new Map() };
+      }
+
+      // Build starts (prefix-sum) over the list of occupied cell ids
+      const cellIds = Array.from(counts.keys());
+      const starts = new Map();
+      let start = 0;
+      for (const id of cellIds) {
+        starts.set(id, start);
+        start += counts.get(id);
+      }
+
+      // Fill particleMap using starts as current offsets
+      const particleMap = new Array(N);
+      const currentOffset = new Map(starts);
+      for (let i = 0; i < N; i++) {
+        const id = particleCellId[i];
+        const off = currentOffset.get(id);
+        particleMap[off] = i;
+        currentOffset.set(id, off + 1);
+      }
+
+      // Build buckets Map with compact indices arrays (slice of particleMap)
+      const buckets = new Map();
+      for (const id of cellIds) {
+        const cx = id % info.nx;
+        const tmp = Math.floor(id / info.nx);
+        const cy = tmp % info.ny;
+        const cz = Math.floor(tmp / info.ny);
+        const k = info.key(cx, cy, cz);
+        const s = starts.get(id);
+        const c = counts.get(id);
+        const indices = particleMap.slice(s, s + c);
+        buckets.set(k, { key: k, cx, cy, cz, indices });
+      }
+
+      if (BENCH) console.timeEnd("buildGridBuckets");
       return { info, buckets };
     }
 
@@ -1427,6 +1473,20 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
 
     const collapseSidebarBtn = document.getElementById("collapseSidebarBtn");
     const wrap = document.querySelector(".wrap");
+    const panelToggleBtn = document.getElementById("togglePanelToggleBtn");
+    const panelToggle = document.getElementById("panelToggle");
+
+    if (panelToggleBtn && panelToggle) {
+      panelToggleBtn.addEventListener("click", () => {
+        const collapsed = panelToggle.classList.toggle("collapsed");
+        panelToggleBtn.textContent = collapsed ? "展開" : "收起";
+
+        // 內容寬度改變後需讓 3D 視圖重設尺寸，避免畫面空白或失真
+        requestAnimationFrame(() => {
+          views.forEach(v => v.resize());
+        });
+      });
+    }
 
     if (collapseSidebarBtn && wrap) {
       collapseSidebarBtn.addEventListener("click", () => {

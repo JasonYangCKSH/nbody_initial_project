@@ -39,15 +39,39 @@ body {
   flex-shrink: 0;
 }
 
-.panelToggle label {
+.panelToggleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 10px;
+}
+
+.panelToggleHeader label {
   font-weight: 600;
 }
 
-.panelCheckboxes {
+.panelToggleBtn {
+  padding: 6px 10px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.panelToggleBtn:hover {
+  background: #444;
+}
+
+.panelToggleBody {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.panelToggle.collapsed .panelToggleBody {
+  display: none;
 }
 
 .panelCheckboxes label {
