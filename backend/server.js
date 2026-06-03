@@ -396,41 +396,124 @@ function handleCollisionsAndMerge3D(particles, stable) {
   if (particles.length < 2) return false;
 
   let merged = false;
-  for (let i = 0; i < particles.length; i++) {
+  const removed = new Set();
+
+  forEachCollisionCandidatePair3D(particles, (i, j) => {
+    if (removed.has(i) || removed.has(j)) return;
     const a = particles[i];
-    for (let j = i + 1; j < particles.length; j++) {
-      const b = particles[j];
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const dz = b.z - a.z;
-      const dist2 = dx * dx + dy * dy + dz * dz;
-      const minDist = (a.r || 0) + (b.r || 0);
-      if (dist2 <= minDist * minDist) {
-        const mA = a.m;
-        const mB = b.m;
-        const mT = mA + mB;
-        if (mT <= 0) continue;
-        const vx = (a.vx * mA + b.vx * mB) / mT;
-        const vy = (a.vy * mA + b.vy * mB) / mT;
-        const vz = (a.vz * mA + b.vz * mB) / mT;
-        const x = (a.x * mA + b.x * mB) / mT;
-        const y = (a.y * mA + b.y * mB) / mT;
-        const z = (a.z * mA + b.z * mB) / mT;
-        const rhoA = a.rho || 1;
-        const rhoB = b.rho || 1;
-        const rho = (rhoA * mA + rhoB * mB) / mT;
-        const r = Math.cbrt((3 * mT) / (4 * Math.PI * rho));
-        const color = mA > mB ? a.color : b.color;
-        const bright = mA > mB ? a.bright || 1 : b.bright || 1;
-        particles[i] = {
-          x, y, z, vx, vy, vz, ax: 0, ay: 0, az: 0,
-          r, rho, m: mT, color, bright,
-        };
-        particles.splice(j, 1);
-        merged = true;
-        j -= 1;
+    const b = particles[j];
+    if (!a || !b) return;
+
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const dz = b.z - a.z;
+    const dist2 = dx * dx + dy * dy + dz * dz;
+    const minDist = (a.r || 0) + (b.r || 0);
+    if (dist2 <= minDist * minDist) {
+      const mA = a.m;
+      const mB = b.m;
+      const mT = mA + mB;
+      if (mT <= 0) return;
+      const vx = (a.vx * mA + b.vx * mB) / mT;
+      const vy = (a.vy * mA + b.vy * mB) / mT;
+      const vz = (a.vz * mA + b.vz * mB) / mT;
+      const x = (a.x * mA + b.x * mB) / mT;
+      const y = (a.y * mA + b.y * mB) / mT;
+      const z = (a.z * mA + b.z * mB) / mT;
+      const rhoA = a.rho || 1;
+      const rhoB = b.rho || 1;
+      const rho = (rhoA * mA + rhoB * mB) / mT;
+      const r = Math.cbrt((3 * mT) / (4 * Math.PI * rho));
+      const color = mA > mB ? a.color : b.color;
+      const bright = mA > mB ? a.bright || 1 : b.bright || 1;
+      particles[i] = {
+        x, y, z, vx, vy, vz, ax: 0, ay: 0, az: 0,
+        r, rho, m: mT, color, bright,
+      };
+      removed.add(j);
+      merged = true;
+    }
+  });
+
+  if (merged) {
+    let write = 0;
+    for (let read = 0; read < particles.length; read++) {
+      if (removed.has(read)) continue;
+      particles[write] = particles[read];
+      write++;
+    }
+    particles.length = write;
+  }
+  return merged;
+}
+
+function forEachCollisionCandidatePair3D(particles, callback) {
+  const boxLimit = 380;
+  const cellSize = getCollisionCellSize3D(particles);
+  const span = boxLimit * 2;
+  const nx = Math.max(1, Math.floor(span / cellSize));
+  const ny = Math.max(1, Math.floor(span / cellSize));
+  const nz = Math.max(1, Math.floor(span / cellSize));
+  const key = (cx, cy, cz) => `${cx},${cy},${cz}`;
+  const idOf = (cx, cy, cz) => cx + cy * nx + cz * nx * ny;
+  const toCellIndex = (v, n) => Math.min(n - 1, Math.max(0, Math.floor((v + boxLimit) / cellSize)));
+
+  const buckets = new Map();
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+    const cx = toCellIndex(p.x, nx);
+    const cy = toCellIndex(p.y, ny);
+    const cz = toCellIndex(p.z, nz);
+    const k = key(cx, cy, cz);
+    let cell = buckets.get(k);
+    if (!cell) {
+      cell = { cx, cy, cz, indices: [] };
+      buckets.set(k, cell);
+    }
+    cell.indices.push(i);
+  }
+
+  for (const cellA of buckets.values()) {
+    const listA = cellA.indices;
+    const idA = idOf(cellA.cx, cellA.cy, cellA.cz);
+    for (let dz = -1; dz <= 1; dz++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const nxCell = cellA.cx + dx;
+          const nyCell = cellA.cy + dy;
+          const nzCell = cellA.cz + dz;
+          if (nxCell < 0 || nyCell < 0 || nzCell < 0 || nxCell >= nx || nyCell >= ny || nzCell >= nz) continue;
+
+          const idB = idOf(nxCell, nyCell, nzCell);
+          if (idB < idA) continue;
+
+          const cellB = buckets.get(key(nxCell, nyCell, nzCell));
+          if (!cellB) continue;
+          const listB = cellB.indices;
+
+          if (idB === idA) {
+            for (let ia = 0; ia < listA.length; ia++) {
+              for (let jb = ia + 1; jb < listA.length; jb++) {
+                callback(listA[ia], listA[jb]);
+              }
+            }
+          } else {
+            for (let ia = 0; ia < listA.length; ia++) {
+              for (let jb = 0; jb < listB.length; jb++) {
+                callback(listA[ia], listB[jb]);
+              }
+            }
+          }
+        }
       }
     }
   }
-  return merged;
+}
+
+function getCollisionCellSize3D(particles) {
+  let maxRadius = 0;
+  for (const p of particles) {
+    maxRadius = Math.max(maxRadius, p.r || 0);
+  }
+  return Math.max(1, maxRadius * 2);
 }

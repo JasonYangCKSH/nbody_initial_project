@@ -839,6 +839,59 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     }
   }
 
+  function getCollisionCellSize() {
+    let maxRadius = 0;
+    for (const p of particles) {
+      maxRadius = Math.max(maxRadius, p.r || 0);
+    }
+    return Math.max(1, maxRadius * 2);
+  }
+
+  function forEachCollisionCandidatePair(callback) {
+    const cellSize = getCollisionCellSize();
+    const view = views[0];
+    const { info, buckets } = view.buildGridBuckets(cellSize);
+
+    for (const cellA of buckets.values()) {
+      const listA = cellA.indices;
+      const idA = info.idOf(cellA.cx, cellA.cy, cellA.cz);
+
+      for (let dz = -1; dz <= 1; dz++) {
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            const nxCell = cellA.cx + dx;
+            const nyCell = cellA.cy + dy;
+            const nzCell = cellA.cz + dz;
+            if (nxCell < 0 || nyCell < 0 || nzCell < 0 || nxCell >= info.nx || nyCell >= info.ny || nzCell >= info.nz) {
+              continue;
+            }
+
+            const idB = info.idOf(nxCell, nyCell, nzCell);
+            if (idB < idA) continue;
+
+            const cellB = buckets.get(info.key(nxCell, nyCell, nzCell));
+            if (!cellB) continue;
+            const listB = cellB.indices;
+
+            if (idB === idA) {
+              for (let ia = 0; ia < listA.length; ia++) {
+                for (let jb = ia + 1; jb < listA.length; jb++) {
+                  callback(listA[ia], listA[jb]);
+                }
+              }
+            } else {
+              for (let ia = 0; ia < listA.length; ia++) {
+                for (let jb = 0; jb < listB.length; jb++) {
+                  callback(listA[ia], listB[jb]);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   function handleCollisionsAndMerge() {
     if (collisionMode === "bounce") {
       return handleCollisionsAndBounce();
@@ -846,53 +899,64 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     if (isStableSolarScenario()) return false;
     if (particles.length < 2) return false;
     let merged = false;
+    const removed = new Set();
+    const oldSelectedIndex = selectedIndex;
 
-    for (let i = 0; i < particles.length; i++) {
+    forEachCollisionCandidatePair((i, j) => {
+      if (removed.has(i) || removed.has(j)) return;
       const a = particles[i];
-      for (let j = i + 1; j < particles.length; j++) {
-        const b = particles[j];
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const dz = b.z - a.z;
-        const dist2 = dx * dx + dy * dy + dz * dz;
-        const minDist = (a.r || 0) + (b.r || 0);
+      const b = particles[j];
+      if (!a || !b) return;
 
-        if (dist2 <= minDist * minDist) {
-          const mA = a.m;
-          const mB = b.m;
-          const mT = mA + mB;
-          if (mT <= 0) continue;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dz = b.z - a.z;
+      const dist2 = dx * dx + dy * dy + dz * dz;
+      const minDist = (a.r || 0) + (b.r || 0);
 
-          const vx = (a.vx * mA + b.vx * mB) / mT;
-          const vy = (a.vy * mA + b.vy * mB) / mT;
-          const vz = (a.vz * mA + b.vz * mB) / mT;
+      if (dist2 <= minDist * minDist) {
+        const mA = a.m;
+        const mB = b.m;
+        const mT = mA + mB;
+        if (mT <= 0) return;
 
-          const x = (a.x * mA + b.x * mB) / mT;
-          const y = (a.y * mA + b.y * mB) / mT;
-          const z = (a.z * mA + b.z * mB) / mT;
+        const vx = (a.vx * mA + b.vx * mB) / mT;
+        const vy = (a.vy * mA + b.vy * mB) / mT;
+        const vz = (a.vz * mA + b.vz * mB) / mT;
 
-          const rhoA = a.rho ?? 1;
-          const rhoB = b.rho ?? 1;
-          const rho = (rhoA * mA + rhoB * mB) / mT;
-          const r = Math.cbrt((3 * mT) / (4 * Math.PI * rho));
+        const x = (a.x * mA + b.x * mB) / mT;
+        const y = (a.y * mA + b.y * mB) / mT;
+        const z = (a.z * mA + b.z * mB) / mT;
 
-          const color = (mA > mB) ? a.color : b.color;
-          const bright = (mA > mB) ? (a.bright ?? 1) : (b.bright ?? 1);
+        const rhoA = a.rho ?? 1;
+        const rhoB = b.rho ?? 1;
+        const rho = (rhoA * mA + rhoB * mB) / mT;
+        const r = Math.cbrt((3 * mT) / (4 * Math.PI * rho));
 
-          const keep = i;
-          const drop = j;
+        const color = (mA > mB) ? a.color : b.color;
+        const bright = (mA > mB) ? (a.bright ?? 1) : (b.bright ?? 1);
 
-          particles[keep] = {
-            x, y, z, vx, vy, vz, ax: 0, ay: 0, az: 0, r, rho, m: mT, color, bright,
-          };
-          particles.splice(drop, 1);
+        particles[i] = {
+          x, y, z, vx, vy, vz, ax: 0, ay: 0, az: 0, r, rho, m: mT, color, bright,
+        };
+        removed.add(j);
+        if (selectedIndex === j) selectedIndex = i;
+        merged = true;
+      }
+    });
 
-          if (selectedIndex === drop) selectedIndex = keep;
-          if (selectedIndex > drop) selectedIndex -= 1;
+    if (merged) {
+      const remap = new Map();
+      particles = particles.filter((_, idx) => {
+        if (removed.has(idx)) return false;
+        remap.set(idx, remap.size);
+        return true;
+      });
 
-          merged = true;
-          j -= 1;
-        }
+      if (selectedIndex >= 0) {
+        selectedIndex = remap.has(selectedIndex) ? remap.get(selectedIndex) : -1;
+      } else if (oldSelectedIndex >= 0 && !removed.has(oldSelectedIndex)) {
+        selectedIndex = remap.get(oldSelectedIndex) ?? -1;
       }
     }
 
@@ -904,62 +968,60 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/exampl
     if (particles.length < 2) return false;
     let bounced = false;
 
-    for (let i = 0; i < particles.length; i++) {
+    forEachCollisionCandidatePair((i, j) => {
       const a = particles[i];
-      for (let j = i + 1; j < particles.length; j++) {
-        const b = particles[j];
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const dz = b.z - a.z;
-        const dist2 = dx * dx + dy * dy + dz * dz;
-        const minDist = (a.r || 0) + (b.r || 0);
+      const b = particles[j];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dz = b.z - a.z;
+      const dist2 = dx * dx + dy * dy + dz * dz;
+      const minDist = (a.r || 0) + (b.r || 0);
 
-        if (dist2 <= minDist * minDist && dist2 > 0) {
-          const dist = Math.sqrt(dist2);
-          const nx = dx / dist;
-          const ny = dy / dist;
-          const nz = dz / dist;
-          const overlap = minDist - dist;
-          const invMassA = a.m > 0 ? 1 / a.m : 0;
-          const invMassB = b.m > 0 ? 1 / b.m : 0;
-          const invMassTotal = invMassA + invMassB;
+      if (dist2 <= minDist * minDist && dist2 > 0) {
+        const dist = Math.sqrt(dist2);
+        const nx = dx / dist;
+        const ny = dy / dist;
+        const nz = dz / dist;
+        const overlap = minDist - dist;
+        const invMassA = a.m > 0 ? 1 / a.m : 0;
+        const invMassB = b.m > 0 ? 1 / b.m : 0;
+        const invMassTotal = invMassA + invMassB;
 
-          if (invMassTotal > 0) {
-            const pushA = overlap * (invMassA / invMassTotal);
-            const pushB = overlap * (invMassB / invMassTotal);
-            a.x -= nx * pushA;
-            a.y -= ny * pushA;
-            a.z -= nz * pushA;
-            b.x += nx * pushB;
-            b.y += ny * pushB;
-            b.z += nz * pushB;
-          }
-
-          const rvx = b.vx - a.vx;
-          const rvy = b.vy - a.vy;
-          const rvz = b.vz - a.vz;
-          const relVel = rvx * nx + rvy * ny + rvz * nz;
-          if (relVel >= 0) {
-            bounced = true;
-            continue;
-          }
-
-          const restitution = 1.0;
-          const impulseMagnitude = -(1 + restitution) * relVel / invMassTotal;
-          const impulseX = impulseMagnitude * nx;
-          const impulseY = impulseMagnitude * ny;
-          const impulseZ = impulseMagnitude * nz;
-
-          a.vx -= impulseX * invMassA;
-          a.vy -= impulseY * invMassA;
-          a.vz -= impulseZ * invMassA;
-          b.vx += impulseX * invMassB;
-          b.vy += impulseY * invMassB;
-          b.vz += impulseZ * invMassB;
-          bounced = true;
+        if (invMassTotal > 0) {
+          const pushA = overlap * (invMassA / invMassTotal);
+          const pushB = overlap * (invMassB / invMassTotal);
+          a.x -= nx * pushA;
+          a.y -= ny * pushA;
+          a.z -= nz * pushA;
+          b.x += nx * pushB;
+          b.y += ny * pushB;
+          b.z += nz * pushB;
         }
+
+        const rvx = b.vx - a.vx;
+        const rvy = b.vy - a.vy;
+        const rvz = b.vz - a.vz;
+        const relVel = rvx * nx + rvy * ny + rvz * nz;
+        if (relVel >= 0) {
+          bounced = true;
+          return;
+        }
+
+        const restitution = 1.0;
+        const impulseMagnitude = -(1 + restitution) * relVel / invMassTotal;
+        const impulseX = impulseMagnitude * nx;
+        const impulseY = impulseMagnitude * ny;
+        const impulseZ = impulseMagnitude * nz;
+
+        a.vx -= impulseX * invMassA;
+        a.vy -= impulseY * invMassA;
+        a.vz -= impulseZ * invMassA;
+        b.vx += impulseX * invMassB;
+        b.vy += impulseY * invMassB;
+        b.vz += impulseZ * invMassB;
+        bounced = true;
       }
-    }
+    });
 
     return bounced;
   }
