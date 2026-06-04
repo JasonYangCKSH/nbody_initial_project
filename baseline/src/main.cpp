@@ -2,79 +2,83 @@
 #include <chrono>
 #include <fstream>
 #include <vector>
+#include <numeric>
 #include "simulation.hpp"
 
+const int NUM_RUNS = 5; // 每個 bodyNum 跑幾次取平均
+
+double measureTime(std::function<void()> func) {
+    auto start = std::chrono::high_resolution_clock::now();
+    func();
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end - start;
+    return elapsed.count();
+}
+
 int main() {
-    
-    
-    Simulation sim(1.0f); // searchRadius = 1.0 = 2 * body_radius, which is something to do with body's radius(0.5)
-    
-    std::vector<int> bodyNumVec = {6000,  8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000};
-    /*
-    sim.GenerateSimple();
-    //sim.GenerateRandom(10000, -15.0f, 15.0f);
-    auto pairs = sim.BruteForce();
-    auto pairs2 = sim.UniformGrid();
-    auto pairs3 = sim.Octree();
-    sim.PrintPairsResult(pairs);
-    sim.PrintPairsResult(pairs2);
-    sim.PrintPairsResult(pairs3);
-    assert(pairs.size() == pairs2.size());
-    assert(pairs.size() == pairs3.size());
-    std::cout << "Done!\n";
-    */
-    
-    
-    std::ofstream of1("../graph/bruteforce.csv");
+
+    Simulation sim(1.0f);
+
+    std::vector<int> bodyNumVec = {6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000};
+
+    //std::ofstream of1("../graph/bruteforce.csv");
     std::ofstream of2("../graph/uniformgrid.csv");
     std::ofstream of3("../graph/octree.csv");
-    for (const int& bodyNum: bodyNumVec) {
-        sim.GenerateRandom(bodyNum, -15.0f, 15.0f);
-        // case1: brute force
-        auto start = std::chrono::high_resolution_clock::now();
-        std::cout << "\nBrute Force Processing...\n";
-        auto pairs = sim.BruteForce();
-        auto end = std::chrono::high_resolution_clock::now();
-        
-        // case2: uniform grid
-        auto start2 = std::chrono::high_resolution_clock::now();
-        std::cout << "Uniform Grid Processing...\n";
-        auto pairs2 = sim.UniformGrid();
-        auto end2 = std::chrono::high_resolution_clock::now();
-        assert(pairs.size() == pairs2.size());
-        // case3: octree
-        auto start3 = std::chrono::high_resolution_clock::now();
-        std::cout << "Octree Processing...\n";
-        auto pairs3 = sim.Octree();
-        auto end3 = std::chrono::high_resolution_clock::now();
-        assert(pairs.size() == pairs3.size());
 
+    for (const int& bodyNum : bodyNumVec) {
+        std::cout << "\n========== Body Num: " << bodyNum << " ==========\n";
 
-        //--------------Print out result-----------------------------
-        std::cout << "\nBrute Force Result:\n";
-        //sim.PrintPairsResult(pairs);
-        std::chrono::duration<double, std::milli> elapsed = end - start;
-        std::cout << "Time Spend: " << elapsed.count() << " ms\n";
-        of1 << bodyNum << " " << elapsed.count() << "\n";
+        std::vector<double> bf_times, ug_times, ot_times;
 
+        for (int run = 0; run < NUM_RUNS; run++) {
+            std::cout << "Run " << run + 1 << "/" << NUM_RUNS << "\n";
 
-        std::cout << "\nUniform Grid Result:\n";
-        //sim.PrintPairsResult(pairs2);
-        std::chrono::duration<double, std::milli> elapsed2 = end2 - start2;
-        std::cout << "Time Spend: " << elapsed2.count() << " ms\n";
-        of2 << bodyNum << " " << elapsed2.count() << "\n";
+            sim.GenerateRandom(bodyNum, -15.0f, 15.0f);
 
-        std::cout << "\nOctree Result:\n";
-        //sim.PrintPairsResult(pairs3);
-        std::chrono::duration<double, std::milli> elapsed3 = end3 - start3;
-        std::cout << "Time Spend: " << elapsed3.count() << " ms\n";
-        of3 << bodyNum << " " << elapsed3.count() << "\n";
-        assert(pairs.size() == pairs2.size());
-        assert(pairs.size() == pairs3.size());
+            // Brute Force
+            //std::vector<NeighborPair> pairs;
+            //double bf_t = measureTime([&]() { pairs = sim.BruteForce(); });
+            //bf_times.push_back(bf_t);
+
+            // Uniform Grid
+            std::vector<NeighborPair> pairs2;
+            double ug_t = measureTime([&]() { pairs2 = sim.UniformGrid(); });
+            ug_times.push_back(ug_t);
+            //assert(pairs.size() == pairs2.size());
+
+            // Octree
+            std::vector<NeighborPair> pairs3;
+            double ot_t = measureTime([&]() { pairs3 = sim.Octree(); });
+            ot_times.push_back(ot_t);
+            //assert(pairs.size() == pairs3.size());
+        }
+
+        // 計算平均（去掉最大最小值）
+        auto trimmed_mean = [](std::vector<double> v) {
+            std::sort(v.begin(), v.end());
+            v.erase(v.begin());        // 去掉最小
+            v.erase(v.end() - 1);     // 去掉最大
+            double sum = std::accumulate(v.begin(), v.end(), 0.0);
+            return sum / v.size();
+        };
+
+        //double bf_avg = trimmed_mean(bf_times);
+        double ug_avg = trimmed_mean(ug_times);
+        double ot_avg = trimmed_mean(ot_times);
+
+        //std::cout << "Brute Force  avg: " << bf_avg << " ms\n";
+        std::cout << "Uniform Grid avg: " << ug_avg << " ms\n";
+        std::cout << "Octree       avg: " << ot_avg << " ms\n";
+
+        //of1 << bodyNum << " " << bf_avg << "\n";
+        of2 << bodyNum << " " << ug_avg << "\n";
+        of3 << bodyNum << " " << ot_avg << "\n";
     }
-    of1.close();
+
+    //of1.close();
     of2.close();
     of3.close();
-    
+
+    std::cout << "\nDone!\n";
     return 0;
 }
