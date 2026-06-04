@@ -1,8 +1,12 @@
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
 
 const app = express();
 const port = process.env.PORT || 3000;
+const CPP_COLLISION_SOURCE = path.join(__dirname, "cpp", "collision_solver.cpp");
+const CPP_COLLISION_BINARY = path.join(__dirname, "cpp", "collision_solver");
 
 app.use(express.json({ limit: "8mb" }));
 app.use((req, res, next) => {
@@ -96,8 +100,8 @@ function computeNextStep3D(payload) {
 
   leapfrogKick3D(particles, dt, timeScale, energyLoss, damping, stable);
 
-  const merged = handleCollisionsAndMerge3D(particles, stable);
-  return { particles, ops, merged };
+  const collisionResult = handleCollisionsAndMerge3D(particles, stable);
+  return { particles: collisionResult.particles, ops, merged: collisionResult.merged };
 }
 
 function copyParticle2D(p) {
@@ -392,8 +396,20 @@ function leapfrogKick3D(particles, dt, timeScale, energyLoss, damping, stable) {
 }
 
 function handleCollisionsAndMerge3D(particles, stable) {
-  if (stable) return false;
-  if (particles.length < 2) return false;
+  if (stable || particles.length < 2) {
+    return { particles, merged: false };
+  }
+
+  try {
+    return runCppCollisionMerge3D(particles);
+  } catch (error) {
+    console.warn("C++ collision solver failed, falling back to JS:", error.message || error);
+    return runJsCollisionMerge3D(particles);
+  }
+}
+
+function runJsCollisionMerge3D(particles) {
+  if (particles.length < 2) return { particles, merged: false };
 
   let merged = false;
   const removed = new Set();
@@ -444,7 +460,112 @@ function handleCollisionsAndMerge3D(particles, stable) {
     }
     particles.length = write;
   }
-  return merged;
+  return { particles, merged };
+}
+
+function runCppCollisionMerge3D(particles) {
+  ensureCppCollisionBinary();
+
+  const result = spawnSync(CPP_COLLISION_BINARY, {
+    input: serializeParticlesForCpp(particles),
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+  });
+
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(`collision_solver exited with ${result.status}: ${result.stderr || ""}`.trim());
+  }
+
+  return parseCppCollisionOutput(result.stdout, particles);
+}
+
+function ensureCppCollisionBinary() {
+  const sourceStat = fs.statSync(CPP_COLLISION_SOURCE);
+  let binaryStat = null;
+  try {
+    binaryStat = fs.statSync(CPP_COLLISION_BINARY);
+  } catch {
+    binaryStat = null;
+  }
+
+  if (binaryStat && binaryStat.mtimeMs >= sourceStat.mtimeMs) return;
+
+  const compile = spawnSync("g++", [
+    "-std=c++17",
+    "-O2",
+    CPP_COLLISION_SOURCE,
+    "-o",
+    CPP_COLLISION_BINARY,
+  ], {
+    encoding: "utf8",
+    maxBuffer: 16 * 1024 * 1024,
+  });
+
+  if (compile.error) throw compile.error;
+  if (compile.status !== 0) {
+    throw new Error(`g++ failed: ${compile.stderr || compile.stdout || ""}`.trim());
+  }
+}
+
+function serializeParticlesForCpp(particles) {
+  const lines = [String(particles.length)];
+  for (const p of particles) {
+    lines.push([
+      p.x, p.y, p.z,
+      p.vx, p.vy, p.vz,
+      p.ax, p.ay, p.az,
+      p.r, p.rho, p.m,
+      p.color || 0,
+      p.bright || 1,
+    ].map(toCppNumber).join(" "));
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+function toCppNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? String(n) : "0";
+}
+
+function parseCppCollisionOutput(output, originalParticles) {
+  const lines = output.trim().split(/\r?\n/);
+  const header = lines.shift();
+  if (!header) throw new Error("collision_solver returned empty output");
+
+  const [mergedFlag, countText] = header.trim().split(/\s+/);
+  const count = Number(countText);
+  if (!Number.isInteger(count) || count < 0) {
+    throw new Error(`collision_solver returned invalid count: ${header}`);
+  }
+
+  const particles = [];
+  for (let i = 0; i < count; i++) {
+    const values = (lines[i] || "").trim().split(/\s+/).map(Number);
+    if (values.length < 14 || values.some((v) => !Number.isFinite(v))) {
+      throw new Error(`collision_solver returned invalid particle at line ${i + 2}`);
+    }
+    const original = originalParticles[i] || {};
+    particles.push({
+      name: original.name,
+      x: values[0],
+      y: values[1],
+      z: values[2],
+      vx: values[3],
+      vy: values[4],
+      vz: values[5],
+      ax: values[6],
+      ay: values[7],
+      az: values[8],
+      r: values[9],
+      rho: values[10],
+      m: values[11],
+      color: values[12],
+      bright: values[13],
+    });
+  }
+
+  return { particles, merged: mergedFlag === "1" };
 }
 
 function forEachCollisionCandidatePair3D(particles, callback) {

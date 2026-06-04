@@ -5,6 +5,7 @@
   "description": "Static front-end with backend physics step computing next positions for planetary simulation.",
   "main": "server.js",
   "scripts": {
+    "build-cpp": "g++ -std=c++17 -O2 cpp/collision_solver.cpp -o cpp/collision_solver",
     "start": "node server.js"
   },
   "dependencies": {
