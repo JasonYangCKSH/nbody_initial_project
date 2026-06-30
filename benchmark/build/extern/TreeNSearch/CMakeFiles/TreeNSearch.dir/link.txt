@@ -1,0 +1,2 @@
+/usr/bin/ar qc libTreeNSearch.a CMakeFiles/TreeNSearch.dir/source/TreeNSearch.cpp.o
+/usr/bin/ranlib libTreeNSearch.a

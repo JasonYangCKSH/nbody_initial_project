@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/jason/nbody_initial_project/benchmark/build/cmake_install.cmake",
+		"/home/jason/nbody_initial_project/benchmark/build/extern/TreeNSearch/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
