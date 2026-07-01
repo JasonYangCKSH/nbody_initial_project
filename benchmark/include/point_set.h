@@ -11,6 +11,7 @@ private:
     void GenerateRandom(int points_num, float range_min = -1.0f, float range_max = 1.0f);
 public:
     PointSet(){}
+    
     ~PointSet(){}
     
     

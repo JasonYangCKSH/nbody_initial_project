@@ -11,7 +11,7 @@ public:
     void SetDataSet(DataSet data_set, int num_of_points);
 
     // Method Comparison
-    tns::NeighborList RunBruteForce();
-    tns::NeighborList RunTreeNSearch();
+    double RunBruteForce();
+    double RunTreeNSearch();
 
 };

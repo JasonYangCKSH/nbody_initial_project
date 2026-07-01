@@ -302,8 +302,8 @@ CMakeFiles/tests.dir/tests/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
  /home/jason/nbody_initial_project/benchmark/extern/TreeNSearch/include/../source/NeighborList.h \
- /home/jason/nbody_initial_project/benchmark/tests/../include/point_set.h \
- /home/jason/nbody_initial_project/benchmark/tests/../include/simulation.h \
+ /home/jason/nbody_initial_project/benchmark/include/point_set.h \
+ /home/jason/nbody_initial_project/benchmark/include/simulation.h \
  /usr/include/c++/15/random /usr/include/c++/15/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \

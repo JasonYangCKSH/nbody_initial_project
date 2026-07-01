@@ -6,9 +6,9 @@ void Simulation::SetDataSet(DataSet data_set, int num_of_points) {
     this->point_set.SetPointSet(data_set, num_of_points);
 
 }
-tns::NeighborList Simulation::RunBruteForce() {
+double Simulation::RunBruteForce() {
 
 }
-tns::NeighborList Simulation::RunTreeNSearch() {
+double Simulation::RunTreeNSearch() {
 
 }

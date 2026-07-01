@@ -18,7 +18,9 @@ add_subdirectory(extern/TreeNSearch)
 target_compile_options(TreeNSearch PRIVATE -mavx2) #----------> turn on avx2 mode
 
 # 3. add benchmark(executable file)
-add_executable(tests tests/main.cpp)
+add_executable(tests tests/main.cpp
+                     src/point_set.cpp
+                     src/simulation.cpp)
 set_target_properties(tests PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
 )
@@ -27,7 +29,7 @@ find_package(OpenMP REQUIRED)
 # ---------------------------
 
 # 4. target include directories
-target_include_directories(tests PRIVATE include)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # 5. target link libraries---
 target_link_libraries(tests PRIVATE TreeNSearch OpenMP::OpenMP_CXX)

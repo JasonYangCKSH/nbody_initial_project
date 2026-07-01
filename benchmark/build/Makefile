@@ -187,6 +187,54 @@ TreeNSearch/fast:
 	$(MAKE) $(MAKESILENT) -f extern/TreeNSearch/CMakeFiles/TreeNSearch.dir/build.make extern/TreeNSearch/CMakeFiles/TreeNSearch.dir/build
 .PHONY : TreeNSearch/fast
 
+src/point_set.o: src/point_set.cpp.o
+.PHONY : src/point_set.o
+
+# target to build an object file
+src/point_set.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/point_set.cpp.o
+.PHONY : src/point_set.cpp.o
+
+src/point_set.i: src/point_set.cpp.i
+.PHONY : src/point_set.i
+
+# target to preprocess a source file
+src/point_set.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/point_set.cpp.i
+.PHONY : src/point_set.cpp.i
+
+src/point_set.s: src/point_set.cpp.s
+.PHONY : src/point_set.s
+
+# target to generate assembly for a file
+src/point_set.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/point_set.cpp.s
+.PHONY : src/point_set.cpp.s
+
+src/simulation.o: src/simulation.cpp.o
+.PHONY : src/simulation.o
+
+# target to build an object file
+src/simulation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/simulation.cpp.o
+.PHONY : src/simulation.cpp.o
+
+src/simulation.i: src/simulation.cpp.i
+.PHONY : src/simulation.i
+
+# target to preprocess a source file
+src/simulation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/simulation.cpp.i
+.PHONY : src/simulation.cpp.i
+
+src/simulation.s: src/simulation.cpp.s
+.PHONY : src/simulation.s
+
+# target to generate assembly for a file
+src/simulation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/src/simulation.cpp.s
+.PHONY : src/simulation.cpp.s
+
 tests/main.o: tests/main.cpp.o
 .PHONY : tests/main.o
 
@@ -225,6 +273,12 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... TreeNSearch"
 	@echo "... tests"
+	@echo "... src/point_set.o"
+	@echo "... src/point_set.i"
+	@echo "... src/point_set.s"
+	@echo "... src/simulation.o"
+	@echo "... src/simulation.i"
+	@echo "... src/simulation.s"
 	@echo "... tests/main.o"
 	@echo "... tests/main.i"
 	@echo "... tests/main.s"
