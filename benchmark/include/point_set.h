@@ -8,5 +8,5 @@ private:
 public:
     PointSet(){}
 
-    void SetPointSet();
+    void SetPointSet(std::vector<std::array<float, 3>> _points);
 };
