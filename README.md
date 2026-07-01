@@ -8,11 +8,11 @@ https://meet.google.com/tbw-rbcg-fsx?hs=224&pli=1
 
 **6/27-7/1:**
 
-- Review and run TreeNSearch project(Fast Octree Neighborhood Search for SPH Simulation, 2022)
+- 熟悉並執行TreeNSearch專案(Fast Octree Neighborhood Search for SPH Simulation, 2022)
 
-- Try to design first benchmark by getting inspirations from previous baseline and current essay.
+- 試著從先前的基準（baseline）和目前的論文中汲取靈感，設計第一個benchmark測試。
 
-- Right now will be focus on Cell-linked-list(CLL) and fast octree method.
+- 現在會著重於CLL(Cell linked-list)與fast octree method
 
 **7/2-7/8:**
 
