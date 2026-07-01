@@ -18,7 +18,7 @@ add_subdirectory(extern/TreeNSearch)
 target_compile_options(TreeNSearch PRIVATE -mavx2) #----------> turn on avx2 mode
 
 # 3. add benchmark(executable file)
-add_executable(tests tests/main.cpp include/point_set.cpp include/simulation.cpp)
+add_executable(tests tests/main.cpp)
 set_target_properties(tests PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/tests
 )

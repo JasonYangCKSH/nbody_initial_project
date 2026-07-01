@@ -2,8 +2,8 @@
 #include "point_set.h"
 #include "simulation.h"
 #include <random>
-void Simulation::SetDataSet() {
-    this->point_set.SetPointSet(RANDOM);
+void Simulation::SetDataSet(DataSet data_set, int num_of_points) {
+    this->point_set.SetPointSet(data_set, num_of_points);
 
 }
 tns::NeighborList Simulation::RunBruteForce() {

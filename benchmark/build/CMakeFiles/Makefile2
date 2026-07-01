@@ -107,12 +107,12 @@ extern/TreeNSearch/clean: extern/TreeNSearch/CMakeFiles/TreeNSearch.dir/clean
 CMakeFiles/tests.dir/all: extern/TreeNSearch/CMakeFiles/TreeNSearch.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/benchmark/build/CMakeFiles --progress-num=3,4,5,6 "Built target tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/benchmark/build/CMakeFiles --progress-num=3,4 "Built target tests"
 .PHONY : CMakeFiles/tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jason/nbody_initial_project/benchmark/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jason/nbody_initial_project/benchmark/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jason/nbody_initial_project/benchmark/build/CMakeFiles 0
 .PHONY : CMakeFiles/tests.dir/rule
@@ -124,7 +124,7 @@ tests: CMakeFiles/tests.dir/rule
 # codegen rule for target.
 CMakeFiles/tests.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/benchmark/build/CMakeFiles --progress-num=3,4,5,6 "Finished codegen for target tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/benchmark/build/CMakeFiles --progress-num=3,4 "Finished codegen for target tests"
 .PHONY : CMakeFiles/tests.dir/codegen
 
 # clean rule for target.

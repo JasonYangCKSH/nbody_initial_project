@@ -86,53 +86,21 @@ CMakeFiles/tests.dir/tests/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tests.dir/tests/main.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jason/nbody_initial_project/benchmark/tests/main.cpp -o CMakeFiles/tests.dir/tests/main.cpp.s
 
-CMakeFiles/tests.dir/include/point_set.cpp.o: CMakeFiles/tests.dir/flags.make
-CMakeFiles/tests.dir/include/point_set.cpp.o: /home/jason/nbody_initial_project/benchmark/include/point_set.cpp
-CMakeFiles/tests.dir/include/point_set.cpp.o: CMakeFiles/tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jason/nbody_initial_project/benchmark/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/tests.dir/include/point_set.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tests.dir/include/point_set.cpp.o -MF CMakeFiles/tests.dir/include/point_set.cpp.o.d -o CMakeFiles/tests.dir/include/point_set.cpp.o -c /home/jason/nbody_initial_project/benchmark/include/point_set.cpp
-
-CMakeFiles/tests.dir/include/point_set.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tests.dir/include/point_set.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jason/nbody_initial_project/benchmark/include/point_set.cpp > CMakeFiles/tests.dir/include/point_set.cpp.i
-
-CMakeFiles/tests.dir/include/point_set.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tests.dir/include/point_set.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jason/nbody_initial_project/benchmark/include/point_set.cpp -o CMakeFiles/tests.dir/include/point_set.cpp.s
-
-CMakeFiles/tests.dir/include/simulation.cpp.o: CMakeFiles/tests.dir/flags.make
-CMakeFiles/tests.dir/include/simulation.cpp.o: /home/jason/nbody_initial_project/benchmark/include/simulation.cpp
-CMakeFiles/tests.dir/include/simulation.cpp.o: CMakeFiles/tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jason/nbody_initial_project/benchmark/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/tests.dir/include/simulation.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tests.dir/include/simulation.cpp.o -MF CMakeFiles/tests.dir/include/simulation.cpp.o.d -o CMakeFiles/tests.dir/include/simulation.cpp.o -c /home/jason/nbody_initial_project/benchmark/include/simulation.cpp
-
-CMakeFiles/tests.dir/include/simulation.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tests.dir/include/simulation.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jason/nbody_initial_project/benchmark/include/simulation.cpp > CMakeFiles/tests.dir/include/simulation.cpp.i
-
-CMakeFiles/tests.dir/include/simulation.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tests.dir/include/simulation.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jason/nbody_initial_project/benchmark/include/simulation.cpp -o CMakeFiles/tests.dir/include/simulation.cpp.s
-
 # Object files for target tests
 tests_OBJECTS = \
-"CMakeFiles/tests.dir/tests/main.cpp.o" \
-"CMakeFiles/tests.dir/include/point_set.cpp.o" \
-"CMakeFiles/tests.dir/include/simulation.cpp.o"
+"CMakeFiles/tests.dir/tests/main.cpp.o"
 
 # External object files for target tests
 tests_EXTERNAL_OBJECTS =
 
 /home/jason/nbody_initial_project/benchmark/tests/tests: CMakeFiles/tests.dir/tests/main.cpp.o
-/home/jason/nbody_initial_project/benchmark/tests/tests: CMakeFiles/tests.dir/include/point_set.cpp.o
-/home/jason/nbody_initial_project/benchmark/tests/tests: CMakeFiles/tests.dir/include/simulation.cpp.o
 /home/jason/nbody_initial_project/benchmark/tests/tests: CMakeFiles/tests.dir/build.make
 /home/jason/nbody_initial_project/benchmark/tests/tests: CMakeFiles/tests.dir/compiler_depend.ts
 /home/jason/nbody_initial_project/benchmark/tests/tests: extern/TreeNSearch/libTreeNSearch.a
 /home/jason/nbody_initial_project/benchmark/tests/tests: /usr/lib/gcc/x86_64-linux-gnu/15/libgomp.so
 /home/jason/nbody_initial_project/benchmark/tests/tests: /usr/lib/x86_64-linux-gnu/libpthread.a
 /home/jason/nbody_initial_project/benchmark/tests/tests: CMakeFiles/tests.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jason/nbody_initial_project/benchmark/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable /home/jason/nbody_initial_project/benchmark/tests/tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jason/nbody_initial_project/benchmark/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable /home/jason/nbody_initial_project/benchmark/tests/tests"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tests.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

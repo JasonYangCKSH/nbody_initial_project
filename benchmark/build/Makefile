@@ -187,54 +187,6 @@ TreeNSearch/fast:
 	$(MAKE) $(MAKESILENT) -f extern/TreeNSearch/CMakeFiles/TreeNSearch.dir/build.make extern/TreeNSearch/CMakeFiles/TreeNSearch.dir/build
 .PHONY : TreeNSearch/fast
 
-include/point_set.o: include/point_set.cpp.o
-.PHONY : include/point_set.o
-
-# target to build an object file
-include/point_set.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/point_set.cpp.o
-.PHONY : include/point_set.cpp.o
-
-include/point_set.i: include/point_set.cpp.i
-.PHONY : include/point_set.i
-
-# target to preprocess a source file
-include/point_set.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/point_set.cpp.i
-.PHONY : include/point_set.cpp.i
-
-include/point_set.s: include/point_set.cpp.s
-.PHONY : include/point_set.s
-
-# target to generate assembly for a file
-include/point_set.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/point_set.cpp.s
-.PHONY : include/point_set.cpp.s
-
-include/simulation.o: include/simulation.cpp.o
-.PHONY : include/simulation.o
-
-# target to build an object file
-include/simulation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/simulation.cpp.o
-.PHONY : include/simulation.cpp.o
-
-include/simulation.i: include/simulation.cpp.i
-.PHONY : include/simulation.i
-
-# target to preprocess a source file
-include/simulation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/simulation.cpp.i
-.PHONY : include/simulation.cpp.i
-
-include/simulation.s: include/simulation.cpp.s
-.PHONY : include/simulation.s
-
-# target to generate assembly for a file
-include/simulation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/simulation.cpp.s
-.PHONY : include/simulation.cpp.s
-
 tests/main.o: tests/main.cpp.o
 .PHONY : tests/main.o
 
@@ -273,12 +225,6 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... TreeNSearch"
 	@echo "... tests"
-	@echo "... include/point_set.o"
-	@echo "... include/point_set.i"
-	@echo "... include/point_set.s"
-	@echo "... include/simulation.o"
-	@echo "... include/simulation.i"
-	@echo "... include/simulation.s"
 	@echo "... tests/main.o"
 	@echo "... tests/main.i"
 	@echo "... tests/main.s"

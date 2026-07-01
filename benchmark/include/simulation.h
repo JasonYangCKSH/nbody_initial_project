@@ -7,8 +7,8 @@ private:
     PointSet point_set;
     
 public:
-    // DataSet
-    void SetDataSet();
+    // DataSet: RANDOM, SIMPLE...
+    void SetDataSet(DataSet data_set, int num_of_points);
 
     // Method Comparison
     tns::NeighborList RunBruteForce();
