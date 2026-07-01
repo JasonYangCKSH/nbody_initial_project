@@ -13,3 +13,8 @@ https://meet.google.com/tbw-rbcg-fsx?hs=224&pli=1
 - Try to design first benchmark by getting inspirations from previous baseline and current essay.
 
 - Right now will be focus on Cell-linked-list(CLL) and fast octree method.
+
+**7/2-7/8:**
+
+- 將becnhmark做好一個雛形，並進行初步run效能。
+
