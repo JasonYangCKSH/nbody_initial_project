@@ -161,19 +161,12 @@ CMakeFiles/tests.dir/src/point_set.cpp.o: /home/jason/nbody_initial_project/benc
   /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
-  /usr/include/x86_64-linux-gnu/bits/select-decl.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
-  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
   /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
   /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
   /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
@@ -205,8 +198,6 @@ CMakeFiles/tests.dir/src/point_set.cpp.o: /home/jason/nbody_initial_project/benc
   /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/c++/15/bits/c++allocator.h \
   /usr/include/x86_64-linux-gnu/c++/15/bits/c++config.h \
@@ -250,6 +241,7 @@ CMakeFiles/tests.dir/src/simulation.cpp.o: /home/jason/nbody_initial_project/ben
   /usr/include/c++/15/bits/basic_string.tcc \
   /usr/include/c++/15/bits/char_traits.h \
   /usr/include/c++/15/bits/charconv.h \
+  /usr/include/c++/15/bits/chrono.h \
   /usr/include/c++/15/bits/concept_check.h \
   /usr/include/c++/15/bits/cpp_type_traits.h \
   /usr/include/c++/15/bits/cxxabi_forced.h \
@@ -276,6 +268,7 @@ CMakeFiles/tests.dir/src/simulation.cpp.o: /home/jason/nbody_initial_project/ben
   /usr/include/c++/15/bits/ostream.h \
   /usr/include/c++/15/bits/ostream.tcc \
   /usr/include/c++/15/bits/ostream_insert.h \
+  /usr/include/c++/15/bits/parse_numbers.h \
   /usr/include/c++/15/bits/postypes.h \
   /usr/include/c++/15/bits/predefined_ops.h \
   /usr/include/c++/15/bits/ptr_traits.h \
@@ -310,6 +303,7 @@ CMakeFiles/tests.dir/src/simulation.cpp.o: /home/jason/nbody_initial_project/ben
   /usr/include/c++/15/cassert \
   /usr/include/c++/15/cctype \
   /usr/include/c++/15/cerrno \
+  /usr/include/c++/15/chrono \
   /usr/include/c++/15/clocale \
   /usr/include/c++/15/cmath \
   /usr/include/c++/15/compare \
@@ -319,6 +313,7 @@ CMakeFiles/tests.dir/src/simulation.cpp.o: /home/jason/nbody_initial_project/ben
   /usr/include/c++/15/cstdio \
   /usr/include/c++/15/cstdlib \
   /usr/include/c++/15/cstring \
+  /usr/include/c++/15/ctime \
   /usr/include/c++/15/cwchar \
   /usr/include/c++/15/cwctype \
   /usr/include/c++/15/debug/assertions.h \
@@ -342,6 +337,7 @@ CMakeFiles/tests.dir/src/simulation.cpp.o: /home/jason/nbody_initial_project/ben
   /usr/include/c++/15/pstl/glue_numeric_defs.h \
   /usr/include/c++/15/pstl/pstl_config.h \
   /usr/include/c++/15/random \
+  /usr/include/c++/15/ratio \
   /usr/include/c++/15/stdexcept \
   /usr/include/c++/15/stdlib.h \
   /usr/include/c++/15/streambuf \
@@ -418,22 +414,13 @@ CMakeFiles/tests.dir/src/simulation.cpp.o: /home/jason/nbody_initial_project/ben
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
   /usr/include/x86_64-linux-gnu/bits/sched.h \
-  /usr/include/x86_64-linux-gnu/bits/select-decl.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
-  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/bits/setjmp.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
   /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
-  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
   /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
   /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
@@ -471,8 +458,6 @@ CMakeFiles/tests.dir/src/simulation.cpp.o: /home/jason/nbody_initial_project/ben
   /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
   /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/c++/15/bits/atomic_word.h \
@@ -806,22 +791,13 @@ CMakeFiles/tests.dir/tests/main.cpp.o: /home/jason/nbody_initial_project/benchma
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
   /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
   /usr/include/x86_64-linux-gnu/bits/sched.h \
-  /usr/include/x86_64-linux-gnu/bits/select-decl.h \
   /usr/include/x86_64-linux-gnu/bits/select.h \
-  /usr/include/x86_64-linux-gnu/bits/select2.h \
   /usr/include/x86_64-linux-gnu/bits/setjmp.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
   /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
-  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
   /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
   /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
@@ -859,8 +835,6 @@ CMakeFiles/tests.dir/tests/main.cpp.o: /home/jason/nbody_initial_project/benchma
   /usr/include/x86_64-linux-gnu/bits/waitflags.h \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
   /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
   /usr/include/x86_64-linux-gnu/c++/15/bits/atomic_word.h \
@@ -1072,6 +1046,8 @@ CMakeFiles/tests.dir/tests/main.cpp.o: /home/jason/nbody_initial_project/benchma
 
 /usr/lib/gcc/x86_64-linux-gnu/15/include/avxneconvertintrin.h:
 
+/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vpopcntdqvlintrin.h:
+
 /usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vpopcntdqintrin.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vp2intersectintrin.h:
@@ -1166,10 +1142,6 @@ CMakeFiles/tests.dir/tests/main.cpp.o: /home/jason/nbody_initial_project/benchma
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
 
-/usr/include/x86_64-linux-gnu/bits/strings_fortified.h:
-
-/usr/include/x86_64-linux-gnu/bits/string_fortified.h:
-
 /usr/lib/gcc/x86_64-linux-gnu/15/include/sm3intrin.h:
 
 /usr/include/x86_64-linux-gnu/bits/sched.h:
@@ -1200,13 +1172,9 @@ CMakeFiles/tests.dir/tests/main.cpp.o: /home/jason/nbody_initial_project/benchma
 
 /usr/include/linux/types.h:
 
-/usr/include/c++/15/typeinfo:
+/home/jason/nbody_initial_project/benchmark/tests/main.cpp:
 
-/usr/include/c++/15/system_error:
-
-/usr/include/c++/15/streambuf:
-
-/usr/include/c++/15/stdlib.h:
+/usr/include/linux/posix_types.h:
 
 /usr/include/c++/15/vector:
 
@@ -1272,8 +1240,6 @@ CMakeFiles/tests.dir/src/point_set.cpp.o:
 
 CMakeFiles/tests.dir/tests/main.cpp.o:
 
-/usr/include/x86_64-linux-gnu/bits/select2.h:
-
 /usr/include/c++/15/cwchar:
 
 /usr/include/c++/15/bits/stl_function.h:
@@ -1314,6 +1280,8 @@ CMakeFiles/tests.dir/tests/main.cpp.o:
 
 /usr/lib/x86_64-linux-gnu/libc.so:
 
+/usr/include/c++/15/bits/version.h:
+
 /usr/lib/gcc/x86_64-linux-gnu/15/include/bmi2intrin.h:
 
 /usr/include/c++/15/bits/concept_check.h:
@@ -1331,10 +1299,6 @@ CMakeFiles/tests.dir/tests/main.cpp.o:
 /usr/include/c++/15/bits/stl_uninitialized.h:
 
 /usr/include/x86_64-linux-gnu/asm/errno.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/15/include/avx512vpopcntdqvlintrin.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/include/amxtf32intrin.h:
 
@@ -1387,6 +1351,8 @@ extern/TreeNSearch/libTreeNSearch.a:
 /usr/include/c++/15/bits/basic_string.h:
 
 /usr/include/c++/15/bits/cpp_type_traits.h:
+
+/usr/include/c++/15/streambuf:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
 
@@ -1453,6 +1419,8 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 /usr/lib/gcc/x86_64-linux-gnu/15/include/avx512fintrin.h:
 
 /usr/lib/x86_64-linux-gnu/libc.so.6:
+
+/usr/include/c++/15/bits/parse_numbers.h:
 
 /usr/include/x86_64-linux-gnu/bits/mathcalls-macros.h:
 
@@ -1560,13 +1528,13 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/errno.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdio.h:
-
 /usr/include/c++/15/bits/postypes.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/include/amxint8intrin.h:
 
 /usr/include/c++/15/bits/std_abs.h:
+
+/usr/include/c++/15/typeinfo:
 
 /usr/include/features.h:
 
@@ -1612,6 +1580,8 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/fp-fast.h:
 
+/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
+
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
 /usr/include/c++/15/bits/basic_ios.h:
@@ -1632,8 +1602,6 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/mathcalls.h:
 
-/usr/include/x86_64-linux-gnu/bits/select-decl.h:
-
 /usr/include/x86_64-linux-gnu/bits/stdint-least.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h:
@@ -1643,20 +1611,6 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
 
 /usr/include/x86_64-linux-gnu/sys/select.h:
-
-/home/jason/nbody_initial_project/benchmark/tests/main.cpp:
-
-/usr/include/linux/posix_types.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio2-decl.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio2.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/15/include/enqcmdintrin.h:
-
-/usr/include/x86_64-linux-gnu/bits/byteswap.h:
-
-/home/jason/nbody_initial_project/benchmark/include/simulation.h:
 
 /usr/include/x86_64-linux-gnu/bits/timex.h:
 
@@ -1722,8 +1676,6 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
@@ -1744,17 +1696,11 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
-/usr/include/c++/15/bits/version.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar2-decl.h:
-
-/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar2.h:
-
 /usr/include/c++/15/tr1/ell_integral.tcc:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
+
+/usr/include/c++/15/system_error:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/include/stdarg.h:
 
@@ -1782,6 +1728,12 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 
 /home/jason/nbody_initial_project/benchmark/extern/TreeNSearch/include/TreeNSearch:
 
+/usr/lib/gcc/x86_64-linux-gnu/15/include/enqcmdintrin.h:
+
+/usr/include/x86_64-linux-gnu/bits/byteswap.h:
+
+/home/jason/nbody_initial_project/benchmark/include/simulation.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/asm-generic/types.h:
@@ -1794,6 +1746,8 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 
 /usr/include/c++/15/bits/basic_ios.tcc:
 
+/usr/include/c++/15/bits/chrono.h:
+
 /usr/include/c++/15/bits/istream.tcc:
 
 /usr/include/c++/15/bits/ostream.tcc:
@@ -1803,6 +1757,8 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 /usr/include/c++/15/bits/streambuf.tcc:
 
 /usr/include/c++/15/cassert:
+
+/usr/include/c++/15/chrono:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 
@@ -1820,4 +1776,10 @@ CMakeFiles/tests.dir/src/simulation.cpp.o:
 
 /usr/include/c++/15/ostream:
 
+/usr/include/c++/15/ratio:
+
 /usr/include/c++/15/stdexcept:
+
+/usr/include/c++/15/ctime:
+
+/usr/include/c++/15/stdlib.h:

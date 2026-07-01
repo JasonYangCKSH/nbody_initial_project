@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/jason/nbody_initial_project/benchmark/extern/TreeNSearch/extern
 
-CXX_FLAGS = -O2 -std=gnu++17 -mavx2
+CXX_FLAGS = -O0 -std=gnu++17 -mavx2
 

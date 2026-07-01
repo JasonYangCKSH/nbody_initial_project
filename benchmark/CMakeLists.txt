@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
-set(CMAKE_CXX_FLAGS_RELEASE "-O2") #---------------> good compile
+set(CMAKE_CXX_FLAGS_RELEASE "-O0") #---------------> good compile
 
 # 2. add subdirectory
 add_subdirectory(extern/TreeNSearch)

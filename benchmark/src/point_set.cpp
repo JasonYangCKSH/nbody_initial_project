@@ -16,6 +16,11 @@ void PointSet::GenerateRandom(int points_num, float range_min, float range_max) 
 
 }
 void PointSet::SetPointSet(DataSet data_set, int num_of_points) {
+    // same with TreeNSearch
+    this->particle_radius = 2.0f / std::pow((float)num_of_points, 1.0f/3.0f);
+    this->search_radius = 2.0f * particle_radius;
+
+
     switch(data_set) {
         case RANDOM:
             GenerateRandom(num_of_points);
@@ -25,3 +30,4 @@ void PointSet::SetPointSet(DataSet data_set, int num_of_points) {
 
     }
 }
+

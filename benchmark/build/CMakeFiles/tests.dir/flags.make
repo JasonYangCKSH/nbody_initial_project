@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/jason/nbody_initial_project/benchmark/include -I/home/jason/nbody_initial_project/benchmark/extern/TreeNSearch/include
 
-CXX_FLAGS = -O2 -std=gnu++17 -fopenmp
+CXX_FLAGS = -O0 -std=gnu++17 -fopenmp
 
