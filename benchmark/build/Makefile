@@ -162,17 +162,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named benchmark
+# Target rules for targets named tests
 
 # Build rule for target.
-benchmark: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 benchmark
-.PHONY : benchmark
+tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests
+.PHONY : tests
 
 # fast build rule for target.
-benchmark/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/build
-.PHONY : benchmark/fast
+tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/build
+.PHONY : tests/fast
 
 #=============================================================================
 # Target rules for targets named TreeNSearch
@@ -187,29 +187,77 @@ TreeNSearch/fast:
 	$(MAKE) $(MAKESILENT) -f extern/TreeNSearch/CMakeFiles/TreeNSearch.dir/build.make extern/TreeNSearch/CMakeFiles/TreeNSearch.dir/build
 .PHONY : TreeNSearch/fast
 
-src/main.o: src/main.cpp.o
-.PHONY : src/main.o
+include/point_set.o: include/point_set.cpp.o
+.PHONY : include/point_set.o
 
 # target to build an object file
-src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/src/main.cpp.o
-.PHONY : src/main.cpp.o
+include/point_set.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/point_set.cpp.o
+.PHONY : include/point_set.cpp.o
 
-src/main.i: src/main.cpp.i
-.PHONY : src/main.i
+include/point_set.i: include/point_set.cpp.i
+.PHONY : include/point_set.i
 
 # target to preprocess a source file
-src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/src/main.cpp.i
-.PHONY : src/main.cpp.i
+include/point_set.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/point_set.cpp.i
+.PHONY : include/point_set.cpp.i
 
-src/main.s: src/main.cpp.s
-.PHONY : src/main.s
+include/point_set.s: include/point_set.cpp.s
+.PHONY : include/point_set.s
 
 # target to generate assembly for a file
-src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark.dir/build.make CMakeFiles/benchmark.dir/src/main.cpp.s
-.PHONY : src/main.cpp.s
+include/point_set.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/point_set.cpp.s
+.PHONY : include/point_set.cpp.s
+
+include/simulation.o: include/simulation.cpp.o
+.PHONY : include/simulation.o
+
+# target to build an object file
+include/simulation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/simulation.cpp.o
+.PHONY : include/simulation.cpp.o
+
+include/simulation.i: include/simulation.cpp.i
+.PHONY : include/simulation.i
+
+# target to preprocess a source file
+include/simulation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/simulation.cpp.i
+.PHONY : include/simulation.cpp.i
+
+include/simulation.s: include/simulation.cpp.s
+.PHONY : include/simulation.s
+
+# target to generate assembly for a file
+include/simulation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/include/simulation.cpp.s
+.PHONY : include/simulation.cpp.s
+
+tests/main.o: tests/main.cpp.o
+.PHONY : tests/main.o
+
+# target to build an object file
+tests/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/tests/main.cpp.o
+.PHONY : tests/main.cpp.o
+
+tests/main.i: tests/main.cpp.i
+.PHONY : tests/main.i
+
+# target to preprocess a source file
+tests/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/tests/main.cpp.i
+.PHONY : tests/main.cpp.i
+
+tests/main.s: tests/main.cpp.s
+.PHONY : tests/main.s
+
+# target to generate assembly for a file
+tests/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/tests/main.cpp.s
+.PHONY : tests/main.cpp.s
 
 # Help Target
 help:
@@ -224,10 +272,16 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... TreeNSearch"
-	@echo "... benchmark"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
+	@echo "... tests"
+	@echo "... include/point_set.o"
+	@echo "... include/point_set.i"
+	@echo "... include/point_set.s"
+	@echo "... include/simulation.o"
+	@echo "... include/simulation.i"
+	@echo "... include/simulation.s"
+	@echo "... tests/main.o"
+	@echo "... tests/main.i"
+	@echo "... tests/main.s"
 .PHONY : help
 
 

@@ -1,13 +1,14 @@
 #pragma once
 #include "TreeNSearch"
 #include "point_set.h"
+#include <random>
 class Simulation {
 private:
     PointSet point_set;
-    tns::NeighborList nsearch;
+    
 public:
     // DataSet
-    void GenerateRandom(int points_num);
+    void SetDataSet();
 
     // Method Comparison
     tns::NeighborList RunBruteForce();

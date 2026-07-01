@@ -1,0 +1,1 @@
+/usr/bin/c++ -O2 -Wl,--dependency-file=CMakeFiles/tests.dir/link.d CMakeFiles/tests.dir/tests/main.cpp.o CMakeFiles/tests.dir/include/point_set.cpp.o CMakeFiles/tests.dir/include/simulation.cpp.o -o /home/jason/nbody_initial_project/benchmark/tests/tests  extern/TreeNSearch/libTreeNSearch.a /usr/lib/gcc/x86_64-linux-gnu/15/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.a

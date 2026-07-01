@@ -1,8 +1,10 @@
-benchmark: \
+/home/jason/nbody_initial_project/benchmark/tests/tests: \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/Scrt1.o \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/crti.o \
   /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o \
-  CMakeFiles/benchmark.dir/src/main.cpp.o \
+  CMakeFiles/tests.dir/tests/main.cpp.o \
+  CMakeFiles/tests.dir/include/point_set.cpp.o \
+  CMakeFiles/tests.dir/include/simulation.cpp.o \
   extern/TreeNSearch/libTreeNSearch.a \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgomp.so \
   /usr/lib/x86_64-linux-gnu/libpthread.a \
@@ -32,7 +34,9 @@ benchmark: \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/15/crtendS.o \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/crtn.o \
-  /lib64/ld-linux-x86-64.so.2
+  /usr/lib/x86_64-linux-gnu/libm.so.6 \
+  /lib64/ld-linux-x86-64.so.2 \
+  /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libgcc_s.so.1
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/Scrt1.o:
 
@@ -40,7 +44,11 @@ benchmark: \
 
 /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o:
 
-CMakeFiles/benchmark.dir/src/main.cpp.o:
+CMakeFiles/tests.dir/tests/main.cpp.o:
+
+CMakeFiles/tests.dir/include/point_set.cpp.o:
+
+CMakeFiles/tests.dir/include/simulation.cpp.o:
 
 extern/TreeNSearch/libTreeNSearch.a:
 
@@ -100,4 +108,8 @@ extern/TreeNSearch/libTreeNSearch.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/crtn.o:
 
+/usr/lib/x86_64-linux-gnu/libm.so.6:
+
 /lib64/ld-linux-x86-64.so.2:
+
+/usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libgcc_s.so.1:
