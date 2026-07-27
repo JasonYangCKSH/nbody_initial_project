@@ -3,12 +3,13 @@
 
 class BruteForceCalculator : public ForceCalculator {
 public:
-    // TODO: 建構子，接受 G（重力常數）跟 softening（softening length）
-    // 兩個都給預設值：G預設1.0，softening預設0.0
 
-    // TODO: override 上面介面定義的函式
+    BruteForceCalculator(double _G = 1.0, double _softening = 0.0): G(_G), softening(_softening){}
+
     void computeAccelerations(std::vector<Body>& bodies) override;
 
 private:
-    // TODO: 需要儲存 G 跟 softening 這兩個成員變數
+
+    double G;
+    double softening;
 };
