@@ -6,6 +6,7 @@
 class LeapfrogIntegrator {
 public:
     // TODO: 建構子，接受一個 ForceCalculator&（為什麼用reference？）
+    explicit LeapfrogIntegrator(ForceCalculator& calc) : calc_(calc) {}
 
     // TODO: step函式，接受 bodies 跟 dt
     // 內部要做的三件事（Kick-Drift-Kick）：
@@ -15,8 +16,14 @@ public:
     // 4. 每個body: velocity += acceleration * (dt * 0.5)   ← 第二次kick
     void step(std::vector<Body>& bodies, double dt) {
         // TODO
+        for (auto& b: bodies) b.velocity += b.acceleration * (dt * 0.5);
+        for (auto& b: bodies) b.position += b.velocity * dt;
+        calc_.computeAccelerations(bodies);
+        for (auto& b : bodies) b.velocity += b.acceleration * (dt * 0.5);
+    
     }
 
 private:
     // TODO: 需要儲存對ForceCalculator的參照
+    ForceCalculator& calc_;
 };
