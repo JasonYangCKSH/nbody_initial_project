@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/jason/nbody_initial_project/nbody_project/tests/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

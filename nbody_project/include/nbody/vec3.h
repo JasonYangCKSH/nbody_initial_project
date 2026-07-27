@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 struct Vec3{
     double x, y, z;
     Vec3():x(0.0), y(0.0), z(0.0){}

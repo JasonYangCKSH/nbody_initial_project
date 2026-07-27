@@ -13,11 +13,11 @@ void BruteForceCalculator::computeAccelerations(std::vector<Body>& bodies) {
             // 步驟3：算出 r = bodies[j].position - bodies[i].position
             Vec3 r = bodies[j].position - bodies[i].position;
 
-            // 步驟4：算出 distSqr = r.dot(r) + softening*softening
+            // 步驟4：算出 distSqrt = r.dot(r) + softening*softening
             double distSqrt = r.dot(r) + softening * softening;
         
-            // 步驟5：算出 invDist3 = 1.0 / (distSqr * sqrt(distSqr))
-            double invDist3 = 1.0 / (distSqr * std::sqrt(distSqr));
+            // 步驟5：算出 invDist3 = 1.0 / (distSqrt * sqrt(distSqrt))
+            double invDist3 = 1.0 / (distSqrt * std::sqrt(distSqrt));
 
             // 步驟6：更新 bodies[i].acceleration
             //         用公式：a_i += G * m_j * invDist3 * r

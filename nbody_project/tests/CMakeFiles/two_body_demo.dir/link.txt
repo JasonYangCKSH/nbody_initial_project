@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/two_body_demo.dir/link.d CMakeFiles/two_body_demo.dir/apps/two_body_demo.cpp.o -o two_body_demo  libnbody_core.a
