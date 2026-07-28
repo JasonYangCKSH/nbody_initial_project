@@ -6,6 +6,7 @@
 #include <cmath>
 
 double totalEnergy(const std::vector<Body>& bodies, double G) {
+    // KE:動能 PE:位能
     double KE = 0.0, PE = 0.0;
     for (const auto& b : bodies) KE += 0.5 * b.mass * b.velocity.dot(b.velocity);
     for (size_t i = 0; i < bodies.size(); ++i)
@@ -15,6 +16,7 @@ double totalEnergy(const std::vector<Body>& bodies, double G) {
 }
 
 int main() {
+    // initialize
     const double G = 1.0;
     std::vector<Body> bodies(2);
     bodies[0].mass = 10.0;
@@ -27,18 +29,21 @@ int main() {
 
     BruteForceCalculator calc(G, 0.0);
     LeapfrogIntegrator integrator(calc);
-
+    
+    // 第一次計算acceleration
     calc.computeAccelerations(bodies);
-
+    // -----------------------------------
     double E0 = totalEnergy(bodies, G);
+    // -----------------------------------
+    
+    // -----------------------------------
     double theoreticalPeriod = 2 * M_PI * std::sqrt(std::pow(r, 3) / (G * (bodies[0].mass + bodies[1].mass)));
-
     double dt = theoreticalPeriod / 1000.0;
     for (int s = 0; s < 1000; ++s) {
         integrator.step(bodies, dt);
     }
-
     double E1 = totalEnergy(bodies, G);
+    // -----------------------------------
     std::cout << "Energy relative error: " << std::abs((E1 - E0) / E0) << "\n";
     std::cout << "Theoretical period: " << theoreticalPeriod << "\n";
     std::cout << "Final position: (" << bodies[1].position.x << ", "
