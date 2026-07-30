@@ -1,0 +1,17 @@
+<!-- test.html -->
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>WASM Hello Test</title></head>
+<body>
+<h1 id="result">loading...</h1>
+
+<script type="module">
+import HelloModule from './hello.js';
+
+HelloModule().then((Module) => {
+    const sum = Module.add(3, 4);
+    document.getElementById('result').textContent = "3 + 4 = " + sum;
+});
+</script>
+</body>
+</html>

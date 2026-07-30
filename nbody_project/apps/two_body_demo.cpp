@@ -24,7 +24,8 @@ int main() {
     bodies[1].position = Vec3(1.0, 0.0, 0.0);
 
     double r = 1.0;
-    double v_circ = std::sqrt(G * bodies[0].mass / r);
+    //double v_circ = std::sqrt(G * bodies[0].mass / r);
+    double v_circ = std::sqrt(G * (bodies[0].mass + bodies[1].mass) / r);
     bodies[1].velocity = Vec3(0.0, v_circ, 0.0);
 
     BruteForceCalculator calc(G, 0.0);
@@ -35,7 +36,7 @@ int main() {
     // -----------------------------------
     double E0 = totalEnergy(bodies, G);
     // -----------------------------------
-    
+
     // -----------------------------------
     double theoreticalPeriod = 2 * M_PI * std::sqrt(std::pow(r, 3) / (G * (bodies[0].mass + bodies[1].mass)));
     double dt = theoreticalPeriod / 1000.0;
@@ -46,6 +47,8 @@ int main() {
     // -----------------------------------
     std::cout << "Energy relative error: " << std::abs((E1 - E0) / E0) << "\n";
     std::cout << "Theoretical period: " << theoreticalPeriod << "\n";
-    std::cout << "Final position: (" << bodies[1].position.x << ", "
+    std::cout << "bodies[0] Final position: (" << bodies[0].position.x << ", "
+               << bodies[0].position.y << ", " << bodies[0].position.z << ")\n";
+    std::cout << "bodies[1] Final position: (" << bodies[1].position.x << ", "
                << bodies[1].position.y << ", " << bodies[1].position.z << ")\n";
 }
