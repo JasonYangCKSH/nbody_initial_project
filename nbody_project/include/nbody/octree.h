@@ -60,4 +60,27 @@ public:
     }
     // TODO: computeMassDistribution()
     // Bottom-up：遞迴計算每個節點的totalMass跟centerOfMass
+    void computeMassDistribution() {
+        if (this->isLeaf) {
+            // leaf node：質量分布就是它自己存的那個粒子（如果有的話）
+            // totalMass / centerOfMass 已經在insert()時設好了
+            return;
+        }
+
+        totalMass = 0.0;
+        centerOfMass = Vec3(0.0, 0.0, 0.0);
+
+        for (auto& child : children) {
+            if (child) {
+                child->computeMassDistribution();
+                totalMass += child->totalMass;
+                centerOfMass += child->centerOfMass * child->totalMass;
+            }
+        }
+
+        if (totalMass > 0.0) {
+            centerOfMass = centerOfMass * (1.0 / totalMass);
+        }
+
+    }
 };
