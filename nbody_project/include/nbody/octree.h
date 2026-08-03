@@ -6,7 +6,7 @@
 class OctreeNode {
 public:
     Vec3 center;
-    double halfsize;
+    double halfSize;
 
     Vec3 centerOfMass;
     double totalMass = 0.0;
@@ -26,6 +26,8 @@ public:
         // case 1: empty leaf node
         if (this->totalMass == 0.0) {
             this->body = &b;
+            this->totalMass = b.mass;
+            this->centerOfMass = b.position;
             return;
         }
         // case 2: nonempty leaf node
@@ -82,5 +84,12 @@ public:
             centerOfMass = centerOfMass * (1.0 / totalMass);
         }
 
+    }
+    Vec3 childCenter(int idx) const {
+        double quarter = halfSize * 0.5;
+        double dx = (idx & 1) ? quarter : -quarter;
+        double dy = (idx & 2) ? quarter : -quarter;
+        double dz = (idx & 4) ? quarter : -quarter;
+        return Vec3(center.x + dx, center.y + dy, center.z + dz);
     }
 };
