@@ -41,7 +41,11 @@ public:
             children[oldIdx]->insert(*oldBody);
         }
         // case 3: internal node
-
+        int idx = getOctantIndex(b.position);
+        if (!children[idx]) {
+            children[idx] = std::make_unique<OctreeNode>(childCenter(idx), halfSize * 0.5);
+        }
+        children[idx]->insert(b);
     }
     // TODO: 一個輔助函式，判斷某個位置屬於8個子節點中的哪一個
     // 通常回傳 0~7 的index
