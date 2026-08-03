@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>N-body Live WASM Visualizer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  :root {
+    --bg-deep: #0a0e16;
+    --bg-panel: rgba(18, 24, 42, 0.72);
+    --border-soft: rgba(255,255,255,0.08);
+    --accent-amber: #e8a34d;
+    --accent-cyan: #4fd8c9;
+    --text-primary: #e6e9f0;
+    --text-muted: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; width:100%; height:100%; background:var(--bg-deep); overflow:hidden; font-family:'Space Grotesk',sans-serif; color:var(--text-primary); }
+  #stage { position:relative; width:100%; height:100%; }
+  canvas { position:absolute; top:0; left:0; width:100%; height:100%; cursor:grab; }
+  canvas.dragging { cursor:grabbing; }
+
+  .hud { position:absolute; top:18px; left:18px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.6; color:var(--text-muted); pointer-events:none; user-select:none; }
+  .hud .big { color:var(--text-primary); font-size:13px; }
+
+  .title-block { position:absolute; top:18px; right:22px; text-align:right; pointer-events:none; user-select:none; }
+  .title-block h1 { margin:0; font-size:15px; font-weight:700; letter-spacing:0.04em; }
+  .title-block p { margin:2px 0 0; font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+
+  .controls { position:absolute; bottom:22px; left:50%; transform:translateX(-50%); background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:14px; backdrop-filter:blur(14px); padding:14px 20px; display:flex; flex-direction:column; gap:10px; width:min(620px,90vw); }
+  .row { display:flex; align-items:center; gap:12px; }
+  button.iconbtn { background:rgba(255,255,255,0.06); border:1px solid var(--border-soft); color:var(--text-primary); border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:14px; }
+  button.iconbtn:hover { background:rgba(255,255,255,0.12); }
+  input[type="range"] { -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:rgba(255,255,255,0.12); outline:none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:var(--accent-cyan); cursor:pointer; box-shadow:0 0 6px var(--accent-cyan); }
+  .label { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); white-space:nowrap; }
+  .paramrow { display:flex; gap:8px; align-items:center; }
+  .paramrow input[type="number"] { width:64px; background:rgba(255,255,255,0.06); border:1px solid var(--border-soft); border-radius:6px; color:var(--text-primary); font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 6px; }
+  .applybtn { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-primary); background:rgba(79,216,201,0.15); border:1px solid var(--accent-cyan); border-radius:7px; padding:6px 12px; cursor:pointer; }
+  .applybtn:hover { background:rgba(79,216,201,0.28); }
+  .toggle { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); cursor:pointer; user-select:none; display:flex; align-items:center; gap:6px; }
+  .toggle input { accent-color: var(--accent-cyan); }
+  #status { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-muted); opacity:0.85; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="mainCanvas"></canvas>
+
+  <div class="hud">
+    <div class="big" id="hudTime">t = 0.000</div>
+    <div><span style="color:var(--accent-amber)">●</span> body 0 &nbsp; <span style="color:var(--accent-cyan)">●</span> body 1</div>
+  </div>
+
+  <div class="title-block">
+    <h1>N-BODY LIVE</h1>
+    <p id="status">initializing…</p>
+  </div>
+
+  <div class="controls">
+    <div class="row">
+      <button class="iconbtn" id="playBtn">⏸</button>
+      <span class="label">SPEED</span>
+      <input type="range" id="speedSlider" min="0.1" max="5" value="1" step="0.1">
+      <span class="label" id="speedLabel">1.0×</span>
+      <label class="toggle"><input type="checkbox" id="followToggle" checked> 跟隨質心</label>
+      <button class="iconbtn" id="resetViewBtn" title="重新置中">⤢</button>
+    </div>
+    <div class="row paramrow">
+      <span class="label">m0</span><input type="number" id="mass0In" value="100">
+      <span class="label">m1</span><input type="number" id="mass1In" value="1">
+      <span class="label">r0</span><input type="number" id="r0In" value="1">
+      <button class="applybtn" id="applyBtn">套用並重新模擬</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import NBodyModule from './nbody.js';
+
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+const PALETTE = ['#e8a34d', '#4fd8c9', '#9b7fe8', '#e8618c'];
+
+function resize() {
+  canvas.width = canvas.clientWidth * devicePixelRatio;
+  canvas.height = canvas.clientHeight * devicePixelRatio;
+}
+window.addEventListener('resize', resize);
+resize();
+
+let sim = null;
+let playing = true;
+let speed = 1.0;
+let followCOM = true;
+let simTime = 0;
+
+let scale = 150, offsetX = 0, offsetY = 0, viewInitialized = false;
+function worldToScreen(x, y) { return { sx: x*scale + offsetX, sy: -y*scale + offsetY }; }
+
+function initView(bodies) {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  offsetX = w/2; offsetY = h/2; scale = 150;
+  viewInitialized = true;
+}
+
+// zoom / pan
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.08 : 0.92;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  offsetX = mx - (mx - offsetX) * factor;
+  offsetY = my - (my - offsetY) * factor;
+  scale *= factor;
+}, { passive:false });
+
+let dragging=false, lastX=0, lastY=0;
+canvas.addEventListener('mousedown', e => { dragging=true; lastX=e.clientX; lastY=e.clientY; canvas.classList.add('dragging'); });
+window.addEventListener('mouseup', () => { dragging=false; canvas.classList.remove('dragging'); });
+window.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  offsetX += e.clientX-lastX; offsetY += e.clientY-lastY;
+  lastX=e.clientX; lastY=e.clientY;
+  document.getElementById('followToggle').checked = false;
+  followCOM = false;
+});
+
+document.getElementById('resetViewBtn').addEventListener('click', () => { initView(); });
+
+// stars
+let stars = [];
+function initStars() {
+  stars = [];
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  for (let i=0;i<140;i++) stars.push({x:Math.random()*w, y:Math.random()*h, r:Math.random()*1.3+0.2, a:Math.random()*0.6+0.15});
+}
+initStars();
+window.addEventListener('resize', initStars);
+
+// controls
+const playBtn = document.getElementById('playBtn');
+playBtn.addEventListener('click', () => { playing = !playing; playBtn.textContent = playing ? '⏸' : '▶'; });
+
+document.getElementById('speedSlider').addEventListener('input', (e) => {
+  speed = parseFloat(e.target.value);
+  document.getElementById('speedLabel').textContent = speed.toFixed(1) + '×';
+});
+
+document.getElementById('followToggle').addEventListener('change', (e) => { followCOM = e.target.checked; });
+
+document.getElementById('applyBtn').addEventListener('click', () => {
+  const m0 = parseFloat(document.getElementById('mass0In').value);
+  const m1 = parseFloat(document.getElementById('mass1In').value);
+  const r0 = parseFloat(document.getElementById('r0In').value);
+  sim.reset(m0, m1, r0);
+  simTime = 0;
+  document.getElementById('status').textContent = `m0=${m0} m1=${m1} r0=${r0}`;
+});
+
+// init WASM
+NBodyModule().then((Module) => {
+  sim = new Module.WebSimulation();
+  document.getElementById('status').textContent = 'running · live WASM';
+  initView();
+  requestAnimationFrame(frame);
+}).catch(err => {
+  document.getElementById('status').textContent = 'WASM載入失敗，見console';
+  console.error(err);
+});
+
+let lastNow = performance.now();
+
+function frame(now) {
+  const dtMs = now - lastNow;
+  lastNow = now;
+
+  if (sim) {
+    const dt = 0.002 * speed;
+    if (playing) {
+      sim.step(dt);
+      simTime += dt;
+    }
+
+    const n = sim.bodyCount();
+    const positions = [];
+    for (let i=0;i<n;i++) positions.push({x: sim.getX(i), y: sim.getY(i)});
+
+    if (followCOM && n >= 2) {
+      // 簡單質心估計（等權重不準，但兩體demo這裡直接用body位置平均置中畫面即可）
+      const cx = (positions[0].x + positions[1].x) / 2;
+      const cy = (positions[0].y + positions[1].y) / 2;
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      offsetX = w/2 - cx*scale;
+      offsetY = h/2 + cy*scale;
+    }
+
+    ctx.save();
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+
+    ctx.fillStyle = 'rgba(10,14,22,0.14)';
+    ctx.fillRect(0,0,canvas.clientWidth, canvas.clientHeight);
+
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(230,233,240,${s.a})`;
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    positions.forEach((p, i) => {
+      const { sx, sy } = worldToScreen(p.x, p.y);
+      const color = PALETTE[i % PALETTE.length];
+      const radius = i === 0 ? 7 : 4.5;
+      ctx.save();
+      ctx.shadowColor = color; ctx.shadowBlur = 16;
+      ctx.beginPath(); ctx.fillStyle = color;
+      ctx.arc(sx, sy, radius, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    });
+
+    ctx.restore();
+
+    document.getElementById('hudTime').textContent = `t = ${simTime.toFixed(3)}`;
+  }
+
+  requestAnimationFrame(frame);
+}
+</script>
+</body>
+</html>
