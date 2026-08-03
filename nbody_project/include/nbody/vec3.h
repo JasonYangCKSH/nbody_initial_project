@@ -28,5 +28,11 @@ struct Vec3{
     double norm() const {
         return std::sqrt(this->dot(*this));
     }
-
+    Vec3 cross(const Vec3& other) const {
+        return Vec3(
+            y * other.z - z * other.y,
+            z * other.x - x * other.z,
+            x * other.y - y * other.x
+        );
+    }
 };
