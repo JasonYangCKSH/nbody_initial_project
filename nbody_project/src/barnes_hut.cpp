@@ -67,7 +67,6 @@ void BarnesHutCalculator::computeAccelerations(std::vector<Body>& bodies) {
     auto root = buildTree(bodies);
 
     for (auto& b : bodies) {
-        Vec3 force = computeForceOnBody(b, *root);
-        b.acceleration = force * (1.0 / b.mass);
+        b.acceleration = computeForceOnBody(b, *root);  
     }
 }
