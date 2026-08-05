@@ -12,6 +12,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 # 之後 apps/ 跟 tests/ 都只要 link 這個 library，不用重複列檔案
 add_library(nbody_core
     src/barnes_hut.cpp
+    src/brute_force.cpp
 )
 
 target_include_directories(nbody_core PUBLIC

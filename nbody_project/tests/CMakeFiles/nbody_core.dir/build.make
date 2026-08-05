@@ -72,10 +72,24 @@ include CMakeFiles/nbody_core.dir/flags.make
 CMakeFiles/nbody_core.dir/codegen:
 .PHONY : CMakeFiles/nbody_core.dir/codegen
 
+CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o: CMakeFiles/nbody_core.dir/flags.make
+CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o: /home/jason/nbody_initial_project/nbody_project/src/barnes_hut.cpp
+CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o: CMakeFiles/nbody_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jason/nbody_initial_project/nbody_project/tests/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o -MF CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o.d -o CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o -c /home/jason/nbody_initial_project/nbody_project/src/barnes_hut.cpp
+
+CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jason/nbody_initial_project/nbody_project/src/barnes_hut.cpp > CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.i
+
+CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jason/nbody_initial_project/nbody_project/src/barnes_hut.cpp -o CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.s
+
 CMakeFiles/nbody_core.dir/src/brute_force.cpp.o: CMakeFiles/nbody_core.dir/flags.make
 CMakeFiles/nbody_core.dir/src/brute_force.cpp.o: /home/jason/nbody_initial_project/nbody_project/src/brute_force.cpp
 CMakeFiles/nbody_core.dir/src/brute_force.cpp.o: CMakeFiles/nbody_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jason/nbody_initial_project/nbody_project/tests/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/nbody_core.dir/src/brute_force.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jason/nbody_initial_project/nbody_project/tests/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/nbody_core.dir/src/brute_force.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nbody_core.dir/src/brute_force.cpp.o -MF CMakeFiles/nbody_core.dir/src/brute_force.cpp.o.d -o CMakeFiles/nbody_core.dir/src/brute_force.cpp.o -c /home/jason/nbody_initial_project/nbody_project/src/brute_force.cpp
 
 CMakeFiles/nbody_core.dir/src/brute_force.cpp.i: cmake_force
@@ -88,15 +102,17 @@ CMakeFiles/nbody_core.dir/src/brute_force.cpp.s: cmake_force
 
 # Object files for target nbody_core
 nbody_core_OBJECTS = \
+"CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o" \
 "CMakeFiles/nbody_core.dir/src/brute_force.cpp.o"
 
 # External object files for target nbody_core
 nbody_core_EXTERNAL_OBJECTS =
 
+libnbody_core.a: CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o
 libnbody_core.a: CMakeFiles/nbody_core.dir/src/brute_force.cpp.o
 libnbody_core.a: CMakeFiles/nbody_core.dir/build.make
 libnbody_core.a: CMakeFiles/nbody_core.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jason/nbody_initial_project/nbody_project/tests/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libnbody_core.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jason/nbody_initial_project/nbody_project/tests/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libnbody_core.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/nbody_core.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/nbody_core.dir/link.txt --verbose=$(VERBOSE)
 

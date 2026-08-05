@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o"
+  "CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o.d"
   "CMakeFiles/nbody_core.dir/src/brute_force.cpp.o"
   "CMakeFiles/nbody_core.dir/src/brute_force.cpp.o.d"
   "libnbody_core.a"

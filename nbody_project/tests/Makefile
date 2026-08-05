@@ -166,6 +166,30 @@ apps/two_body_demo.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/two_body_demo.dir/build.make CMakeFiles/two_body_demo.dir/apps/two_body_demo.cpp.s
 .PHONY : apps/two_body_demo.cpp.s
 
+src/barnes_hut.o: src/barnes_hut.cpp.o
+.PHONY : src/barnes_hut.o
+
+# target to build an object file
+src/barnes_hut.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nbody_core.dir/build.make CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o
+.PHONY : src/barnes_hut.cpp.o
+
+src/barnes_hut.i: src/barnes_hut.cpp.i
+.PHONY : src/barnes_hut.i
+
+# target to preprocess a source file
+src/barnes_hut.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nbody_core.dir/build.make CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.i
+.PHONY : src/barnes_hut.cpp.i
+
+src/barnes_hut.s: src/barnes_hut.cpp.s
+.PHONY : src/barnes_hut.s
+
+# target to generate assembly for a file
+src/barnes_hut.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nbody_core.dir/build.make CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.s
+.PHONY : src/barnes_hut.cpp.s
+
 src/brute_force.o: src/brute_force.cpp.o
 .PHONY : src/brute_force.o
 
@@ -203,6 +227,9 @@ help:
 	@echo "... apps/two_body_demo.o"
 	@echo "... apps/two_body_demo.i"
 	@echo "... apps/two_body_demo.s"
+	@echo "... src/barnes_hut.o"
+	@echo "... src/barnes_hut.i"
+	@echo "... src/barnes_hut.s"
 	@echo "... src/brute_force.o"
 	@echo "... src/brute_force.i"
 	@echo "... src/brute_force.s"

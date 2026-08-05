@@ -1,2 +1,2 @@
-/usr/bin/ar qc libnbody_core.a CMakeFiles/nbody_core.dir/src/brute_force.cpp.o
+/usr/bin/ar qc libnbody_core.a CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o CMakeFiles/nbody_core.dir/src/brute_force.cpp.o
 /usr/bin/ranlib libnbody_core.a

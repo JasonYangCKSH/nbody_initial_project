@@ -1,4 +1,5 @@
 #include "nbody/body.h"
+#include "nbody/barnes_hut.h"
 #include "nbody/brute_force.h"
 #include "nbody/integrator.h"
 #include "nbody/diagnostics.h"
@@ -19,7 +20,7 @@ int main() {
     double v_circ = std::sqrt(G * (bodies[0].mass + bodies[1].mass) / r);
     bodies[1].velocity = Vec3(0.0, v_circ, 0.0);
 
-    BruteForceCalculator calc(G, 0.0);
+    BarnesHutCalculator calc(G, 0.0, 0.0);
     LeapfrogIntegrator integrator(calc);
 
     calc.computeAccelerations(bodies);

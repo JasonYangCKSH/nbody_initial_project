@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/jason/nbody_initial_project/nbody_project/src/barnes_hut.cpp" "CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o" "gcc" "CMakeFiles/nbody_core.dir/src/barnes_hut.cpp.o.d"
   "/home/jason/nbody_initial_project/nbody_project/src/brute_force.cpp" "CMakeFiles/nbody_core.dir/src/brute_force.cpp.o" "gcc" "CMakeFiles/nbody_core.dir/src/brute_force.cpp.o.d"
   )
 
