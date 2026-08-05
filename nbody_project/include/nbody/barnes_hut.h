@@ -19,8 +19,8 @@ private:
     double theta_;
 
     // TODO: 建樹用的輔助函式
-    // std::unique_ptr<OctreeNode> buildTree(const std::vector<Body>& bodies);
+    std::unique_ptr<OctreeNode> buildTree(const std::vector<Body>& bodies);
 
     // TODO: 對單一粒子，遞迴walk整棵樹算加速度
-    // Vec3 computeForceOnBody(const Body& target, const OctreeNode& node);
+    Vec3 computeForceOnBody(const Body& target, const OctreeNode& node);
 };
