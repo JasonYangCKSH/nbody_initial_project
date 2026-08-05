@@ -9,9 +9,12 @@ std::unique_ptr<OctreeNode> BarnesHutCalculator::buildTree(const std::vector<Bod
     double minZ = std::numeric_limits<double>::max(), maxZ = -std::numeric_limits<double>::max();
 
     for (const auto& b : bodies) {
-        minX = std::min(minX, b.position.x); maxX = std::max(maxX, b.position.x);
-        minY = std::min(minY, b.position.y); maxY = std::max(maxY, b.position.y);
-        minZ = std::min(minZ, b.position.z); maxZ = std::max(maxZ, b.position.z);
+        minX = std::min(minX, b.position.x); 
+        maxX = std::max(maxX, b.position.x);
+        minY = std::min(minY, b.position.y); 
+        maxY = std::max(maxY, b.position.y);
+        minZ = std::min(minZ, b.position.z); 
+        maxZ = std::max(maxZ, b.position.z);
     }
 
     Vec3 center((minX + maxX) * 0.5, (minY + maxY) * 0.5, (minZ + maxZ) * 0.5);
