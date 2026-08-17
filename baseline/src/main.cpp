@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <numeric>
+#include <algorithm>
 #include "simulation.hpp"
 
 const int NUM_RUNS = 5; // 每個 bodyNum 跑幾次取平均
@@ -36,7 +37,7 @@ int main() {
             std::cout << "Run " << run + 1 << "/" << NUM_RUNS << "\n";
 
             sim.GenerateRandom(bodyNum, -15.0f, 15.0f);
-
+            sim.GenerateNonUniform(bodyNum, -15.0f, 15.0f);
             // Brute Force
             //std::vector<NeighborPair> pairs;
             //double bf_t = measureTime([&]() { pairs = sim.BruteForce(); });

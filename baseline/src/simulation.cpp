@@ -46,6 +46,53 @@ void Simulation::GenerateRandom(int n, float rangeMin, float rangeMax) {
     }
 
 }
+
+void Simulation::GenerateNonUniform(int n, float rangeMin, float rangeMax) {
+    bodies.clear();
+    std::mt19937 rng(42);
+
+    // 少數幾個密集聚集中心，模擬密度極不均勻的分布
+    const int numClusters = 4;
+    std::uniform_real_distribution<float> centerDist(rangeMin * 0.6f, rangeMax * 0.6f);
+    std::vector<glm::vec3> clusterCenters;
+    for (int c = 0; c < numClusters; c++) {
+        clusterCenters.push_back(glm::vec3(
+            centerDist(rng), centerDist(rng), centerDist(rng)
+        ));
+    }
+
+    // 每個聚集中心的擴散半徑刻意設得很小，讓粒子擠在一起
+    std::normal_distribution<float> clusterSpread(0.0f, (rangeMax - rangeMin) * 0.02f);
+
+    // 質量與半徑維持固定，呼應固定球體簡化假設
+    const float fixedMass = 1.0f;
+    const float fixedRadius = 0.2f;
+
+    // 90% 的粒子落在密集聚集區，10% 稀疏散布在整個空間
+    std::uniform_real_distribution<float> sparseDist(rangeMin, rangeMax);
+    std::uniform_int_distribution<int> clusterPick(0, numClusters - 1);
+    std::uniform_real_distribution<float> ratioDist(0.0f, 1.0f);
+
+    for (int i = 0; i < n; i++) {
+        glm::vec3 pos;
+
+        if (ratioDist(rng) < 0.9f) {
+            // 密集區：緊貼某個聚集中心
+            const glm::vec3& center = clusterCenters[clusterPick(rng)];
+            pos = center + glm::vec3(
+                clusterSpread(rng), clusterSpread(rng), clusterSpread(rng)
+            );
+        } else {
+            // 稀疏區：整個空間隨機散布
+            pos = glm::vec3(sparseDist(rng), sparseDist(rng), sparseDist(rng));
+        }
+
+        bodies.push_back(Body(pos, glm::vec3(0), glm::vec3(0), fixedMass, fixedRadius));
+    }
+}
+
+
+
 // B
 
 // 1. Brute Force

@@ -21,6 +21,7 @@ public:
     void GenerateRandom(int n, float rangeMin, float rangeMax);
     void GenerateUniform(int nx, int ny, int nz, float spacing);
     void GenerateSimple();
+    void GenerateNonUniform(int n, float rangeMin, float rangeMax);
     // ---- B. Finding Neighbor Methods ----
     std::vector<NeighborPair> BruteForce();
     std::vector<NeighborPair> UniformGrid();
