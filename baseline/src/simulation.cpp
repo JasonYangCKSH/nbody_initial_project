@@ -187,10 +187,10 @@ struct OctreeNode {
         for (int i = 0; i < 8; i++) children[i] = nullptr;
     }
 };
-void InsertParticle(OctreeNode* node, int particleIdx, const std::vector<Body>& bodies, int depth, int maxDepth) {
+void InsertParticle(OctreeNode* node, int particleIdx, const std::vector<Body>& bodies, int depth, const int maxDepth) {
 
     // end case: if reaching its threshold
-    if (node->objects.size() < 8) {
+    if (node->objects.size() < 8 || depth < maxDepth) {
         node->objects.push_back(particleIdx);
         return;
     }

@@ -22,12 +22,53 @@ int main() {
     const std::vector<int> smallBodyNumVec  = {1000,  2000,  3000,  4000,  5000,  6000,  7000,  8000,  9000,  10000};
     const std::vector<int> mediumBodyNumVec = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
     const std::vector<int> largeBodyNumVec  = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
-    std::vector<int> bodyNumVec = smallBodyNumVec;
+    //std::vector<int> bodyNumVec = smallBodyNumVec;
 
+
+    //sim.GenerateNonUniform(1000, -15.0f, 15.0f);
+    sim.GenerateRandom();
+    std::vector<NeighborPair> pairs = sim.BruteForce();
+    std::vector<NeighborPair> pairs2 = sim.UniformGrid();
+    std::vector<NeighborPair> pairs3 = sim.Octree();
+
+    
+    std::sort(pairs.begin(), pairs.end(),
+    [](const NeighborPair& a, const NeighborPair& b) {
+        if (a.i != b.i) return a.i < b.i;
+        return a.j < b.j;
+    });
+
+    std::sort(pairs2.begin(), pairs2.end(),
+    [](const NeighborPair& a, const NeighborPair& b) {
+        if (a.i != b.i) return a.i < b.i;
+        return a.j < b.j;
+    });
+
+    std::sort(pairs3.begin(), pairs3.end(),
+    [](const NeighborPair& a, const NeighborPair& b) {
+        if (a.i != b.i) return a.i < b.i;
+        return a.j < b.j;
+    });
+
+    bool identical = (pairs.size() == pairs2.size() && pairs.size() == pairs3.size());
+    if (identical) {
+        for (size_t k = 0; k < pairs.size(); k++) {
+            if (pairs[k].i != pairs2[k].i || pairs[k].j != pairs2[k].j ||
+                pairs[k].i != pairs3[k].i || pairs[k].j != pairs3[k].j) {
+
+                identical = false;
+                break;
+            }
+        }
+    }
+    for (const auto & np: pairs) {
+        std::cout <<"["<< np.i <<", "<< np.j << "] " << np.distance2 << std::endl;
+
+    }
     //std::ofstream of1("../graph/bruteforce.csv");
-    std::ofstream of2("../graph/uniformgrid.csv");
-    std::ofstream of3("../graph/octree.csv");
-
+    //std::ofstream of2("../graph/uniformgrid.csv");
+    //std::ofstream of3("../graph/octree.csv");
+    /*
     for (const int& bodyNum : bodyNumVec) {
         std::cout << "\n========== Body Num: " << bodyNum << " ==========\n";
 
@@ -36,7 +77,7 @@ int main() {
         for (int run = 0; run < NUM_RUNS; run++) {
             std::cout << "Run " << run + 1 << "/" << NUM_RUNS << "\n";
 
-            sim.GenerateRandom(bodyNum, -15.0f, 15.0f);
+            //sim.GenerateRandom(bodyNum, -15.0f, 15.0f);
             sim.GenerateNonUniform(bodyNum, -15.0f, 15.0f);
             // Brute Force
             //std::vector<NeighborPair> pairs;
@@ -81,7 +122,9 @@ int main() {
     //of1.close();
     of2.close();
     of3.close();
-
-    std::cout << "\nDone!\n";
+    */
+    if (identical)
+        std::cout << "\nDone!\n";
+    else std::cout << "\nfuck\n";
     return 0;
 }
