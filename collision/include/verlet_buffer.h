@@ -32,7 +32,7 @@ inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) 
     //if (cellSize <= 0.0f) throw std::invalid_argument("cellSize must be positive");
 
     for (auto& p : particles) {
-        float maxSkin = std::max(cellSize - p.radius, 0.0f);
+        float maxSkin = std::max(cellSize * 0.5f - p.radius, 0.0f);
         p.skin = std::clamp(p.skin, 0.0f, maxSkin);
     }
 }
