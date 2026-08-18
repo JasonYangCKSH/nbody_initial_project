@@ -2,7 +2,7 @@
 #include "particle.h"
 #include <vector>
 #include <algorithm>
-
+#include <stdexcept>
 // Local Verlet buffer approach (Checkaraou et al., "Local Verlet buffer
 // approach for broad-phase interaction detection in Discrete Element
 // Method", arXiv:2208.13770).
@@ -19,6 +19,7 @@ inline void updateLocalSkin(std::vector<Particle>& particles, float K, float dt)
 // Baseline comparison used in the paper (section 5.4 / [20]): a uniform skin
 // equal to the particle radius, identical for every particle.
 inline void updateSkinRadius(std::vector<Particle>& particles) {
+
     for (auto& p : particles) {
         p.skin = p.radius;
     }
@@ -27,6 +28,9 @@ inline void updateSkinRadius(std::vector<Particle>& particles) {
 // Eq. 12: the linked-cell method requires R_NL <= cell size, so the skin is
 // capped such that R_C + skin never exceeds cellSize.
 inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) {
+
+    if (cellSize <= 0.0f) throw std::invalid_argument("cellSize must be positive");
+    
     for (auto& p : particles) {
         float maxSkin = std::max(cellSize - p.radius, 0.0f);
         p.skin = std::clamp(p.skin, 0.0f, maxSkin);

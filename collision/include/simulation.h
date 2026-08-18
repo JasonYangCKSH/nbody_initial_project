@@ -24,7 +24,7 @@ struct SimConfig {
     float cellSize = 1.0f;  // must be >= largest extended bounding-sphere diameter
 
     enum class SkinMode { LocalVelocity, FixedRadius, None };
-    SkinMode skinMode = SkinMode::LocalVelocity;
+    SkinMode skinMode = SkinMode::None;//SkinMode::LocalVelocity;
 };
 
 // Drives one XDEM-style iteration (Fig. 5): decide whether the Verlet list
