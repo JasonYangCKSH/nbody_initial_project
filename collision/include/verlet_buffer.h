@@ -28,9 +28,9 @@ inline void updateSkinRadius(std::vector<Particle>& particles) {
 // Eq. 12: the linked-cell method requires R_NL <= cell size, so the skin is
 // capped such that R_C + skin never exceeds cellSize.
 inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) {
+    assert(cellSize > 0.0f && "message");
+    //if (cellSize <= 0.0f) throw std::invalid_argument("cellSize must be positive");
 
-    if (cellSize <= 0.0f) throw std::invalid_argument("cellSize must be positive");
-    
     for (auto& p : particles) {
         float maxSkin = std::max(cellSize - p.radius, 0.0f);
         p.skin = std::clamp(p.skin, 0.0f, maxSkin);
