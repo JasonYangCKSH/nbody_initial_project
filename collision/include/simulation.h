@@ -37,10 +37,11 @@ public:
     StepStats step(std::vector<Particle>& particles, bool recordCollisions = false) {
         StepStats stats;
 
-        applySkinModel(particles);
+        
 
         bool needsBuild = !hasList_ || !verlet::listStillValid(particles);
         if (needsBuild) {
+            applySkinModel(particles);
             auto t0 = std::chrono::steady_clock::now();
             bool withSkin = cfg_.skinMode != SimConfig::SkinMode::None;
             verletList_ = cell_.build(particles, withSkin);
