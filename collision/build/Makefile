@@ -143,6 +143,19 @@ bench_k_sweep/fast:
 .PHONY : bench_k_sweep/fast
 
 #=============================================================================
+# Target rules for targets named bench_k_sweep_csv
+
+# Build rule for target.
+bench_k_sweep_csv: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bench_k_sweep_csv
+.PHONY : bench_k_sweep_csv
+
+# fast build rule for target.
+bench_k_sweep_csv/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/build
+.PHONY : bench_k_sweep_csv/fast
+
+#=============================================================================
 # Target rules for targets named bench
 
 # Build rule for target.
@@ -203,6 +216,30 @@ bench/bench_k_sweep.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep.dir/build.make CMakeFiles/bench_k_sweep.dir/bench/bench_k_sweep.cpp.s
 .PHONY : bench/bench_k_sweep.cpp.s
 
+bench/bench_k_sweep_csv.o: bench/bench_k_sweep_csv.cpp.o
+.PHONY : bench/bench_k_sweep_csv.o
+
+# target to build an object file
+bench/bench_k_sweep_csv.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o
+.PHONY : bench/bench_k_sweep_csv.cpp.o
+
+bench/bench_k_sweep_csv.i: bench/bench_k_sweep_csv.cpp.i
+.PHONY : bench/bench_k_sweep_csv.i
+
+# target to preprocess a source file
+bench/bench_k_sweep_csv.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.i
+.PHONY : bench/bench_k_sweep_csv.cpp.i
+
+bench/bench_k_sweep_csv.s: bench/bench_k_sweep_csv.cpp.s
+.PHONY : bench/bench_k_sweep_csv.s
+
+# target to generate assembly for a file
+bench/bench_k_sweep_csv.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.s
+.PHONY : bench/bench_k_sweep_csv.cpp.s
+
 test/test_correctness.o: test/test_correctness.cpp.o
 .PHONY : test/test_correctness.o
 
@@ -237,6 +274,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... bench"
 	@echo "... bench_k_sweep"
+	@echo "... bench_k_sweep_csv"
 	@echo "... test_correctness"
 	@echo "... bench/bench.o"
 	@echo "... bench/bench.i"
@@ -244,6 +282,9 @@ help:
 	@echo "... bench/bench_k_sweep.o"
 	@echo "... bench/bench_k_sweep.i"
 	@echo "... bench/bench_k_sweep.s"
+	@echo "... bench/bench_k_sweep_csv.o"
+	@echo "... bench/bench_k_sweep_csv.i"
+	@echo "... bench/bench_k_sweep_csv.s"
 	@echo "... test/test_correctness.o"
 	@echo "... test/test_correctness.i"
 	@echo "... test/test_correctness.s"

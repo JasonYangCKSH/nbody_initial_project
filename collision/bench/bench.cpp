@@ -9,8 +9,8 @@
 int main() {
     // 1.
     float radius = 1.0f;
-    float cellSize = 2.0f;
-    float speed = 100.0f;
+    float cellSize = 8.0f;
+    float speed = 1.0f;
     // 2.
     scenario::Cloud particles = scenario::uniformCloud(10000, 50.0f, radius, speed);
     scenario::Cloud refParticles = particles; // 給 brute force 用的獨立副本
@@ -23,7 +23,7 @@ int main() {
     Simulation sim(config);
 
 
-    for (int i = 0; i < 2000; i++) {
+    for (int i = 0; i < 200; i++) {
         StepStats st = sim.step(particles);
         std::cout << "step " << i + 1
                 << " | rebuilt: " << (st.broadPhaseExecuted ? "yes" : "no")
