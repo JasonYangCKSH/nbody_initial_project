@@ -38,9 +38,10 @@ public:
         StepStats stats;
 
         
-        // 1. broad-phase
+        // 1. determine if verlet list still available
         bool needsBuild = !hasList_ || !verlet::listStillValid(particles);
         if (needsBuild) {
+            // 2. broad-phase
             applySkinModel(particles);
             auto t0 = std::chrono::steady_clock::now();
             bool withSkin = cfg_.skinMode != SimConfig::SkinMode::None;
@@ -54,7 +55,7 @@ public:
         }
         stats.broadPhasePairs = (int)verletList_.size();
 
-        // 2. narrow-phase
+        // 3. narrow-phase
         auto t2 = std::chrono::steady_clock::now();
         int collisionCount = 0;
         if (recordCollisions) stats.collisions.reserve(verletList_.size());
@@ -68,7 +69,7 @@ public:
         stats.narrowPhaseSeconds = std::chrono::duration<double>(t3 - t2).count();
         stats.collisionCount = collisionCount;
 
-        // 3. update particles' position, velocity, acceleration
+        // 4. update particles' position, velocity, acceleration
         integrate(particles);
         return stats;
     }
