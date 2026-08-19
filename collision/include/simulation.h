@@ -5,6 +5,7 @@
 #include "verlet_buffer.h"
 #include <vector>
 #include <chrono>
+#include <iostream>
 #include <glm/glm.hpp>
 
 // Per-step timing/diagnostics, mirroring the metrics the paper reports in
@@ -83,6 +84,7 @@ private:
     void applySkinModel(std::vector<Particle>& particles) {
         switch (cfg_.skinMode) {
             case SimConfig::SkinMode::LocalVelocity:
+           
                 verlet::updateLocalSkin(particles, cfg_.K, cfg_.dt);
                 verlet::capSkinToCellSize(particles, cfg_.cellSize);
                 break;

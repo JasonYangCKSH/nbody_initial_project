@@ -12,3 +12,4 @@ include_directories(include)
 
 add_executable(test_correctness test/test_correctness.cpp)
 add_executable(bench_k_sweep bench/bench_k_sweep.cpp)
+add_executable(bench bench/bench.cpp)
