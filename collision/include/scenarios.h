@@ -68,4 +68,8 @@ inline Cloud explosion(int n, float boxSize, float radius, float speed, unsigned
     return particles;
 }
 
+
+
+
+
 } // namespace scenario
