@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include  <iostream>
 // Local Verlet buffer approach (Checkaraou et al., "Local Verlet buffer
 // approach for broad-phase interaction detection in Discrete Element
 // Method", arXiv:2208.13770).
@@ -32,7 +33,7 @@ inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) 
     //if (cellSize <= 0.0f) throw std::invalid_argument("cellSize must be positive");
 
     for (auto& p : particles) {
-        float maxSkin = std::max(cellSize / 2 - p.radius, 0.0f);
+        float maxSkin = std::max(cellSize - p.radius, 0.0f);
         p.skin = std::clamp(p.skin, 0.0f, maxSkin);
     }
 }
@@ -41,7 +42,9 @@ inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) 
 // moved further than its own skin distance since the last broad-phase.
 inline bool listStillValid(const std::vector<Particle>& particles) {
     for (const auto& p : particles) {
-        if (glm::length(p.pos - p.posAtLastBroadPhase) > p.skin) {
+        float disp = glm::length(p.pos - p.posAtLastBroadPhase);
+        if (disp > p.skin) {
+            
             return false;
         }
     }

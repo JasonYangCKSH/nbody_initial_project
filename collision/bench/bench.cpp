@@ -12,18 +12,18 @@ int main() {
     float cellSize = 2.0f;
     float speed = 100.0f;
     // 2.
-    scenario::Cloud particles = scenario::uniformCloud(100000, 50.0f, radius, speed);
+    scenario::Cloud particles = scenario::uniformCloud(10000, 50.0f, radius, speed);
     scenario::Cloud refParticles = particles; // 給 brute force 用的獨立副本
     // 3.
     SimConfig config;
     config.cellSize = cellSize;
-    config.K = 200;
-    config.skinMode = SimConfig::SkinMode::FixedRadius;
+    config.K = 0;
+    config.skinMode = SimConfig::SkinMode::LocalVelocity;
 
     Simulation sim(config);
 
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 2000; i++) {
         StepStats st = sim.step(particles);
         std::cout << "step " << i + 1
                 << " | rebuilt: " << (st.broadPhaseExecuted ? "yes" : "no")

@@ -1,1 +1,1 @@
-/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/test_correctness.dir/link.d CMakeFiles/test_correctness.dir/test/test_correctness.cpp.o -o test_correctness
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/test_correctness.dir/test/test_correctness.cpp.o -o test_correctness 
