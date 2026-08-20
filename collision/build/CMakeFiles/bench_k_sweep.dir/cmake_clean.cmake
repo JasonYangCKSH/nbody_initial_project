@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/bench_k_sweep.dir/link.d"
   "CMakeFiles/bench_k_sweep.dir/bench/bench_k_sweep.cpp.o"
   "CMakeFiles/bench_k_sweep.dir/bench/bench_k_sweep.cpp.o.d"
   "bench_k_sweep"

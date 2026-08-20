@@ -39,7 +39,6 @@ static void report(std::ostream& out, const std::string& scenario,
         << r.broadPhaseSeconds << "," << r.narrowPhaseSeconds << ","
         << r.broadPhaseExecutions << "," << skippedPct << "\n";
 }
-
 int main() {
     struct NamedScenario {
         const char* name;
@@ -60,7 +59,6 @@ int main() {
 
     const std::vector<int> kValues = {0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000};
 
-    // 兩種模式，各自產生一份檔案
     struct ModeConfig {
         const char* filename;
         SimConfig::SkinMode mode;
@@ -68,6 +66,7 @@ int main() {
     std::vector<ModeConfig> modes = {
         {"bench_results_local_velocity.csv", SimConfig::SkinMode::LocalVelocity},
         {"bench_results_fixed_radius.csv", SimConfig::SkinMode::FixedRadius},
+        {"bench_results_none.csv", SimConfig::SkinMode::None},
     };
 
     for (auto& modeCfg : modes) {
@@ -83,12 +82,11 @@ int main() {
                 SimConfig cfg;
                 cfg.K = (float)K;
                 cfg.cellSize = cellSize;
-                cfg.skinMode = (K == 0) ? SimConfig::SkinMode::None : modeCfg.mode;
+                cfg.skinMode = modeCfg.mode;
 
                 auto cloud = sc.cloud;
                 BenchResult r = runBench(cloud, cfg, steps);
                 report(outFile, sc.name, std::to_string(K), r, steps);
-                
             }
             break;
         }
