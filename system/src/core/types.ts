@@ -33,6 +33,8 @@ export interface StepMetrics {
   step: number;
   algorithm: string;
   elapsedMs: number;
+  broadPhaseMs: number;
+  narrowPhaseMs: number;
   distanceChecks: number;
   candidatePairs: number;
   collisions: number;

@@ -1,5 +1,7 @@
 import { add, scale, type ParticleData, type Vec3 } from './types';
 
+export const PARTICLE_RADIUS = 0.075;
+
 export class ParticleSystem {
   readonly particles: ParticleData[];
   constructor(count: number, readonly bounds: Vec3, seed = 17) {
@@ -7,7 +9,7 @@ export class ParticleSystem {
     this.particles = Array.from({ length: count }, (_, id) => {
       const position = { x: random() * bounds.x, y: random() * bounds.y, z: random() * bounds.z };
       const velocity = { x: (random() - 0.5) * 1.5, y: (random() - 0.5) * 1.5, z: (random() - 0.5) * 1.5 };
-      return { id, position, velocity, radius: 0.075, positionAtLastBroadPhase: { ...position }, skin: 0 };
+      return { id, position, velocity, radius: PARTICLE_RADIUS, positionAtLastBroadPhase: { ...position }, skin: 0 };
     });
   }
   step(dt: number): void {
