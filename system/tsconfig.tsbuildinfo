@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/core/ParticleSystem.ts","./src/core/VerletBufferController.ts","./src/core/core.test.ts","./src/core/types.ts","./src/core/metrics/Instrumentation.ts","./src/core/spatial/BruteForceStructure.ts","./src/core/spatial/UniformGridStructure.ts","./vite.config.ts","./vitest.config.ts"],"version":"5.9.3"}
