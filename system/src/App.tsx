@@ -11,7 +11,7 @@ import { VerletBufferController } from './core/VerletBufferController';
 import type { ParticleData, StepMetrics, Vec3 } from './core/types';
 
 type Algorithm = 'Brute Force' | 'Uniform Grid';
-const bounds = { x: 50, y: 50, z: 5 };
+const bounds = { x: 50, y: 50, z: 50 };
 const dt = 1 / 30;
 
 // Wireframe lattice matching UniformGridStructure's cellOf() partition
