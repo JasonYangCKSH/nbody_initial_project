@@ -88,7 +88,7 @@ function App() {
   const [bufferEnabled, setBufferEnabled] = useState(false);
   const [K, setK] = useState(12);
   const [cellSize, setCellSize] = useState(0.8);
-  const [showGrid, setShowGrid] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [version, setVersion] = useState(0);
   const [metrics, setMetrics] = useState<StepMetrics>({ step: 0, algorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: true, rebuildCount: 1, skippedSteps: 0 });
