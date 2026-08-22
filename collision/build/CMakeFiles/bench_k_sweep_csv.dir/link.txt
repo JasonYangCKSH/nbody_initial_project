@@ -1,1 +1,1 @@
-/usr/bin/c++ -g -Wl,--dependency-file=CMakeFiles/bench_k_sweep_csv.dir/link.d CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o -o bench_k_sweep_csv
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/bench_k_sweep_csv.dir/link.d CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o -o bench_k_sweep_csv

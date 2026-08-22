@@ -46,6 +46,7 @@ static BenchResult runBenchAveraged(const scenario::Cloud& baseCloud, const SimC
                                      int steps, int repeats) {
     BenchResult sum;
     for (int r = 0; r < repeats; ++r) {
+        
         auto cloud = baseCloud; // 每次重複都從乾淨狀態開始
         BenchResult res = runBench(cloud, cfg, steps);
         sum.totalSeconds += res.totalSeconds;
@@ -79,12 +80,12 @@ int main() {
     const float radius = 0.1f;
     const float cellSize = 0.8f;
     const int steps = 500;
-    const int repeats = 3; // 每個 (scenario, K) 點重複跑幾次取平均
+    const int repeats = 10; // 每個 (scenario, K) 點重複跑幾次取平均
 
     std::vector<NamedScenario> scenarios = {
         {"uniform_cloud", scenario::uniformCloud(2000, boxSize, radius, 0.3f)},
         {"free_fall", scenario::freeFall(2000, boxSize, radius)},
-        {"mixed_regime", scenario::mixedRegime(1000, 1000, boxSize, radius, 0.05f, 2.0f)},
+        //{"mixed_regime", scenario::mixedRegime(1000, 1000, boxSize, radius, 0.05f, 2.0f)},
         //{"explosion", scenario::explosion(2000, boxSize, radius, 3.0f)},
     };
 
@@ -98,7 +99,7 @@ int main() {
     std::vector<ModeConfig> modes = {
         {"bench_results_local_velocity.csv", SimConfig::SkinMode::LocalVelocity},
         {"bench_results_fixed_radius.csv", SimConfig::SkinMode::FixedRadius},
-        {"bench_results_none.csv", SimConfig::SkinMode::None},
+        //{"bench_results_none.csv", SimConfig::SkinMode::None},
     };
 
     for (auto& modeCfg : modes) {
