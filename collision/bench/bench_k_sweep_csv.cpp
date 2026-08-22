@@ -89,7 +89,7 @@ int main() {
                 BenchResult r = runBench(cloud, cfg, steps);
                 report(outFile, sc.name, std::to_string(K), r, steps);
             }
-            break;
+        
         }
         outFile.close();
         std::cout << "Results written to " << modeCfg.filename << "\n";
