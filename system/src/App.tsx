@@ -112,14 +112,18 @@ function App() {
     let rebuilt = false;
     let broadPhaseMs = 0;
     if (needsRebuild) {
+      // broad-phase
       const broadPhaseStarted = performance.now();
       const event = controller.current.rebuild(structure.current, particles, metrics.step + 1);
       rebuilt = true;
       cachedPairs.current = structure.current.queryCandidatePairs(bufferEnabled);
       broadPhaseMs = performance.now() - broadPhaseStarted;
+      // end broad-phase
       if (metrics.step > 0)
         setEvents((old) => [`Step ${event.step}: Rebuild triggered - Particle #${event.triggeredByParticleId} exceeded skin (dx=${event.displacement.toFixed(2)} > skin=${event.skinAtTrigger.toFixed(2)})`, ...old].slice(0, 12));
     }
+    
+    // narrow-phase
     const pairs = cachedPairs.current;
     const narrowPhaseStarted = performance.now();
     highlighted.current = new Set(pairs.flat());
@@ -127,9 +131,14 @@ function App() {
     current.resolveCollisions(collisionPairs);
     collisionIds.current = new Set(collisionPairs.flat());
     const narrowPhaseMs = performance.now() - narrowPhaseStarted;
+    // end narrow-phase
+
     const structureMetrics = structure.current.getMetrics();
     const next: StepMetrics = { step: metrics.step + 1, algorithm, elapsedMs: performance.now() - started, broadPhaseMs, narrowPhaseMs, distanceChecks: structureMetrics.distanceChecks, candidatePairs: pairs.length, collisions: collisionPairs.length, rebuilt, rebuildCount: metrics.rebuildCount + (rebuilt ? 1 : 0), skippedSteps: metrics.skippedSteps + (rebuilt ? 0 : 1) };
-    instrumentation.current.recordStep(next); setMetrics(next); setHistory(instrumentation.current.getHistory()); setVersion((value) => value + 1);
+    instrumentation.current.recordStep(next); 
+    setMetrics(next); 
+    setHistory(instrumentation.current.getHistory()); 
+    setVersion((value) => value + 1);
   };
   useEffect(() => { if (!playing) return; const timer = window.setInterval(step, 140); return () => window.clearInterval(timer); });
   useEffect(() => { controller.current.K = K; }, [K]);
