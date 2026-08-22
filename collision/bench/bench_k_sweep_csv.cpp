@@ -3,9 +3,9 @@
 // narrow-phase time, and the fraction of skipped broad-phases.
 // Runs the full scenario x K sweep once per SkinMode, writing each mode's
 // results to its own CSV file:
-//   bench_result_local_velocity.csv
-//   bench_result_fixed_radius.csv
-//   bench_result_none.csv
+//   bench_results_local_velocity.csv
+//   bench_results_fixed_radius.csv
+//   bench_results_none.csv
 
 #include "../include/particle.h"
 #include "../include/scenarios.h"
@@ -51,12 +51,58 @@ static void report(const std::string& scenario, const std::string& kLabel,
               << r.broadPhaseExecutions << "," << skippedPct << "\n";
 }
 
-int main() {
-    struct NamedScenario {
-        const char* name;
-        scenario::Cloud cloud;
-    };
+struct NamedScenario {
+    const char* name;
+    scenario::Cloud cloud;
+};
 
+// One sweep pass per SkinMode: which mode to run, which file to write it to,
+// and whether to append the paper's fixed-radius baseline row (Fig. 11's
+// orange line) at the end of each scenario's block.
+struct SweepMode {
+    const char* fileSuffix;
+    SimConfig::SkinMode mode;
+    bool appendRadiusBaseline;
+};
+
+static void runSweep(const SweepMode& sweep, std::vector<NamedScenario>& scenarios,
+                      const std::vector<int>& kValues, float cellSize, int steps) {
+    std::string filename = std::string("bench_results_") + sweep.fileSuffix + ".csv";
+    std::ofstream fout(filename);
+    const char* header = "scenario,K,total_s,broadphase_s,narrowphase_s,broadphase_execs,skipped_pct\n";
+    fout << header;
+    std::cout << header;
+
+    for (auto& sc : scenarios) {
+        for (int K : kValues) {
+            SimConfig cfg;
+            cfg.K = (float)K;
+            cfg.cellSize = cellSize;
+            // K=0 makes the local-velocity skin identically zero, so label
+            // it None for that mode; the other modes don't depend on K.
+            cfg.skinMode = (sweep.mode == SimConfig::SkinMode::LocalVelocity && K == 0)
+                               ? SimConfig::SkinMode::None
+                               : sweep.mode;
+
+            auto cloud = sc.cloud; // fresh copy so every K starts from the same state
+            BenchResult r = runBench(cloud, cfg, steps);
+            report(sc.name, std::to_string(K), r, steps, fout);
+        }
+
+        if (sweep.appendRadiusBaseline) {
+            // Fixed skin = particle radius baseline (paper's orange line in Fig. 11).
+            SimConfig cfgFixed;
+            cfgFixed.cellSize = cellSize;
+            cfgFixed.skinMode = SimConfig::SkinMode::FixedRadius;
+            auto cloud = sc.cloud;
+            BenchResult r = runBench(cloud, cfgFixed, steps);
+            report(sc.name, "radius", r, steps, fout);
+        }
+    }
+    fout.close();
+}
+
+int main() {
     const float boxSize = 20.0f;
     const float radius = 0.1f;
     const float cellSize = 0.8f;
@@ -70,31 +116,16 @@ int main() {
     };
 
     const std::vector<int> kValues = {0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000};
-    std::ofstream fout("bench_results_local_velocity.csv");
-    fout << "scenario,K,total_s,broadphase_s,narrowphase_s,broadphase_execs,skipped_pct\n";
-    std::cout << "scenario,K,total_s,broadphase_s,narrowphase_s,broadphase_execs,skipped_pct\n";
-    for (auto& sc : scenarios) {
-        for (int K : kValues) {
-            SimConfig cfg;
-            cfg.K = (float)K;
-            cfg.cellSize = cellSize;
-            cfg.skinMode = (K == 0) ? SimConfig::SkinMode::None : SimConfig::SkinMode::LocalVelocity;
 
-            auto cloud = sc.cloud; // fresh copy so every K starts from the same state
-            BenchResult r = runBench(cloud, cfg, steps);
-            report(sc.name, std::to_string(K), r, steps, fout);
+    const std::vector<SweepMode> sweeps = {
+        {"local_velocity", SimConfig::SkinMode::LocalVelocity, /*appendRadiusBaseline=*/true},
+        {"fixed_radius", SimConfig::SkinMode::FixedRadius, /*appendRadiusBaseline=*/true},
+        {"none", SimConfig::SkinMode::None, /*appendRadiusBaseline=*/false},
+    };
 
-        }
-
-        // Fixed skin = particle radius baseline (paper's orange line in Fig. 11).
-        SimConfig cfgFixed;
-        cfgFixed.cellSize = cellSize;
-        cfgFixed.skinMode = SimConfig::SkinMode::LocalVelocity;
-        auto cloud = sc.cloud;
-        BenchResult r = runBench(cloud, cfgFixed, steps);
-        report(sc.name, "radius", r, steps, fout);
-        
+    for (const auto& sweep : sweeps) {
+        runSweep(sweep, scenarios, kValues, cellSize, steps);
     }
-    fout.close();
+
     return 0;
 }
