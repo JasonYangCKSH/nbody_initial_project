@@ -11,7 +11,7 @@ import { VerletBufferController } from './core/VerletBufferController';
 import type { ParticleData, StepMetrics, Vec3 } from './core/types';
 
 type Algorithm = 'Brute Force' | 'Uniform Grid';
-const bounds = { x: 50, y: 50, z: 50 };
+const bounds = { x:25, y: 25, z: 25 };
 const dt = 1 / 30;
 
 // Wireframe lattice matching UniformGridStructure's cellOf() partition
@@ -61,24 +61,23 @@ function SimulationView({ particles, highlighted, collisionIds }: { particles: P
   </>;
 }
 
-function PhaseTimingChart({ history }: { history: StepMetrics[] }) {
+function PhaseChart({ history, metricKey, color, label, markRebuilds }: { history: StepMetrics[]; metricKey: 'broadPhaseMs' | 'narrowPhaseMs'; color: string; label: string; markRebuilds?: boolean }) {
   const width = 330;
   const height = 84;
   const points = history.slice(-40);
   if (points.length < 2) return <div className="phase-chart"><svg viewBox={`0 0 ${width} ${height}`} /></div>;
-  const maxMs = Math.max(0.05, ...points.map((item) => Math.max(item.broadPhaseMs, item.narrowPhaseMs)));
-  const toPath = (key: 'broadPhaseMs' | 'narrowPhaseMs') => points.map((item, index) => {
-    const x = (index / (points.length - 1)) * width;
-    const y = height - (item[key] / maxMs) * height;
-    return `${index === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(' ');
+  const maxMs = Math.max(0.05, ...points.map((item) => item[metricKey]));
+  const xAt = (index: number) => (index / (points.length - 1)) * width;
+  const yAt = (item: StepMetrics) => height - (item[metricKey] / maxMs) * height;
+  const path = points.map((item, index) => `${index === 0 ? 'M' : 'L'}${xAt(index).toFixed(1)},${yAt(item).toFixed(1)}`).join(' ');
+  const latest = points.at(-1)!;
   return <div className="phase-chart">
     <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
-      <path d={toPath('broadPhaseMs')} fill="none" stroke="#5DCAA5" strokeWidth="1.5" />
-      <path d={toPath('narrowPhaseMs')} fill="none" stroke="#D9A441" strokeWidth="1.5" />
+      <path d={path} fill="none" stroke={color} strokeWidth="1.5" />
+      {markRebuilds && points.map((item, index) => item.rebuilt && <circle key={item.step} cx={xAt(index)} cy={yAt(item)} r={2.2} fill="#D85A30" />)}
     </svg>
     <div className="phase-chart-axis"><span>step {points[0].step}</span><span>step {points.at(-1)!.step}</span></div>
-    <div className="phase-chart-legend"><span className="mint">● broad-phase {points.at(-1)!.broadPhaseMs.toFixed(2)}ms</span><span className="gold">● narrow-phase {points.at(-1)!.narrowPhaseMs.toFixed(2)}ms</span></div>
+    <div className="phase-chart-legend"><span style={{ color }}>● {label} {latest[metricKey].toFixed(2)}ms</span>{markRebuilds && <span className={latest.rebuilt ? 'rebuild-flag on' : 'rebuild-flag'}>● rebuilt this step: {latest.rebuilt ? 'yes' : 'no'}</span>}</div>
   </div>;
 }
 
@@ -100,20 +99,28 @@ function App() {
   const structure = useRef(algorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, cellSize) : new BruteForceStructure());
   const highlighted = useRef(new Set<number>());
   const collisionIds = useRef(new Set<number>());
+  const cachedPairs = useRef<[number, number][]>([]);
 
-  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, cellSize) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); setMetrics({ step: 0, algorithm: nextAlgorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: true, rebuildCount: 1, skippedSteps: 0 }); setHistory([]); setEvents([]); setVersion((value) => value + 1); };
+  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, cellSize) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; setMetrics({ step: 0, algorithm: nextAlgorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: true, rebuildCount: 1, skippedSteps: 0 }); setHistory([]); setEvents([]); setVersion((value) => value + 1); };
   const step = () => {
     const started = performance.now();
     const current = system.current;
     const particles = current.particles;
     current.step(dt);
     controller.current.K = K;
-    const broadPhaseStarted = performance.now();
     const needsRebuild = !bufferEnabled || !controller.current.isListValid(particles);
     let rebuilt = false;
-    if (needsRebuild) { const event = controller.current.rebuild(structure.current, particles, metrics.step + 1); rebuilt = true; if (metrics.step > 0) setEvents((old) => [`Step ${event.step}: Rebuild triggered - Particle #${event.triggeredByParticleId} exceeded skin (dx=${event.displacement.toFixed(2)} > skin=${event.skinAtTrigger.toFixed(2)})`, ...old].slice(0, 12)); }
-    const pairs = structure.current.queryCandidatePairs(bufferEnabled);
-    const broadPhaseMs = performance.now() - broadPhaseStarted;
+    let broadPhaseMs = 0;
+    if (needsRebuild) {
+      const broadPhaseStarted = performance.now();
+      const event = controller.current.rebuild(structure.current, particles, metrics.step + 1);
+      rebuilt = true;
+      cachedPairs.current = structure.current.queryCandidatePairs(bufferEnabled);
+      broadPhaseMs = performance.now() - broadPhaseStarted;
+      if (metrics.step > 0)
+        setEvents((old) => [`Step ${event.step}: Rebuild triggered - Particle #${event.triggeredByParticleId} exceeded skin (dx=${event.displacement.toFixed(2)} > skin=${event.skinAtTrigger.toFixed(2)})`, ...old].slice(0, 12));
+    }
+    const pairs = cachedPairs.current;
     const narrowPhaseStarted = performance.now();
     highlighted.current = new Set(pairs.flat());
     const collisionPairs = pairs.filter(([a, b]) => { const p = particles[a]; const q = particles[b]; return Math.hypot(p.position.x - q.position.x, p.position.y - q.position.y, p.position.z - q.position.z) <= p.radius + q.radius; });
@@ -133,7 +140,7 @@ function App() {
     <aside className="panel"><header><div><span className="eyebrow">COLLISION LAB / PHASE 01</span><h1>Broad-phase<br /><em>diagnostics</em></h1></div><Activity size={22} color="#5DCAA5" /></header>
       <div className="control-block"><div className="block-heading">CONTROL DECK <span>01</span></div><label>PARTICLE COUNT <strong>{count.toLocaleString()}</strong></label><input type="range" min="100" max="10000" step="100" value={count} onChange={(event) => { setCount(Number(event.target.value)); }} onMouseUp={reset} /><div className="range-endpoints"><span>100</span><span>10,000</span></div><label>SPATIAL STRUCTURE</label><div className="segmented">{(['Brute Force', 'Uniform Grid'] as Algorithm[]).map((item) => <button className={algorithm === item ? 'active' : ''} onClick={() => { setAlgorithm(item); reset(item); }} key={item}>{item}</button>)}</div>{algorithm === 'Uniform Grid' && <><label>GRID CELL SIZE <strong>{cellSize.toFixed(2)}</strong></label><input type="range" min={2 * PARTICLE_RADIUS} max="3" step="0.05" value={cellSize} onChange={(event) => setCellSize(Number(event.target.value))} onMouseUp={reset} /><div className="range-endpoints"><span>{(2 * PARTICLE_RADIUS).toFixed(2)}</span><span>3.00</span></div><div className="toggle-row"><span>SHOW GRID</span><button className={`switch ${showGrid ? 'on' : ''}`} onClick={() => setShowGrid(!showGrid)}><span /></button></div></>}<div className="toggle-row"><span>VERLET BUFFER <small>Condition 5</small></span><button className={`switch ${bufferEnabled ? 'on' : ''}`} onClick={() => { setBufferEnabled(!bufferEnabled); reset(); }}><span /></button></div><label className={bufferEnabled ? '' : 'muted'}>K SKIN COEFFICIENT <strong>{K}</strong></label><input disabled={!bufferEnabled} type="range" min="0" max="200" value={K} onChange={(event) => setK(Number(event.target.value))} /><div className="action-row"><button onClick={() => setPlaying(!playing)} title={playing ? 'Pause' : 'Play'}>{playing ? <Pause size={16} /> : <Play size={16} />}{playing ? 'PAUSE' : 'PLAY'}</button><button onClick={step} title="Step"><SkipForward size={16} /> STEP</button><button onClick={reset} title="Reset"><RotateCcw size={16} /></button></div></div>
       <div className="control-block stats"><div className="block-heading">RUN TELEMETRY <span>02</span></div><div className="stat-grid"><div><small>STEP</small><strong>{metrics.step.toString().padStart(5, '0')}</strong></div><div><small>LAST ΔT</small><strong>{metrics.elapsedMs.toFixed(2)}<i> ms</i></strong></div><div><small>DISTANCE CHECKS</small><strong>{metrics.distanceChecks.toLocaleString()}</strong><span className="compare">vs {latest?.distanceChecks.toLocaleString() ?? '---'}</span></div><div><small>CANDIDATE PAIRS</small><strong>{metrics.candidatePairs.toLocaleString()}</strong><span className="compare mint">{metrics.collisions} collisions</span></div></div><div className="mini-chart">{history.slice(-34).map((item, index) => <span key={`${item.step}-${index}`} style={{ height: `${Math.min(100, Math.max(8, item.distanceChecks / Math.max(metrics.distanceChecks, 1) * 100))}%` }} />)}</div><div className="footer-stats"><span>REBUILDS <b>{metrics.rebuildCount}</b></span><span>SKIPPED <b className="mint">{skippedRatio}%</b></span></div></div>
-      <div className="control-block phase-block"><div className="block-heading">PHASE TIMING <span>03</span></div><PhaseTimingChart history={history} /></div>
+      <div className="control-block phase-block"><div className="block-heading">PHASE TIMING <span>03</span></div><div className="phase-chart-title mint">BROAD-PHASE</div><PhaseChart history={history} metricKey="broadPhaseMs" color="#5DCAA5" label="broad-phase" markRebuilds /><div className="phase-chart-title gold">NARROW-PHASE</div><PhaseChart history={history} metricKey="narrowPhaseMs" color="#D9A441" label="narrow-phase" /></div>
       <div className="control-block event-log"><div className="block-heading">EVENT LOG <span>04</span></div>{events.length ? events.map((event, index) => <p key={`${event}-${index}`}>{event}</p>) : <p className="quiet">Awaiting rebuild trigger...</p>}</div><button className="export" onClick={() => { const blob = new Blob([instrumentation.current.exportJSON()], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'collision-lab-run.json'; link.click(); }}><Download size={14} /> EXPORT RUN DATA</button>
     </aside>
   </main>;
