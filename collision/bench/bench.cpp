@@ -17,7 +17,7 @@ int main() {
     // 3.
     SimConfig config;
     config.cellSize = cellSize;
-    config.K = 0;
+    config.K = 20;
     config.skinMode = SimConfig::SkinMode::LocalVelocity;
 
     Simulation sim(config);

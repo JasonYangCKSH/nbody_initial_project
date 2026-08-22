@@ -54,7 +54,7 @@ int main() {
     const float radius = 0.1f;
     const float cellSize = 0.8f;
     const int steps = 500;
-
+    
     std::vector<NamedScenario> scenarios = {
         {"uniform_cloud", scenario::uniformCloud(2000, boxSize, radius, 0.3f)},
         {"free_fall", scenario::freeFall(2000, boxSize, radius)},
@@ -78,13 +78,13 @@ int main() {
 
         }
 
-        // Fixed skin = particle radius baseline (paper's orange line in Fig. 11).
-        SimConfig cfgFixed;
-        cfgFixed.cellSize = cellSize;
-        cfgFixed.skinMode = SimConfig::SkinMode::LocalVelocity;
-        auto cloud = sc.cloud;
-        BenchResult r = runBench(cloud, cfgFixed, steps);
-        report(sc.name, "radius", r, steps);
+        //Fixed skin = particle radius baseline (paper's orange line in Fig. 11).
+        //SimConfig cfgFixed;
+        //cfgFixed.cellSize = cellSize;
+        //cfgFixed.skinMode = SimConfig::SkinMode::FixedRadius;
+        //auto cloud = sc.cloud;
+        //BenchResult r = runBench(cloud, cfgFixed, steps);
+        //report(sc.name, "radius", r, steps);
         
     }
 
