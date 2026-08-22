@@ -142,6 +142,56 @@ bench_k_sweep/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep.dir/build.make CMakeFiles/bench_k_sweep.dir/build
 .PHONY : bench_k_sweep/fast
 
+#=============================================================================
+# Target rules for targets named bench_k_sweep_csv
+
+# Build rule for target.
+bench_k_sweep_csv: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bench_k_sweep_csv
+.PHONY : bench_k_sweep_csv
+
+# fast build rule for target.
+bench_k_sweep_csv/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/build
+.PHONY : bench_k_sweep_csv/fast
+
+#=============================================================================
+# Target rules for targets named bench
+
+# Build rule for target.
+bench: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bench
+.PHONY : bench
+
+# fast build rule for target.
+bench/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/build
+.PHONY : bench/fast
+
+bench/bench.o: bench/bench.cpp.o
+.PHONY : bench/bench.o
+
+# target to build an object file
+bench/bench.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.o
+.PHONY : bench/bench.cpp.o
+
+bench/bench.i: bench/bench.cpp.i
+.PHONY : bench/bench.i
+
+# target to preprocess a source file
+bench/bench.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.i
+.PHONY : bench/bench.cpp.i
+
+bench/bench.s: bench/bench.cpp.s
+.PHONY : bench/bench.s
+
+# target to generate assembly for a file
+bench/bench.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.s
+.PHONY : bench/bench.cpp.s
+
 bench/bench_k_sweep.o: bench/bench_k_sweep.cpp.o
 .PHONY : bench/bench_k_sweep.o
 
@@ -165,6 +215,30 @@ bench/bench_k_sweep.s: bench/bench_k_sweep.cpp.s
 bench/bench_k_sweep.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep.dir/build.make CMakeFiles/bench_k_sweep.dir/bench/bench_k_sweep.cpp.s
 .PHONY : bench/bench_k_sweep.cpp.s
+
+bench/bench_k_sweep_csv.o: bench/bench_k_sweep_csv.cpp.o
+.PHONY : bench/bench_k_sweep_csv.o
+
+# target to build an object file
+bench/bench_k_sweep_csv.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o
+.PHONY : bench/bench_k_sweep_csv.cpp.o
+
+bench/bench_k_sweep_csv.i: bench/bench_k_sweep_csv.cpp.i
+.PHONY : bench/bench_k_sweep_csv.i
+
+# target to preprocess a source file
+bench/bench_k_sweep_csv.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.i
+.PHONY : bench/bench_k_sweep_csv.cpp.i
+
+bench/bench_k_sweep_csv.s: bench/bench_k_sweep_csv.cpp.s
+.PHONY : bench/bench_k_sweep_csv.s
+
+# target to generate assembly for a file
+bench/bench_k_sweep_csv.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.s
+.PHONY : bench/bench_k_sweep_csv.cpp.s
 
 test/test_correctness.o: test/test_correctness.cpp.o
 .PHONY : test/test_correctness.o
@@ -198,11 +272,19 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... bench"
 	@echo "... bench_k_sweep"
+	@echo "... bench_k_sweep_csv"
 	@echo "... test_correctness"
+	@echo "... bench/bench.o"
+	@echo "... bench/bench.i"
+	@echo "... bench/bench.s"
 	@echo "... bench/bench_k_sweep.o"
 	@echo "... bench/bench_k_sweep.i"
 	@echo "... bench/bench_k_sweep.s"
+	@echo "... bench/bench_k_sweep_csv.o"
+	@echo "... bench/bench_k_sweep_csv.i"
+	@echo "... bench/bench_k_sweep_csv.s"
 	@echo "... test/test_correctness.o"
 	@echo "... test/test_correctness.i"
 	@echo "... test/test_correctness.s"

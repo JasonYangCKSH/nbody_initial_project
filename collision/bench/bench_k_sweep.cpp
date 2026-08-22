@@ -70,7 +70,7 @@ int main() {
             SimConfig cfg;
             cfg.K = (float)K;
             cfg.cellSize = cellSize;
-            cfg.skinMode = (K == 0) ? SimConfig::SkinMode::None : SimConfig::SkinMode::FixedRadius;
+            cfg.skinMode = (K == 0) ? SimConfig::SkinMode::None : SimConfig::SkinMode::LocalVelocity;
 
             auto cloud = sc.cloud; // fresh copy so every K starts from the same state
             BenchResult r = runBench(cloud, cfg, steps);
@@ -81,11 +81,11 @@ int main() {
         // Fixed skin = particle radius baseline (paper's orange line in Fig. 11).
         SimConfig cfgFixed;
         cfgFixed.cellSize = cellSize;
-        cfgFixed.skinMode = SimConfig::SkinMode::FixedRadius;
+        cfgFixed.skinMode = SimConfig::SkinMode::LocalVelocity;
         auto cloud = sc.cloud;
         BenchResult r = runBench(cloud, cfgFixed, steps);
         report(sc.name, "radius", r, steps);
-        break;
+        
     }
 
     return 0;

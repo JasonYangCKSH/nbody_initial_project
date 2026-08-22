@@ -1,4 +1,6 @@
 /home/jason/nbody_initial_project/collision/build-debug/CMakeFiles/test_correctness.dir
 /home/jason/nbody_initial_project/collision/build-debug/CMakeFiles/bench_k_sweep.dir
+/home/jason/nbody_initial_project/collision/build-debug/CMakeFiles/bench_k_sweep_csv.dir
+/home/jason/nbody_initial_project/collision/build-debug/CMakeFiles/bench.dir
 /home/jason/nbody_initial_project/collision/build-debug/CMakeFiles/edit_cache.dir
 /home/jason/nbody_initial_project/collision/build-debug/CMakeFiles/rebuild_cache.dir

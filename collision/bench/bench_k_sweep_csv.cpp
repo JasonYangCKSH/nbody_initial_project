@@ -51,10 +51,11 @@ int main() {
     const int steps = 500;
 
     std::vector<NamedScenario> scenarios = {
+        {"explosion", scenario::explosion(2000, boxSize, radius, 3.0f)},
         {"uniform_cloud", scenario::uniformCloud(2000, boxSize, radius, 0.3f)},
         {"free_fall", scenario::freeFall(2000, boxSize, radius)},
         {"mixed_regime", scenario::mixedRegime(1000, 1000, boxSize, radius, 0.05f, 2.0f)},
-        {"explosion", scenario::explosion(2000, boxSize, radius, 3.0f)},
+        
     };
 
     const std::vector<int> kValues = {0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000};

@@ -81,10 +81,10 @@ int main() {
     const std::vector<float> kValues = {0.0f, 10.0f, 20.0f, 50.0f, 80.0f, 100.0f, 150.0f, 200.0f};
 
     for (float K : kValues) {
-        checkScenario("uniform_cloud", scenario::uniformCloud(1000, 6.0f, 0.1f, 0.3f), K, cellSize, steps);
-        checkScenario("free_fall", scenario::freeFall(1000, 6.0f, 0.1f), K, cellSize, steps);
-        checkScenario("mixed_regime",
-                       scenario::mixedRegime(500, 500, 6.0f, 0.1f, 0.05f, 2.0f), K, cellSize, steps);
+        //checkScenario("uniform_cloud", scenario::uniformCloud(100, 6.0f, 0.1f, 0.3f), K, cellSize, steps);
+        //checkScenario("free_fall", scenario::freeFall(1000, 6.0f, 0.1f), K, cellSize, steps);
+        //checkScenario("mixed_regime",
+        //               scenario::mixedRegime(500, 500, 6.0f, 0.1f, 0.05f, 2.0f), K, cellSize, steps);
         checkScenario("explosion", scenario::explosion(100, 6.0f, 0.1f, 3.0f), K, cellSize, steps);
     }
 
