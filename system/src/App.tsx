@@ -12,7 +12,7 @@ import type { ParticleData, StepMetrics, Vec3 } from './core/types';
 
 type Algorithm = 'Brute Force' | 'Uniform Grid';
 const bounds = { x:25, y: 25, z: 25 };
-const dt = 1 / 30;
+const dt = 1 / 15;
 
 // Wireframe lattice matching UniformGridStructure's cellOf() partition
 // (cell boundaries at multiples of cellSize, clipped to the bounding box),
