@@ -79,13 +79,13 @@ int main() {
     const float radius = 0.1f;
     const float cellSize = 0.8f;
     const int steps = 500;
-    const int repeats = 1; // 每個 (scenario, K) 點重複跑幾次取平均
+    const int repeats = 3; // 每個 (scenario, K) 點重複跑幾次取平均
 
     std::vector<NamedScenario> scenarios = {
         {"uniform_cloud", scenario::uniformCloud(2000, boxSize, radius, 0.3f)},
         {"free_fall", scenario::freeFall(2000, boxSize, radius)},
         {"mixed_regime", scenario::mixedRegime(1000, 1000, boxSize, radius, 0.05f, 2.0f)},
-        {"explosion", scenario::explosion(2000, boxSize, radius, 3.0f)},
+        //{"explosion", scenario::explosion(2000, boxSize, radius, 3.0f)},
     };
 
     const std::vector<int> kValues = {0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000};
