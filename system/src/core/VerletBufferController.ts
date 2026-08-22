@@ -17,7 +17,6 @@ export class VerletBufferController {
   isListValid(particles: ParticleData[]): boolean { return particles.every((particle) => distance(particle.position, particle.positionAtLastBroadPhase) <= particle.skin); }
   rebuild(structure: SpatialStructure, particles: ParticleData[], step: number): RebuildEvent {
     this.step = step;
-    //this.updateSkins(particles, structure.getDebugGeometry().cellSize || undefined);
     const cellSize = structure.getDebugGeometry().cellSize;
     const cellSizeForCap = cellSize > 0 ? cellSize : undefined;
     this.updateSkins(particles, cellSizeForCap);
