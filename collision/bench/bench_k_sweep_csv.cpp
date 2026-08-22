@@ -40,13 +40,15 @@ static BenchResult runBench(scenario::Cloud particles, SimConfig cfg, int steps)
     return result;
 }
 
-// Writes to any ostream (file or stdout).
-static void report(std::ostream& out, const std::string& scenario, const std::string& kLabel,
-                    const BenchResult& r, int steps) {
+static void report(const std::string& scenario, const std::string& kLabel,
+                    const BenchResult& r, int steps, std::ofstream& fout) {
     double skippedPct = 100.0 * (1.0 - (double)r.broadPhaseExecutions / steps);
-    out << scenario << "," << kLabel << "," << r.totalSeconds << ","
-        << r.broadPhaseSeconds << "," << r.narrowPhaseSeconds << ","
-        << r.broadPhaseExecutions << "," << skippedPct << "\n";
+    fout << scenario << "," << kLabel << "," << r.totalSeconds << ","
+              << r.broadPhaseSeconds << "," << r.narrowPhaseSeconds << ","
+              << r.broadPhaseExecutions << "," << skippedPct << "\n";
+    std::cout << scenario << "," << kLabel << "," << r.totalSeconds << ","
+              << r.broadPhaseSeconds << "," << r.narrowPhaseSeconds << ","
+              << r.broadPhaseExecutions << "," << skippedPct << "\n";
 }
 
 int main() {
@@ -68,41 +70,31 @@ int main() {
     };
 
     const std::vector<int> kValues = {0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000};
+    std::ofstream fout("bench_results_local_velocity.csv");
+    fout << "scenario,K,total_s,broadphase_s,narrowphase_s,broadphase_execs,skipped_pct\n";
+    std::cout << "scenario,K,total_s,broadphase_s,narrowphase_s,broadphase_execs,skipped_pct\n";
+    for (auto& sc : scenarios) {
+        for (int K : kValues) {
+            SimConfig cfg;
+            cfg.K = (float)K;
+            cfg.cellSize = cellSize;
+            cfg.skinMode = (K == 0) ? SimConfig::SkinMode::None : SimConfig::SkinMode::LocalVelocity;
 
-    struct ModeConfig {
-        const char* filename;
-        SimConfig::SkinMode mode;
-    };
-    std::vector<ModeConfig> modes = {
-        {"bench_results_local_velocity.csv", SimConfig::SkinMode::LocalVelocity},
-        {"bench_results_fixed_radius.csv", SimConfig::SkinMode::FixedRadius},
-        {"bench_results_none.csv", SimConfig::SkinMode::None},
-    };
+            auto cloud = sc.cloud; // fresh copy so every K starts from the same state
+            BenchResult r = runBench(cloud, cfg, steps);
+            report(sc.name, std::to_string(K), r, steps, fout);
 
-    for (auto& modeCfg : modes) {
-        std::ofstream outFile(modeCfg.filename);
-        if (!outFile.is_open()) {
-            std::cerr << "Failed to open " << modeCfg.filename << " for writing\n";
-            return 1;
-        }
-        outFile << "scenario,K,total_s,broadphase_s,narrowphase_s,broadphase_execs,skipped_pct\n";
-
-        for (auto& sc : scenarios) {
-            for (int K : kValues) {
-                SimConfig cfg;
-                cfg.K = (float)K;
-                cfg.cellSize = cellSize;
-                cfg.skinMode = modeCfg.mode;
-
-                auto cloud = sc.cloud; // fresh copy so every K starts from the same state
-                BenchResult r = runBench(cloud, cfg, steps);
-                report(outFile, sc.name, std::to_string(K), r, steps);
-            }
         }
 
-        outFile.close();
-        std::cout << "Results written to " << modeCfg.filename << "\n";
+        // Fixed skin = particle radius baseline (paper's orange line in Fig. 11).
+        SimConfig cfgFixed;
+        cfgFixed.cellSize = cellSize;
+        cfgFixed.skinMode = SimConfig::SkinMode::LocalVelocity;
+        auto cloud = sc.cloud;
+        BenchResult r = runBench(cloud, cfgFixed, steps);
+        report(sc.name, "radius", r, steps, fout);
+        
     }
-
+    fout.close();
     return 0;
 }
