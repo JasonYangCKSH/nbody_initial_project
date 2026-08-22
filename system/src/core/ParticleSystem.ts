@@ -16,8 +16,14 @@ export class ParticleSystem {
     this.particles.forEach((particle) => {
       particle.position = add(particle.position, scale(particle.velocity, dt));
       (['x', 'y', 'z'] as const).forEach((axis) => {
-        if (particle.position[axis] < particle.radius) { particle.position[axis] = particle.radius; particle.velocity[axis] = Math.abs(particle.velocity[axis]); }
-        if (particle.position[axis] > this.bounds[axis] - particle.radius) { particle.position[axis] = this.bounds[axis] - particle.radius; particle.velocity[axis] = -Math.abs(particle.velocity[axis]); }
+        if (particle.position[axis] < particle.radius) { 
+          particle.position[axis] = particle.radius; 
+          particle.velocity[axis] = Math.abs(particle.velocity[axis]); 
+        }
+        if (particle.position[axis] > this.bounds[axis] - particle.radius) { 
+          particle.position[axis] = this.bounds[axis] - particle.radius; 
+          particle.velocity[axis] = -Math.abs(particle.velocity[axis]); 
+        }
       });
     });
   }
