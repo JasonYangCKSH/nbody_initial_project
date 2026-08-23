@@ -127,7 +127,7 @@ int main() {
     bool allPass = true;
  
     // Sweep particle counts, both with and without skin, multiple seeds.
-    std::vector<int> counts = {10, 50, 100, 500, 1000, 2000};
+    std::vector<int> counts = {10, 50, 100, 500, 1000, 2000, 10000};
     std::vector<bool> skinModes = {false, true};
  
     for (bool withSkin : skinModes) {

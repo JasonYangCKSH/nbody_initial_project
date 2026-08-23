@@ -451,6 +451,34 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
   /usr/lib/gcc/x86_64-linux-gnu/15/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/15/include/syslimits.h
 
+test: /lib64/ld-linux-x86-64.so.2 \
+  /usr/lib/x86_64-linux-gnu/Scrt1.o \
+  /usr/lib/x86_64-linux-gnu/crti.o \
+  /usr/lib/x86_64-linux-gnu/crtn.o \
+  /usr/lib/x86_64-linux-gnu/libc.so \
+  /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 \
+  /usr/lib/x86_64-linux-gnu/libm.so \
+  /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o \
+  /usr/lib/gcc/x86_64-linux-gnu/15/crtendS.o \
+  /usr/lib/gcc/x86_64-linux-gnu/15/libgcc.a \
+  /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
+  /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so \
+  /usr/lib/x86_64-linux-gnu/libc.so.6 \
+  /usr/lib/x86_64-linux-gnu/libc_nonshared.a \
+  /usr/lib/x86_64-linux-gnu/libm.so.6 \
+  /usr/lib/x86_64-linux-gnu/libmvec.so.1 \
+  CMakeFiles/test.dir/test/test.cpp.o
+
+
+/usr/lib/x86_64-linux-gnu/libc.so.6:
+
+/usr/lib/x86_64-linux-gnu/libgcc_s.so.1:
+
+/usr/lib/x86_64-linux-gnu/crti.o:
+
+/usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so:
+
+/lib64/ld-linux-x86-64.so.2:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/include/syslimits.h:
 
@@ -463,6 +491,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /usr/include/x86_64-linux-gnu/sys/select.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/15/crtendS.o:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
@@ -489,6 +519,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
 
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+/usr/lib/x86_64-linux-gnu/crtn.o:
 
 /usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
@@ -533,6 +565,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /usr/include/x86_64-linux-gnu/bits/stdio2.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-least.h:
+
+CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
 
@@ -639,6 +673,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
 
 /usr/include/c++/15/tr1/legendre_function.tcc:
+
+/usr/lib/x86_64-linux-gnu/Scrt1.o:
 
 /usr/include/c++/15/tr1/hypergeometric.tcc:
 
@@ -756,6 +792,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 
 /home/jason/nbody_initial_project/collision/include/glm/detail/type_mat2x2.inl:
 
+/usr/lib/x86_64-linux-gnu/libm.so:
+
 /usr/include/asm-generic/int-ll64.h:
 
 /home/jason/nbody_initial_project/collision/include/glm/vector_relational.hpp:
@@ -769,6 +807,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /home/jason/nbody_initial_project/collision/include/glm/ext/vector_float3.hpp:
 
 /home/jason/nbody_initial_project/collision/include/glm/matrix.hpp:
+
+/usr/lib/x86_64-linux-gnu/libc.so:
 
 /home/jason/nbody_initial_project/collision/include/glm/ext/vector_bool4.hpp:
 
@@ -854,6 +894,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 
 /home/jason/nbody_initial_project/collision/include/glm/detail/type_mat4x4.hpp:
 
+/usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so:
+
 /usr/include/c++/15/bits/ptr_traits.h:
 
 /usr/include/c++/15/bits/stl_construct.h:
@@ -863,6 +905,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /usr/include/c++/15/bits/shared_ptr_atomic.h:
 
 /home/jason/nbody_initial_project/collision/include/glm/detail/type_vec3.hpp:
+
+/usr/lib/x86_64-linux-gnu/libmvec.so.1:
 
 /usr/include/c++/15/bits/stl_iterator_base_types.h:
 
@@ -877,6 +921,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /usr/include/c++/15/exception:
 
 /home/jason/nbody_initial_project/collision/include/glm/ext/matrix_float4x3.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/15/libgcc.a:
 
 /usr/include/c++/15/array:
 
@@ -941,6 +987,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /usr/include/c++/15/bits/requires_hosted.h:
 
 /usr/include/c++/15/cstdlib:
+
+/usr/lib/x86_64-linux-gnu/libc_nonshared.a:
 
 /home/jason/nbody_initial_project/collision/include/glm/ext/matrix_float2x4_precision.hpp:
 
@@ -1098,6 +1146,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 
 /usr/include/asm-generic/errno.h:
 
+/usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o:
+
 /usr/include/c++/15/bits/range_access.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
@@ -1137,6 +1187,8 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
 /usr/include/c++/15/set:
 
 /usr/include/c++/15/bits/memory_resource.h:
+
+/usr/lib/x86_64-linux-gnu/libm.so.6:
 
 /usr/include/x86_64-linux-gnu/bits/locale.h:
 
