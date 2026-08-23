@@ -130,6 +130,19 @@ test_correctness/fast:
 .PHONY : test_correctness/fast
 
 #=============================================================================
+# Target rules for targets named test
+
+# Build rule for target.
+test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test
+.PHONY : test
+
+# fast build rule for target.
+test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
+.PHONY : test/fast
+
+#=============================================================================
 # Target rules for targets named bench_k_sweep
 
 # Build rule for target.
@@ -240,6 +253,30 @@ bench/bench_k_sweep_csv.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench_k_sweep_csv.dir/build.make CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.s
 .PHONY : bench/bench_k_sweep_csv.cpp.s
 
+test/test.o: test/test.cpp.o
+.PHONY : test/test.o
+
+# target to build an object file
+test/test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test/test.cpp.o
+.PHONY : test/test.cpp.o
+
+test/test.i: test/test.cpp.i
+.PHONY : test/test.i
+
+# target to preprocess a source file
+test/test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test/test.cpp.i
+.PHONY : test/test.cpp.i
+
+test/test.s: test/test.cpp.s
+.PHONY : test/test.s
+
+# target to generate assembly for a file
+test/test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test/test.cpp.s
+.PHONY : test/test.cpp.s
+
 test/test_correctness.o: test/test_correctness.cpp.o
 .PHONY : test/test_correctness.o
 
@@ -275,6 +312,7 @@ help:
 	@echo "... bench"
 	@echo "... bench_k_sweep"
 	@echo "... bench_k_sweep_csv"
+	@echo "... test"
 	@echo "... test_correctness"
 	@echo "... bench/bench.o"
 	@echo "... bench/bench.i"
@@ -285,6 +323,9 @@ help:
 	@echo "... bench/bench_k_sweep_csv.o"
 	@echo "... bench/bench_k_sweep_csv.i"
 	@echo "... bench/bench_k_sweep_csv.s"
+	@echo "... test/test.o"
+	@echo "... test/test.i"
+	@echo "... test/test.s"
 	@echo "... test/test_correctness.o"
 	@echo "... test/test_correctness.i"
 	@echo "... test/test_correctness.s"

@@ -1,7 +1,7 @@
-CMakeFiles/bench.dir/bench/bench.cpp.o: \
- /home/jason/nbody_initial_project/collision/bench/bench.cpp \
+CMakeFiles/test.dir/test/test.cpp.o: \
+ /home/jason/nbody_initial_project/collision/test/test.cpp \
  /usr/include/stdc-predef.h \
- /home/jason/nbody_initial_project/collision/bench/../include/particle.h \
+ /home/jason/nbody_initial_project/collision/test/../include/particle.h \
  /home/jason/nbody_initial_project/collision/include/glm/glm.hpp \
  /home/jason/nbody_initial_project/collision/include/glm/detail/_fixes.hpp \
  /usr/include/c++/15/cmath /usr/include/c++/15/bits/requires_hosted.h \
@@ -284,12 +284,15 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: \
  /home/jason/nbody_initial_project/collision/include/glm/detail/type_half.inl \
  /home/jason/nbody_initial_project/collision/include/glm/integer.hpp \
  /home/jason/nbody_initial_project/collision/include/glm/detail/func_integer.inl \
- /home/jason/nbody_initial_project/collision/bench/../include/scenarios.h \
- /usr/include/c++/15/random /usr/include/c++/15/cstdlib \
- /usr/include/c++/15/string /usr/include/c++/15/bits/stringfwd.h \
- /usr/include/c++/15/bits/char_traits.h \
- /usr/include/c++/15/bits/postypes.h /usr/include/c++/15/cwchar \
- /usr/include/wchar.h /usr/lib/gcc/x86_64-linux-gnu/15/include/stdarg.h \
+ /home/jason/nbody_initial_project/collision/test/../include/broad_phase.h \
+ /usr/include/c++/15/utility /usr/include/c++/15/bits/stl_relops.h \
+ /usr/include/c++/15/memory /usr/include/c++/15/bits/stl_tempbuf.h \
+ /usr/include/c++/15/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/15/bits/align.h /usr/include/c++/15/bits/unique_ptr.h \
+ /usr/include/c++/15/bits/shared_ptr.h /usr/include/c++/15/iosfwd \
+ /usr/include/c++/15/bits/stringfwd.h /usr/include/c++/15/bits/postypes.h \
+ /usr/include/c++/15/cwchar /usr/include/wchar.h \
+ /usr/lib/gcc/x86_64-linux-gnu/15/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
@@ -297,44 +300,6 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
  /usr/include/x86_64-linux-gnu/bits/wchar2-decl.h \
  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
- /usr/include/c++/15/bits/localefwd.h \
- /usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h \
- /usr/include/c++/15/clocale /usr/include/locale.h \
- /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/15/iosfwd \
- /usr/include/c++/15/cctype /usr/include/ctype.h \
- /usr/include/c++/15/bits/ostream_insert.h \
- /usr/include/c++/15/bits/cxxabi_forced.h \
- /usr/include/c++/15/bits/basic_string.h /usr/include/c++/15/string_view \
- /usr/include/c++/15/bits/string_view.tcc \
- /usr/include/c++/15/ext/string_conversions.h /usr/include/c++/15/cstdio \
- /usr/include/stdio.h /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
- /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
- /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
- /usr/include/x86_64-linux-gnu/bits/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/c++/15/cerrno \
- /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
- /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
- /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
- /usr/include/c++/15/bits/charconv.h \
- /usr/include/c++/15/bits/basic_string.tcc \
- /usr/include/c++/15/bits/random.h \
- /usr/include/c++/15/bits/uniform_int_dist.h \
- /usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h \
- /usr/include/c++/15/bits/random.tcc /usr/include/c++/15/numeric \
- /usr/include/c++/15/bits/stl_numeric.h \
- /usr/include/c++/15/pstl/glue_numeric_defs.h \
- /usr/include/c++/15/pstl/execution_defs.h \
- /home/jason/nbody_initial_project/collision/bench/../include/simulation.h \
- /home/jason/nbody_initial_project/collision/bench/../include/broad_phase.h \
- /usr/include/c++/15/utility /usr/include/c++/15/bits/stl_relops.h \
- /usr/include/c++/15/memory /usr/include/c++/15/bits/stl_tempbuf.h \
- /usr/include/c++/15/bits/stl_raw_storage_iter.h \
- /usr/include/c++/15/bits/align.h /usr/include/c++/15/bits/unique_ptr.h \
- /usr/include/c++/15/bits/shared_ptr.h \
  /usr/include/c++/15/bits/shared_ptr_base.h \
  /usr/include/c++/15/bits/allocated_ptr.h \
  /usr/include/c++/15/ext/atomicity.h \
@@ -370,20 +335,40 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: \
  /usr/include/c++/15/bits/atomic_lockfree_defines.h \
  /usr/include/c++/15/backward/auto_ptr.h \
  /usr/include/c++/15/pstl/glue_memory_defs.h \
- /home/jason/nbody_initial_project/collision/bench/../include/narrow_phase.h \
- /home/jason/nbody_initial_project/collision/bench/../include/verlet_buffer.h \
- /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
- /usr/include/c++/15/bits/algorithmfwd.h \
- /usr/include/c++/15/bits/stl_heap.h \
- /usr/include/c++/15/pstl/glue_algorithm_defs.h \
- /usr/include/c++/15/stdexcept /usr/include/c++/15/iostream \
+ /usr/include/c++/15/pstl/execution_defs.h /usr/include/c++/15/iostream \
  /usr/include/c++/15/ostream /usr/include/c++/15/bits/ostream.h \
- /usr/include/c++/15/ios /usr/include/c++/15/bits/ios_base.h \
- /usr/include/c++/15/bits/locale_classes.h \
+ /usr/include/c++/15/ios /usr/include/c++/15/bits/char_traits.h \
+ /usr/include/c++/15/bits/localefwd.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h \
+ /usr/include/c++/15/clocale /usr/include/locale.h \
+ /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/15/cctype \
+ /usr/include/ctype.h /usr/include/c++/15/bits/ios_base.h \
+ /usr/include/c++/15/bits/locale_classes.h /usr/include/c++/15/string \
+ /usr/include/c++/15/bits/ostream_insert.h \
+ /usr/include/c++/15/bits/cxxabi_forced.h \
+ /usr/include/c++/15/bits/basic_string.h /usr/include/c++/15/string_view \
+ /usr/include/c++/15/bits/string_view.tcc \
+ /usr/include/c++/15/ext/string_conversions.h /usr/include/c++/15/cstdlib \
+ /usr/include/c++/15/cstdio /usr/include/stdio.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+ /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/c++/15/cerrno \
+ /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
+ /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
+ /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
+ /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
+ /usr/include/c++/15/bits/charconv.h \
+ /usr/include/c++/15/bits/basic_string.tcc \
  /usr/include/c++/15/bits/locale_classes.tcc \
  /usr/include/c++/15/system_error \
  /usr/include/x86_64-linux-gnu/c++/15/bits/error_constants.h \
- /usr/include/c++/15/streambuf /usr/include/c++/15/bits/streambuf.tcc \
+ /usr/include/c++/15/stdexcept /usr/include/c++/15/streambuf \
+ /usr/include/c++/15/bits/streambuf.tcc \
  /usr/include/c++/15/bits/basic_ios.h \
  /usr/include/c++/15/bits/locale_facets.h /usr/include/c++/15/cwctype \
  /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
@@ -393,6 +378,16 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: \
  /usr/include/c++/15/bits/locale_facets.tcc \
  /usr/include/c++/15/bits/basic_ios.tcc \
  /usr/include/c++/15/bits/ostream.tcc /usr/include/c++/15/istream \
- /usr/include/c++/15/bits/istream.tcc /usr/include/c++/15/chrono \
- /usr/include/c++/15/bits/chrono.h /usr/include/c++/15/ratio \
- /usr/include/c++/15/ctime /usr/include/c++/15/bits/parse_numbers.h
+ /usr/include/c++/15/bits/istream.tcc /usr/include/c++/15/random \
+ /usr/include/c++/15/bits/random.h \
+ /usr/include/c++/15/bits/uniform_int_dist.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h \
+ /usr/include/c++/15/bits/random.tcc /usr/include/c++/15/numeric \
+ /usr/include/c++/15/bits/stl_numeric.h \
+ /usr/include/c++/15/pstl/glue_numeric_defs.h /usr/include/c++/15/set \
+ /usr/include/c++/15/bits/stl_tree.h /usr/include/c++/15/bits/stl_set.h \
+ /usr/include/c++/15/bits/stl_multiset.h /usr/include/c++/15/algorithm \
+ /usr/include/c++/15/bits/stl_algo.h \
+ /usr/include/c++/15/bits/algorithmfwd.h \
+ /usr/include/c++/15/bits/stl_heap.h \
+ /usr/include/c++/15/pstl/glue_algorithm_defs.h

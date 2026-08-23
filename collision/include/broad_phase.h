@@ -3,7 +3,9 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <utility>
+#include <memory>
 #include <unordered_map>
+#include <array>
 #include <cstdint>
 
 using PairList = std::vector<std::pair<int, int>>;
