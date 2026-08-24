@@ -78,7 +78,7 @@ static void checkScenario(const char* name, scenario::Cloud particles, float K,
 int main() {
     const float cellSize = 0.8f; // 8x radius, ample room for skin growth
     const int steps = 2000;
-    const std::vector<float> kValues = {0.0f, 10.0f, 20.0f, 50.0f, 80.0f, 100.0f, 150.0f, 200.0f};
+    const std::vector<float> kValues = {0.0f, 10.0f, 20.0f, 50.0f, 80.0f, 100.0f, 150.0f, 200.0f, 1000.0f, 2000.0f};
 
     for (float K : kValues) {
         //checkScenario("uniform_cloud", scenario::uniformCloud(100, 6.0f, 0.1f, 0.3f), K, cellSize, steps);
