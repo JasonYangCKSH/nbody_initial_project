@@ -120,7 +120,8 @@ public:
     // particles); leafCapacity is the K referenced in the report (fixed for
     // now, not swept — see Future Work).
     Octree(glm::vec3 center, float halfExtent, int leafCapacity = 8, int maxDepth = 12)
-        : leafCapacity_(leafCapacity), maxDepth_(maxDepth) {
+        : leafCapacity_(leafCapacity), maxDepth_(maxDepth),
+        rootCenter_(center), rootHalfExtent_(halfExtent) {
         root_ = std::make_unique<Node>();
         root_->center = center;
         root_->halfExtent = halfExtent;
@@ -143,7 +144,15 @@ public:
         collectPairs(root_.get(), particles, withSkin, pairs);
         return pairs;
     }
- 
+    float leafHalfExtentOf(int idx, std::vector<Particle>& particles) const {
+        Node *node = root_.get();
+        while (!node->isLeaf()) {
+            int c = childIndex(node->center, particles[idx].pos);
+            node = node->children[c].get();
+
+        }
+        return node->halfExtent;
+    }
 private:
     struct Node {
         glm::vec3 center{0.0f};
@@ -270,15 +279,7 @@ private:
     }
 
 
-    float leafHalfExtentOf(int idx, std::vector<Particle>& particles) const {
-        Node *node = root_.get();
-        while (!node->isLeaf()) {
-            int c = childIndex(node->center, particles[idx].pos);
-            node = node->children[c].get();
 
-        }
-        return node->halfExtent;
-    }
 };
 
 

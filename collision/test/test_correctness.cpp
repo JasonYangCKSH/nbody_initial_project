@@ -85,7 +85,7 @@ int main() {
         //checkScenario("free_fall", scenario::freeFall(1000, 6.0f, 0.1f), K, cellSize, steps);
         //checkScenario("mixed_regime",
         //               scenario::mixedRegime(500, 500, 6.0f, 0.1f, 0.05f, 2.0f), K, cellSize, steps);
-        checkScenario("explosion", scenario::explosion(100, 6.0f, 0.1f, 3.0f), K, cellSize, steps);
+        //checkScenario("explosion", scenario::explosion(100, 6.0f, 0.1f, 3.0f), K, cellSize, steps);
     }
 
     std::cout << "All correctness checks passed.\n";

@@ -1,5 +1,6 @@
 /home/jason/nbody_initial_project/collision/build/CMakeFiles/test_correctness.dir
 /home/jason/nbody_initial_project/collision/build/CMakeFiles/test.dir
+/home/jason/nbody_initial_project/collision/build/CMakeFiles/test_octree.dir
 /home/jason/nbody_initial_project/collision/build/CMakeFiles/bench_k_sweep.dir
 /home/jason/nbody_initial_project/collision/build/CMakeFiles/bench_k_sweep_csv.dir
 /home/jason/nbody_initial_project/collision/build/CMakeFiles/bench.dir

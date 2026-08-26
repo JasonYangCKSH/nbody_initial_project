@@ -1,7 +1,7 @@
-CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o: \
- /home/jason/nbody_initial_project/collision/bench/bench_k_sweep_csv.cpp \
+CMakeFiles/test_octree.dir/test/test_octree.cpp.o: \
+ /home/jason/nbody_initial_project/collision/test/test_octree.cpp \
  /usr/include/stdc-predef.h \
- /home/jason/nbody_initial_project/collision/bench/../include/particle.h \
+ /home/jason/nbody_initial_project/collision/test/../include/particle.h \
  /home/jason/nbody_initial_project/collision/include/glm/glm.hpp \
  /home/jason/nbody_initial_project/collision/include/glm/detail/_fixes.hpp \
  /usr/include/c++/10/cmath \
@@ -289,10 +289,11 @@ CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o: \
  /home/jason/nbody_initial_project/collision/include/glm/detail/type_half.inl \
  /home/jason/nbody_initial_project/collision/include/glm/integer.hpp \
  /home/jason/nbody_initial_project/collision/include/glm/detail/func_integer.inl \
- /home/jason/nbody_initial_project/collision/bench/../include/scenarios.h \
- /usr/include/c++/10/random /usr/include/c++/10/string \
- /usr/include/c++/10/bits/stringfwd.h \
- /usr/include/c++/10/bits/char_traits.h \
+ /home/jason/nbody_initial_project/collision/test/../include/broad_phase.h \
+ /usr/include/c++/10/memory \
+ /usr/include/c++/10/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/10/bits/ranges_uninitialized.h \
+ /usr/include/c++/10/iosfwd /usr/include/c++/10/bits/stringfwd.h \
  /usr/include/c++/10/bits/postypes.h /usr/include/c++/10/cwchar \
  /usr/include/wchar.h /usr/lib/gcc/x86_64-linux-gnu/10/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
@@ -302,14 +303,6 @@ CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
  /usr/include/x86_64-linux-gnu/bits/wchar2-decl.h \
  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
- /usr/include/c++/10/bits/localefwd.h \
- /usr/include/x86_64-linux-gnu/c++/10/bits/c++locale.h \
- /usr/include/c++/10/clocale /usr/include/locale.h \
- /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/10/iosfwd \
- /usr/include/c++/10/cctype /usr/include/ctype.h \
- /usr/include/c++/10/bits/ostream_insert.h \
- /usr/include/c++/10/bits/cxxabi_forced.h \
- /usr/include/c++/10/bits/basic_string.h \
  /usr/include/c++/10/ext/atomicity.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/gthr.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h \
@@ -324,7 +317,29 @@ CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/atomic_word.h \
- /usr/include/c++/10/string_view /usr/include/c++/10/bits/string_view.tcc \
+ /usr/include/c++/10/ext/concurrence.h \
+ /usr/include/c++/10/bits/unique_ptr.h \
+ /usr/include/c++/10/bits/shared_ptr.h \
+ /usr/include/c++/10/bits/shared_ptr_base.h \
+ /usr/include/c++/10/bits/allocated_ptr.h \
+ /usr/include/c++/10/bits/shared_ptr_atomic.h \
+ /usr/include/c++/10/bits/atomic_base.h \
+ /usr/include/c++/10/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/10/backward/auto_ptr.h \
+ /usr/include/c++/10/pstl/glue_memory_defs.h \
+ /usr/include/c++/10/pstl/execution_defs.h /usr/include/c++/10/iostream \
+ /usr/include/c++/10/ostream /usr/include/c++/10/ios \
+ /usr/include/c++/10/bits/char_traits.h \
+ /usr/include/c++/10/bits/localefwd.h \
+ /usr/include/x86_64-linux-gnu/c++/10/bits/c++locale.h \
+ /usr/include/c++/10/clocale /usr/include/locale.h \
+ /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/10/cctype \
+ /usr/include/ctype.h /usr/include/c++/10/bits/ios_base.h \
+ /usr/include/c++/10/bits/locale_classes.h /usr/include/c++/10/string \
+ /usr/include/c++/10/bits/ostream_insert.h \
+ /usr/include/c++/10/bits/cxxabi_forced.h \
+ /usr/include/c++/10/bits/basic_string.h /usr/include/c++/10/string_view \
+ /usr/include/c++/10/bits/string_view.tcc \
  /usr/include/c++/10/ext/string_conversions.h /usr/include/c++/10/cstdio \
  /usr/include/stdio.h /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
@@ -340,39 +355,11 @@ CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
  /usr/include/c++/10/bits/charconv.h \
  /usr/include/c++/10/bits/basic_string.tcc \
- /usr/include/c++/10/bits/random.h \
- /usr/include/x86_64-linux-gnu/c++/10/bits/opt_random.h \
- /usr/include/c++/10/bits/random.tcc /usr/include/c++/10/numeric \
- /usr/include/c++/10/bits/stl_numeric.h \
- /usr/include/c++/10/pstl/glue_numeric_defs.h \
- /usr/include/c++/10/pstl/execution_defs.h \
- /home/jason/nbody_initial_project/collision/bench/../include/simulation.h \
- /home/jason/nbody_initial_project/collision/bench/../include/broad_phase.h \
- /usr/include/c++/10/memory \
- /usr/include/c++/10/bits/stl_raw_storage_iter.h \
- /usr/include/c++/10/bits/ranges_uninitialized.h \
- /usr/include/c++/10/ext/concurrence.h \
- /usr/include/c++/10/bits/unique_ptr.h \
- /usr/include/c++/10/bits/shared_ptr.h \
- /usr/include/c++/10/bits/shared_ptr_base.h \
- /usr/include/c++/10/bits/allocated_ptr.h \
- /usr/include/c++/10/bits/shared_ptr_atomic.h \
- /usr/include/c++/10/bits/atomic_base.h \
- /usr/include/c++/10/bits/atomic_lockfree_defines.h \
- /usr/include/c++/10/backward/auto_ptr.h \
- /usr/include/c++/10/pstl/glue_memory_defs.h \
- /home/jason/nbody_initial_project/collision/bench/../include/narrow_phase.h \
- /home/jason/nbody_initial_project/collision/bench/../include/verlet_buffer.h \
- /usr/include/c++/10/algorithm \
- /usr/include/c++/10/pstl/glue_algorithm_defs.h \
- /usr/include/c++/10/stdexcept /usr/include/c++/10/iostream \
- /usr/include/c++/10/ostream /usr/include/c++/10/ios \
- /usr/include/c++/10/bits/ios_base.h \
- /usr/include/c++/10/bits/locale_classes.h \
  /usr/include/c++/10/bits/locale_classes.tcc \
  /usr/include/c++/10/system_error \
  /usr/include/x86_64-linux-gnu/c++/10/bits/error_constants.h \
- /usr/include/c++/10/streambuf /usr/include/c++/10/bits/streambuf.tcc \
+ /usr/include/c++/10/stdexcept /usr/include/c++/10/streambuf \
+ /usr/include/c++/10/bits/streambuf.tcc \
  /usr/include/c++/10/bits/basic_ios.h \
  /usr/include/c++/10/bits/locale_facets.h /usr/include/c++/10/cwctype \
  /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
@@ -382,10 +369,9 @@ CMakeFiles/bench_k_sweep_csv.dir/bench/bench_k_sweep_csv.cpp.o: \
  /usr/include/c++/10/bits/locale_facets.tcc \
  /usr/include/c++/10/bits/basic_ios.tcc \
  /usr/include/c++/10/bits/ostream.tcc /usr/include/c++/10/istream \
- /usr/include/c++/10/bits/istream.tcc /usr/include/c++/10/chrono \
- /usr/include/c++/10/ratio /usr/include/c++/10/ctime \
- /usr/include/c++/10/bits/parse_numbers.h /usr/include/c++/10/fstream \
- /usr/include/c++/10/bits/codecvt.h \
- /usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h \
- /usr/include/x86_64-linux-gnu/c++/10/bits/c++io.h \
- /usr/include/c++/10/bits/fstream.tcc
+ /usr/include/c++/10/bits/istream.tcc /usr/include/c++/10/random \
+ /usr/include/c++/10/bits/random.h \
+ /usr/include/x86_64-linux-gnu/c++/10/bits/opt_random.h \
+ /usr/include/c++/10/bits/random.tcc /usr/include/c++/10/numeric \
+ /usr/include/c++/10/bits/stl_numeric.h \
+ /usr/include/c++/10/pstl/glue_numeric_defs.h
