@@ -268,6 +268,17 @@ private:
             }
         }
     }
+
+
+    float leafHalfExtentOf(int idx, std::vector<Particle>& particles) const {
+        Node *node = root_.get();
+        while (!node->isLeaf()) {
+            int c = childIndex(node->center, particles[idx].pos);
+            node = node->children[c].get();
+
+        }
+        return node->halfExtent;
+    }
 };
 
 
