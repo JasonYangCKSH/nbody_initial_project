@@ -13,7 +13,7 @@ namespace verlet {
 // velocity rather than a single global bulk velocity.
 inline void updateLocalSkin(std::vector<Particle>& particles, float K, float dt) {
     for (auto& p : particles) {
-        p.skin = K * glm::length(p.vel) * dt;
+        p.skin = K * glm::length(p.vel) * dt + 0.5f * glm::length(p.acc) * dt * dt;
     }
 }
 

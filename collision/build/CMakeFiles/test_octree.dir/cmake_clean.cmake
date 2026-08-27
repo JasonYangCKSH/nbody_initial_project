@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/test_octree.dir/link.d"
   "CMakeFiles/test_octree.dir/test/test_octree.cpp.o"
   "CMakeFiles/test_octree.dir/test/test_octree.cpp.o.d"
   "test_octree"

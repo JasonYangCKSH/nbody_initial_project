@@ -1,1 +1,1 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/test_octree.dir/test/test_octree.cpp.o -o test_octree 
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/test_octree.dir/link.d CMakeFiles/test_octree.dir/test/test_octree.cpp.o -o test_octree
