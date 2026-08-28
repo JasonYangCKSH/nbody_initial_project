@@ -174,13 +174,18 @@ private:
         // 2. 計算基礎 Grid 格子尺寸 (總寬度 / 總格數)
         float gridSize = worldSize_ / static_cast<float>(1 << maxDepth_);
         int maxGridIdx = (1 << maxDepth_) - 1;
-
         // 3. 映射至整數網格座標 [0, 2^maxDepth - 1]
         int gx = std::clamp(static_cast<int>(glm::floor(normalizedPos.x / gridSize)), 0, maxGridIdx);
         int gy = std::clamp(static_cast<int>(glm::floor(normalizedPos.y / gridSize)), 0, maxGridIdx);
         int gz = std::clamp(static_cast<int>(glm::floor(normalizedPos.z / gridSize)), 0, maxGridIdx);
 
         return glm::ivec3(gx, gy, gz);
+    }
+    static bool checkOverlap(const Particle& p1, const Particle& p2, bool withSkin) {
+        float radiusSum = p1.radius + p2.radius;
+        if (withSkin) radiusSum += p1.skin + p2.skin;
+        float distSq = glm::distance2(p1.pos, p2.pos);
+        return distSq <= (radiusSum * radiusSum);
     }
 public:
     Octree(int maxDepth, int leafCapacity, float worldSize):maxDepth_(maxDepth), leafCapacity_(leafCapacity), worldSize_(worldSize){}
