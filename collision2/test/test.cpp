@@ -58,5 +58,5 @@ int main() {
     }
     for (auto& p2: pairs2) {
         std::cout << "[Uniform Grid]: " << p2.first << ", " << p2.second << std::endl;
-    }
+    
 }
