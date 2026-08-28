@@ -43,8 +43,8 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
         // --- 宏觀極端測試 ---
         case ScenarioType::UniformRandom: {
             particles.reserve(macroCount);
-            std::mt19937 rng(42); // 固定 seed 確保測試可重現
-            float halfSize = worldSize * 0.45f; // 留 5% 安全邊界避免出界
+            std::mt19937 rng(42); 
+            float halfSize = worldSize * 0.45f; 
             std::uniform_real_distribution<float> posDist(-halfSize, halfSize);
             std::uniform_real_distribution<float> radiusDist(0.1f, 0.5f);
 
