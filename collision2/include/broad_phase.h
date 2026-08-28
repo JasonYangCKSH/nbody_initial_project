@@ -206,40 +206,33 @@ private:
         }
     }
 
-    void processNode(size_t start, size_t end, int currentDepth, 
-                     const std::vector<OctreeEntry>& entries, 
-                     const std::vector<Particle>& particles, 
+    void processNode(size_t start, size_t end, int currentDepth,
+                     const std::vector<OctreeEntry>& entries,
+                     const std::vector<Particle>& particles,
                      bool withSkin, PairList& pairs) const {
         size_t count = end - start;
         if (count <= 1) return;
-
         if (count <= static_cast<size_t>(leafCapacity_) || currentDepth >= maxDepth_) {
             collideLeaf(start, end, entries, particles, withSkin, pairs);
             return;
         }
-
         int shift = 3 * (maxDepth_ - 1 - currentDepth);
         size_t childStart = start;
-
         for (int octant = 0; octant < 8; ++octant) {
             if (childStart >= end) break;
-
             auto it = std::lower_bound(
-                entries.begin() + childStart, 
-                entries.begin() + end, 
+                entries.begin() + childStart,
+                entries.begin() + end,
                 octant + 1,
                 [shift](const OctreeEntry& entry, int targetOctant) {
                     int currentOctant = static_cast<int>((entry.key >> shift) & 7ULL);
                     return currentOctant < targetOctant;
                 }
             );
-
             size_t childEnd = std::distance(entries.begin(), it);
-
             if (childEnd > childStart) {
                 processNode(childStart, childEnd, currentDepth + 1, entries, particles, withSkin, pairs);
             }
-
             childStart = childEnd;
         }
     }

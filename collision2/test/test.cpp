@@ -67,7 +67,7 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
 }
 
 int main() {
-    std::vector<Particle> particles = generateScenario(ScenarioType::UniformRandom, (size_t)1500, 100.0f);
+    std::vector<Particle> particles = generateScenario(ScenarioType::UniformRandom, (size_t)3000, 100.0f);
     PairList pairs1 = BruteForce(particles, false);
     broad::UniformGrid uni(0.8);
     broad::Octree oct(1, 1, 100.0f);
