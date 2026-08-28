@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <random>
 #include <cmath>
+#include <chrono>
 #include "particle.h"
 #include "broad_phase.h"
 #include "brute_force.h"
@@ -67,12 +68,29 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
 }
 
 int main() {
-    std::vector<Particle> particles = generateScenario(ScenarioType::UniformRandom, (size_t)3000, 100.0f);
-    PairList pairs1 = BruteForce(particles, false);
+    std::vector<Particle> particles = generateScenario(ScenarioType::UniformRandom, (size_t)50000, 100.0f);
+    // 1. BruteForce
+    auto start1 = std::chrono::high_resolution_clock::now();
+    PairList pairs1 = BruteForce(particles);
+    auto end1 = std::chrono::high_resolution_clock::now();
+
+    // 2. Uniform Grid
     broad::UniformGrid uni(0.8);
-    broad::Octree oct(1, 1, 100.0f);
+    auto start2 = std::chrono::high_resolution_clock::now();
     PairList pairs2 = uni.Build(particles, false);
+    auto end2 = std::chrono::high_resolution_clock::now();
+
+    // 3. Linear Octree
+    broad::Octree oct(1, 1, 100.0f);
+    auto start3 = std::chrono::high_resolution_clock::now();
     PairList pairs3 = oct.Build(particles, false);
+    auto end3 = std::chrono::high_resolution_clock::now();
+    std::cout << "BruteForce: " 
+              << std::chrono::duration<double, std::milli>(end1 - start1).count() << " ms\n";
+    std::cout << "UniformGrid: " 
+              << std::chrono::duration<double, std::milli>(end2 - start2).count() << " ms\n";
+    std::cout << "Octree: " 
+              << std::chrono::duration<double, std::milli>(end3 - start3).count() << " ms\n";
     for (auto& p1: pairs1) {
         std::cout << "[Brute Force]: " << p1.first << ", " << p1.second << std::endl;
     }
