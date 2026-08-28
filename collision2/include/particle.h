@@ -1,5 +1,8 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <vector>
+#include <utility>
+using PairList = std::vector<std::pair<int, int>>;
 struct Particle {
     glm::vec3 pos{0.0};
     glm::vec3 vec{0.0};

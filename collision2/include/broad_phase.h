@@ -9,25 +9,11 @@
 // 假設 Particle 定義於此或外部引入
 // #include "particle.h"
 
-using PairList = std::vector<std::pair<int, int>>;
+
 
 namespace broad {
 
-inline PairList BruteForce(const std::vector<Particle>& particles, bool withSkin) {
-    PairList pairs;
-    const size_t n = particles.size();
-    for (size_t i = 0; i < n; ++i) {
-        for (size_t j = i + 1; j < n; ++j) {
-            float radiusSum = particles[i].radius + particles[j].radius;
-            if (withSkin) radiusSum += particles[i].skin + particles[j].skin;
-            float dist = glm::distance2(particles[i].pos, particles[j].pos); 
-            if (dist <= radiusSum * radiusSum) {
-                pairs.emplace_back(static_cast<int>(i), static_cast<int>(j));
-            }
-        }
-    }
-    return pairs;
-}
+
 
 class UniformGrid {
 private:
@@ -44,13 +30,13 @@ private:
     };
 
     static uint64_t expandBits3D(uint64_t vec) {
-        vec &= 0x1FFFFF;
-        vec = (vec | (vec << 32)) & 0x70000000FFFF0000ULL;
-        vec = (vec | (vec << 16)) & 0x070000FF0000FF00ULL;
-        vec = (vec | (vec <<  8)) & 0x0700F00F00F00F00ULL;
-        vec = (vec | (vec <<  4)) & 0x8938938938938938ULL;
-        vec = (vec | (vec <<  2)) & 0x4924924924924924ULL;
-        return vec;   
+        vec &= 0x1FFFFFULL;
+        vec = (vec | (vec << 32)) & 0x1F00000000FFFFULL;
+        vec = (vec | (vec << 16)) & 0x1F0000FF0000FFULL;
+        vec = (vec | (vec <<  8)) & 0x100F00F00F00F00FULL;
+        vec = (vec | (vec <<  4)) & 0x10C30C30C30C30C3ULL;
+        vec = (vec | (vec <<  2)) & 0x1249249249249249ULL;
+        return vec;
     }
 
     static uint64_t encodeMorton3D(glm::ivec3 cellCoord) {
