@@ -23,7 +23,6 @@ private:
         uint64_t key;
         int particleIdx;
 
-        // 重載 < 運算子，方便 std::sort 與 std::equal_range 直接使用
         bool operator<(const ParticleCellEntry& other) const {
             return key < other.key;
         }
@@ -145,9 +144,13 @@ private:
     int maxDepth_;
     int leafCapacity_;
     float worldSize_;
-    struct OctreeEntry {
+    struct ParticleOctreeEntry {
         uint64_t key;
         int particleIdx;
+
+        bool operator<(const OctreeEntry& other) const {
+            return key < other.key;
+        }
 
     };
     static uint64_t expandBits3D(uint64_t vec) {
@@ -160,7 +163,7 @@ private:
         return vec;
     }
 
-    static uint64_t encodeMorton3D(glm::ivec3 cellCoord) {
+    static uint64_t encodeMorton3D(glm::ivec3 gridCoord) {
         uint64_t x = expandBits3D(static_cast<uint64_t>(cellCoord.x));
         uint64_t y = expandBits3D(static_cast<uint64_t>(cellCoord.y));
         uint64_t z = expandBits3D(static_cast<uint64_t>(cellCoord.z));
@@ -187,10 +190,80 @@ private:
         float distSq = glm::distance2(p1.pos, p2.pos);
         return distSq <= (radiusSum * radiusSum);
     }
+
+
+    void collideLeaf(size_t start, size_t end,
+                     const std::vector<OctreeEntry>& entries,
+                     const std::vector<Particle>& particles,
+                     bool withSkin, PairList& pairs) const {
+        for (size_t i = start; i < end; ++i) {
+            for (size_t j = i + 1; j < end; ++j) {
+                int idxA = entries[i].particleIdx;
+                int idxB = entries[j].particleIdx;
+                if (checkOverlap(particles[idxA], particles[idxB], withSkin)) {
+                    if (idxA > idxB) std::swap(idxA, idxB);
+                    pairs.emplace_back(idxA, idxB);
+                }
+            }
+        }
+    }
+
+    void processNode(size_t start, size_t end, int currentDepth, const std::vector<ParticleOctreeEntry>& entries, 
+                    const std::vector<Particle>& particles, bool withskin, PairList& pairs) const{
+        size_t count = end - start;
+        if (count <= 1) return;
+        if (count <= static_cast<size_t>(leafCapacity_) || currentDepth >= maxDepth_) {
+            collideLeaf(start, end, entries, particles, withSkin, pairs);
+            return;
+        }
+        // 2. 計算當前 Depth 下，Octant (0~7) 位於 Morton Key 的位移量
+        int shift = 3 * (maxDepth_ - 1 - currentDepth);
+        // 3. 遍歷 8 個 Octant (0 ~ 7)，找出各自在 entries 陣列中的子區間 [childStart, childEnd)
+        size_t childStart = start;
+
+        for (int octant = 0; octant < 8; ++octant) {
+            if (childStart >= end) break; // 已經超出當前區間
+         // 尋找第一個「當前層級的 bit 值 > octant」的位置，作為邊界
+            auto it = std::lower_bound(
+                entries.begin() + childStart, 
+                entries.begin() + end, 
+                octant + 1,
+                [shift](const OctreeEntry& entry, int targetOctant) {
+                    int currentOctant = static_cast<int>((entry.key >> shift) & 7ULL);
+                    return currentOctant < targetOctant;
+                }
+            );
+
+            size_t childEnd = std::distance(entries.begin(), it);
+        // 如果這個 Octant 裡面有粒子，遞迴向下處理
+            if (childEnd > childStart) {
+                processNode(childStart, childEnd, currentDepth + 1, entries, particles, withSkin, pairs);
+            }
+
+            // 下一個 Octant 的起點就是上一個 Octant 的終點
+            childStart = childEnd;
+        }
+
+    }
+
 public:
     Octree(int maxDepth, int leafCapacity, float worldSize):maxDepth_(maxDepth), leafCapacity_(leafCapacity), worldSize_(worldSize){}
     PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
+        //1. cell to grid
+        std::vector<ParticleOctreeEntry> entries;
+        entries.reserve(particles.size());
+        for (size_t i = 0; i < particles.size(); ++i) {
+            glm::ivec3 cell = posToCell(particles[i].pos); 
+            uint64_t key = encodeMorton3D(cell);
+            entries.push_back({key, static_cast<int>(i)});
+        }
+        std::sort(entries.begin(), entries.end());
 
+        PairList pairs;
+        if (!entries.empty()) {
+            processNode();
+        }
+        return pairs;
     }
 
 };
