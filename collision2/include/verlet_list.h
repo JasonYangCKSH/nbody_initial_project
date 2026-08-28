@@ -13,14 +13,12 @@ inline void updateLocalSkin(std::vector<Particle>& particles, float K, float dt)
     }
 }
 
-
 inline void updateSkinRadius(std::vector<Particle>& particles) {
 
     for (auto& p : particles) {
         p.skin = p.radius;
     }
 }
-
 
 inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) {
     assert(cellSize > 0.0f && "message");
@@ -31,7 +29,6 @@ inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) 
         p.skin = std::clamp(p.skin, 0.0f, maxSkin);
     }
 }
-
 
 inline bool listStillValid(const std::vector<Particle>& particles) {
     for (const auto& p : particles) {
