@@ -10,7 +10,8 @@
 enum class ScenarioType {
     UnitTest_TwoOverLapping,
     UnitTest_BarelyTouching,
-    UnitTest_NoTouching
+    UnitTest_NoTouching,
+    UniformRandom
 };
 std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, float worldSize) {
     std::vector<Particle> particles;
@@ -40,6 +41,24 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
             break;
         }
         // --- 宏觀極端測試 ---
+        case ScenarioType::UniformRandom: {
+            particles.reserve(macroCount);
+            std::mt19937 rng(42); // 固定 seed 確保測試可重現
+            float halfSize = worldSize * 0.45f; // 留 5% 安全邊界避免出界
+            std::uniform_real_distribution<float> posDist(-halfSize, halfSize);
+            std::uniform_real_distribution<float> radiusDist(0.1f, 0.5f);
+
+            for (size_t i = 0; i < macroCount; ++i) {
+                Particle p;
+                p.pos = glm::vec3(posDist(rng), posDist(rng), posDist(rng));
+                p.radius = radiusDist(rng);
+                p.skin = 0.02f;
+                particles.push_back(p);
+            }
+            break;
+        }
+        
+        
         default: {
             break;
         }
@@ -48,15 +67,20 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
 }
 
 int main() {
-    std::vector<Particle> particles = generateScenario(ScenarioType::UnitTest_NoTouching, (size_t)10000, 25.0f);
+    std::vector<Particle> particles = generateScenario(ScenarioType::UniformRandom, (size_t)1500, 100.0f);
     PairList pairs1 = BruteForce(particles, false);
     broad::UniformGrid uni(0.8);
+    broad::Octree oct(1, 1, 100.0f);
     PairList pairs2 = uni.Build(particles, false);
-
+    PairList pairs3 = oct.Build(particles, false);
     for (auto& p1: pairs1) {
         std::cout << "[Brute Force]: " << p1.first << ", " << p1.second << std::endl;
     }
     for (auto& p2: pairs2) {
         std::cout << "[Uniform Grid]: " << p2.first << ", " << p2.second << std::endl;
-    
+    }
+    for (auto& p3: pairs3) {
+        std::cout << "[Octree]: " << p3.first << ", " << p3.second << std::endl;
+
+    }
 }

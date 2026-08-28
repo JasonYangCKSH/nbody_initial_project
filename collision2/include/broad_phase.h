@@ -144,15 +144,16 @@ private:
     int maxDepth_;
     int leafCapacity_;
     float worldSize_;
-    struct ParticleOctreeEntry {
+
+    struct OctreeEntry {
         uint64_t key;
         int particleIdx;
 
         bool operator<(const OctreeEntry& other) const {
             return key < other.key;
         }
-
     };
+
     static uint64_t expandBits3D(uint64_t vec) {
         vec &= 0x1FFFFFULL;
         vec = (vec | (vec << 32)) & 0x1F00000000FFFFULL;
@@ -164,33 +165,30 @@ private:
     }
 
     static uint64_t encodeMorton3D(glm::ivec3 gridCoord) {
-        uint64_t x = expandBits3D(static_cast<uint64_t>(cellCoord.x));
-        uint64_t y = expandBits3D(static_cast<uint64_t>(cellCoord.y));
-        uint64_t z = expandBits3D(static_cast<uint64_t>(cellCoord.z));
+        uint64_t x = expandBits3D(static_cast<uint64_t>(gridCoord.x));
+        uint64_t y = expandBits3D(static_cast<uint64_t>(gridCoord.y));
+        uint64_t z = expandBits3D(static_cast<uint64_t>(gridCoord.z));
         return (z << 2) | (y << 1) | x;
     }
 
     glm::ivec3 posToGrid(const glm::vec3& pos) const {
-        // 1. 將空間平移至原點為 (-worldSize_/2) 的正數空間 [0, worldSize_]
         glm::vec3 normalizedPos = pos + glm::vec3(worldSize_ * 0.5f);
-
-        // 2. 計算基礎 Grid 格子尺寸 (總寬度 / 總格數)
         float gridSize = worldSize_ / static_cast<float>(1 << maxDepth_);
         int maxGridIdx = (1 << maxDepth_) - 1;
-        // 3. 映射至整數網格座標 [0, 2^maxDepth - 1]
+
         int gx = std::clamp(static_cast<int>(glm::floor(normalizedPos.x / gridSize)), 0, maxGridIdx);
         int gy = std::clamp(static_cast<int>(glm::floor(normalizedPos.y / gridSize)), 0, maxGridIdx);
         int gz = std::clamp(static_cast<int>(glm::floor(normalizedPos.z / gridSize)), 0, maxGridIdx);
 
         return glm::ivec3(gx, gy, gz);
     }
+
     static bool checkOverlap(const Particle& p1, const Particle& p2, bool withSkin) {
         float radiusSum = p1.radius + p2.radius;
         if (withSkin) radiusSum += p1.skin + p2.skin;
         float distSq = glm::distance2(p1.pos, p2.pos);
         return distSq <= (radiusSum * radiusSum);
     }
-
 
     void collideLeaf(size_t start, size_t end,
                      const std::vector<OctreeEntry>& entries,
@@ -208,22 +206,24 @@ private:
         }
     }
 
-    void processNode(size_t start, size_t end, int currentDepth, const std::vector<ParticleOctreeEntry>& entries, 
-                    const std::vector<Particle>& particles, bool withskin, PairList& pairs) const{
+    void processNode(size_t start, size_t end, int currentDepth, 
+                     const std::vector<OctreeEntry>& entries, 
+                     const std::vector<Particle>& particles, 
+                     bool withSkin, PairList& pairs) const {
         size_t count = end - start;
         if (count <= 1) return;
+
         if (count <= static_cast<size_t>(leafCapacity_) || currentDepth >= maxDepth_) {
             collideLeaf(start, end, entries, particles, withSkin, pairs);
             return;
         }
-        // 2. 計算當前 Depth 下，Octant (0~7) 位於 Morton Key 的位移量
+
         int shift = 3 * (maxDepth_ - 1 - currentDepth);
-        // 3. 遍歷 8 個 Octant (0 ~ 7)，找出各自在 entries 陣列中的子區間 [childStart, childEnd)
         size_t childStart = start;
 
         for (int octant = 0; octant < 8; ++octant) {
-            if (childStart >= end) break; // 已經超出當前區間
-         // 尋找第一個「當前層級的 bit 值 > octant」的位置，作為邊界
+            if (childStart >= end) break;
+
             auto it = std::lower_bound(
                 entries.begin() + childStart, 
                 entries.begin() + end, 
@@ -235,37 +235,37 @@ private:
             );
 
             size_t childEnd = std::distance(entries.begin(), it);
-        // 如果這個 Octant 裡面有粒子，遞迴向下處理
+
             if (childEnd > childStart) {
                 processNode(childStart, childEnd, currentDepth + 1, entries, particles, withSkin, pairs);
             }
 
-            // 下一個 Octant 的起點就是上一個 Octant 的終點
             childStart = childEnd;
         }
-
     }
 
 public:
-    Octree(int maxDepth, int leafCapacity, float worldSize):maxDepth_(maxDepth), leafCapacity_(leafCapacity), worldSize_(worldSize){}
+    Octree(int maxDepth, int leafCapacity, float worldSize)
+        : maxDepth_(maxDepth), leafCapacity_(leafCapacity), worldSize_(worldSize) {}
+
     PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        //1. cell to grid
-        std::vector<ParticleOctreeEntry> entries;
+        std::vector<OctreeEntry> entries;
         entries.reserve(particles.size());
+
         for (size_t i = 0; i < particles.size(); ++i) {
-            glm::ivec3 cell = posToCell(particles[i].pos); 
-            uint64_t key = encodeMorton3D(cell);
+            glm::ivec3 grid = posToGrid(particles[i].pos);
+            uint64_t key = encodeMorton3D(grid);
             entries.push_back({key, static_cast<int>(i)});
         }
+
         std::sort(entries.begin(), entries.end());
 
         PairList pairs;
         if (!entries.empty()) {
-            processNode();
+            processNode(0, entries.size(), 0, entries, particles, withSkin, pairs);
         }
         return pairs;
     }
-
 };
 
 } // namespace broad
