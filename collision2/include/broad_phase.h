@@ -6,7 +6,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp> // 為了使用 glm::distance2
 
-
+// 假設 Particle 定義於此或外部引入
+// #include "particle.h"
 
 using PairList = std::vector<std::pair<int, int>>;
 
@@ -15,12 +16,14 @@ namespace broad {
 inline PairList BruteForce(const std::vector<Particle>& particles, bool withSkin) {
     PairList pairs;
     const size_t n = particles.size();
-    for (size_t i = 0; i < particles.size(); ++i) {
+    for (size_t i = 0; i < n; ++i) {
         for (size_t j = i + 1; j < n; ++j) {
             float radiusSum = particles[i].radius + particles[j].radius;
             if (withSkin) radiusSum += particles[i].skin + particles[j].skin;
             float dist = glm::distance2(particles[i].pos, particles[j].pos); 
-            if (dist <= radiusSum * radiusSum) pairs.emplace_back((int)i, (int)j);
+            if (dist <= radiusSum * radiusSum) {
+                pairs.emplace_back(static_cast<int>(i), static_cast<int>(j));
+            }
         }
     }
     return pairs;
@@ -33,6 +36,11 @@ private:
     struct ParticleCellEntry {
         uint64_t key;
         int particleIdx;
+
+        // 重載 < 運算子，方便 std::sort 與 std::equal_range 直接使用
+        bool operator<(const ParticleCellEntry& other) const {
+            return key < other.key;
+        }
     };
 
     static uint64_t expandBits3D(uint64_t vec) {
@@ -76,14 +84,13 @@ public:
         for (size_t i = 0; i < particles.size(); ++i) {
             glm::ivec3 cell = posToCell(particles[i].pos); 
             uint64_t key = encodeMorton3D(cell);
-            entries.emplace_back(ParticleCellEntry{key, static_cast<int>(i)});
+            entries.push_back({key, static_cast<int>(i)});
         }
 
-        std::sort(entries.begin(), entries.end(), [](const ParticleCellEntry& a, const ParticleCellEntry& b){
-            return a.key < b.key;
-        });
+        // 使用內部定義的 operator< 進行排序
+        std::sort(entries.begin(), entries.end());
 
-        // 2. 從左下到右上 traverse 每個 cell
+        // 2. 從左下到右上 traverse 每個 cell (13 個前向搜尋半導體)
         static const glm::ivec3 kForwardOffsets[13] = {
             {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {-1, 1, 0},
             {1, 0, -1}, {1, 1, -1}, {0, 1, -1}, {-1, 1, -1},
@@ -94,10 +101,6 @@ public:
         PairList pairs;
         size_t n = entries.size();
         size_t cellStart = 0;
-
-        auto keyCompare = [](const ParticleCellEntry& entry, uint64_t val) {
-            return entry.key < val;
-        };
 
         while (cellStart < n) {
             uint64_t currentKey = entries[cellStart].key;
@@ -112,6 +115,7 @@ public:
                     int idxA = entries[i].particleIdx;
                     int idxB = entries[j].particleIdx;
                     if (checkOverlap(particles[idxA], particles[idxB], withSkin)) {
+                        if (idxA > idxB) std::swap(idxA, idxB);
                         pairs.emplace_back(idxA, idxB);
                     }
                 }
@@ -123,15 +127,19 @@ public:
                 glm::ivec3 targetCell = currentCell + offset;
                 uint64_t targetKey = encodeMorton3D(targetCell);
 
-                // 用二分搜尋快速定位目標鄰居 Cell 在 entries 中的範圍
-                auto range = std::equal_range(entries.begin(), entries.end(), targetKey, keyCompare);
+                // 修正：使用 Dummy Entry 進行安全的 equal_range 搜尋
+                ParticleCellEntry targetDummy{targetKey, 0};
+                auto range = std::equal_range(entries.begin(), entries.end(), targetDummy);
 
                 for (size_t i = cellStart; i < cellEnd; ++i) {
                     int idxA = entries[i].particleIdx;
                     for (auto it = range.first; it != range.second; ++it) {
                         int idxB = it->particleIdx;
                         if (checkOverlap(particles[idxA], particles[idxB], withSkin)) {
-                            pairs.emplace_back(idxA, idxB);
+                            int a = idxA;
+                            int b = idxB;
+                            if (a > b) std::swap(a, b); // 規範化 pair 索引順序
+                            pairs.emplace_back(a, b);
                         }
                     }
                 }
@@ -152,6 +160,5 @@ private:
 public:
 
 };
-
 
 } // namespace broad
