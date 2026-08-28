@@ -9,8 +9,8 @@
 
 enum class ScenarioType {
     UnitTest_TwoOverLapping,
-    UnitTest_BarelyTouching
-
+    UnitTest_BarelyTouching,
+    UnitTest_NoTouching
 };
 std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, float worldSize) {
     std::vector<Particle> particles;
@@ -48,7 +48,7 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
 }
 
 int main() {
-    std::vector<Particle> particles = generateScenario(ScenarioType::UnitTest_BarelyTouching, (size_t)10000, 25.0f);
+    std::vector<Particle> particles = generateScenario(ScenarioType::UnitTest_NoTouching, (size_t)10000, 25.0f);
     PairList pairs1 = BruteForce(particles, false);
     broad::UniformGrid uni(0.8);
     PairList pairs2 = uni.Build(particles, false);
