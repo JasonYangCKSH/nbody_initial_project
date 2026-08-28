@@ -142,8 +142,51 @@ public:
 
 class Octree {
 private:
+    int maxDepth_;
+    int leafCapacity_;
+    float worldSize_;
+    struct OctreeEntry {
+        uint64_t key;
+        int particleIdx;
 
+    };
+    static uint64_t expandBits3D(uint64_t vec) {
+        vec &= 0x1FFFFFULL;
+        vec = (vec | (vec << 32)) & 0x1F00000000FFFFULL;
+        vec = (vec | (vec << 16)) & 0x1F0000FF0000FFULL;
+        vec = (vec | (vec <<  8)) & 0x100F00F00F00F00FULL;
+        vec = (vec | (vec <<  4)) & 0x10C30C30C30C30C3ULL;
+        vec = (vec | (vec <<  2)) & 0x1249249249249249ULL;
+        return vec;
+    }
+
+    static uint64_t encodeMorton3D(glm::ivec3 cellCoord) {
+        uint64_t x = expandBits3D(static_cast<uint64_t>(cellCoord.x));
+        uint64_t y = expandBits3D(static_cast<uint64_t>(cellCoord.y));
+        uint64_t z = expandBits3D(static_cast<uint64_t>(cellCoord.z));
+        return (z << 2) | (y << 1) | x;
+    }
+
+    glm::ivec3 posToGrid(const glm::vec3& pos) const {
+        // 1. 將空間平移至原點為 (-worldSize_/2) 的正數空間 [0, worldSize_]
+        glm::vec3 normalizedPos = pos + glm::vec3(worldSize_ * 0.5f);
+
+        // 2. 計算基礎 Grid 格子尺寸 (總寬度 / 總格數)
+        float gridSize = worldSize_ / static_cast<float>(1 << maxDepth_);
+        int maxGridIdx = (1 << maxDepth_) - 1;
+
+        // 3. 映射至整數網格座標 [0, 2^maxDepth - 1]
+        int gx = std::clamp(static_cast<int>(glm::floor(normalizedPos.x / gridSize)), 0, maxGridIdx);
+        int gy = std::clamp(static_cast<int>(glm::floor(normalizedPos.y / gridSize)), 0, maxGridIdx);
+        int gz = std::clamp(static_cast<int>(glm::floor(normalizedPos.z / gridSize)), 0, maxGridIdx);
+
+        return glm::ivec3(gx, gy, gz);
+    }
 public:
+    Octree(int maxDepth, int leafCapacity, float worldSize):maxDepth_(maxDepth), leafCapacity_(leafCapacity), worldSize_(worldSize){}
+    PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
+
+    }
 
 };
 
