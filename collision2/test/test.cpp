@@ -32,7 +32,13 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
             break;
         }
 
-
+        case ScenarioType::UnitTest_NoTouching: {
+            Particle p1, p2;
+            p1.pos = glm::vec3(0.0f, 0.0f, 0.0f); p1.radius = 0.5f; p1.skin = 0.0f;
+            p2.pos = glm::vec3(2.0f, 0.0f, 0.0f); p2.radius = 0.5f; p2.skin = 0.0f;
+            particles = {p1, p2};
+            break;
+        }
         // --- 宏觀極端測試 ---
         default: {
             break;
