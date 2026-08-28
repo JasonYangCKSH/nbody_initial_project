@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -5,11 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp> // 為了使用 glm::distance2
 
-struct Particle {
-    glm::vec3 pos;
-    float radius;
-    float skin;
-};
+
 
 using PairList = std::vector<std::pair<int, int>>;
 
@@ -148,5 +145,13 @@ public:
         return pairs;
     }
 };
+
+class Octree {
+private:
+
+public:
+
+};
+
 
 } // namespace broad
