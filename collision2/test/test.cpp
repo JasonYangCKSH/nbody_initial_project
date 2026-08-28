@@ -12,7 +12,8 @@ enum class ScenarioType {
     UnitTest_TwoOverLapping,
     UnitTest_BarelyTouching,
     UnitTest_NoTouching,
-    UniformRandom
+    UniformRandom,
+    DenseCluster
 };
 std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, float worldSize) {
     std::vector<Particle> particles;
@@ -58,8 +59,22 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
             }
             break;
         }
-        
-        
+        case ScenarioType::DenseCluster: {
+            particles.reserve(macroCount);
+            std::mt19937 rng(42);
+            // 使用高斯分佈 (標準差設為世界大小的 2%)，強行將 99% 粒子塞在中心極小區域
+            std::normal_distribution<float> posDist(0.0f, worldSize * 0.02f);
+            std::uniform_real_distribution<float> radiusDist(0.1f, 0.5f);
+
+            for (size_t i = 0; i < macroCount; ++i) {
+                Particle p;
+                p.pos = glm::vec3(posDist(rng), posDist(rng), posDist(rng));
+                p.radius = radiusDist(rng);
+                p.skin = 0.02f;
+                particles.push_back(p);
+            }
+            break;        
+        }
         default: {
             break;
         }
@@ -68,10 +83,10 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
 }
 
 int main() {
-    std::vector<Particle> particles = generateScenario(ScenarioType::UniformRandom, (size_t)50000, 100.0f);
+    std::vector<Particle> particles = generateScenario(ScenarioType::DenseCluster, (size_t)50000, 100.0f);
     // 1. BruteForce
     auto start1 = std::chrono::high_resolution_clock::now();
-    PairList pairs1 = BruteForce(particles);
+    //PairList pairs1 = BruteForce(particles);
     auto end1 = std::chrono::high_resolution_clock::now();
 
     // 2. Uniform Grid
@@ -91,7 +106,7 @@ int main() {
               << std::chrono::duration<double, std::milli>(end2 - start2).count() << " ms\n";
     std::cout << "Octree: " 
               << std::chrono::duration<double, std::milli>(end3 - start3).count() << " ms\n";
-    for (auto& p1: pairs1) {
+    /*for (auto& p1: pairs1) {
         std::cout << "[Brute Force]: " << p1.first << ", " << p1.second << std::endl;
     }
     for (auto& p2: pairs2) {
@@ -100,5 +115,5 @@ int main() {
     for (auto& p3: pairs3) {
         std::cout << "[Octree]: " << p3.first << ", " << p3.second << std::endl;
 
-    }
+    }*/
 }
