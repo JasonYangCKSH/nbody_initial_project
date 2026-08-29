@@ -5,7 +5,7 @@
 using PairList = std::vector<std::pair<int, int>>;
 struct Particle {
     glm::vec3 pos{0.0};
-    glm::vec3 vec{0.0};
+    glm::vec3 vel{0.0};
     glm::vec3 acc{0.0};
     float radius = 0.0f;
 

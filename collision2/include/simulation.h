@@ -1,12 +1,16 @@
 #pragma once
+#define GLM_ENABLE_EXPERIMENTAL
 #include "particle.h"
 #include "broad_phase.h"
 #include "narrow_phase.h"
 #include "verlet_buffer.h"
+#include "brute_force.h"
 #include "scenario.h"
 #include <vector>
 #include <chrono>
 #include <iostream>
+#include <optional>
+#include <variant>
 #include <glm/glm.hpp>
 
 struct StepStats {
@@ -30,15 +34,14 @@ private:
     std::vector<Particle> particles_;
 
     StructureMode mode_;
-    std::unique_ptr<broad::SpatialStructure> structure_;  // 只有UniformGrid/Octree用得到,brute force時可以是nullptr
-    verlet::VerletBufferController verletCtrl_;
+    std::optional<std::variant<broad::UniformGrid, broad::Octree>> structure_;  // 只有UniformGrid/Octree用得到,brute force時可以是std::nullopt
     bool skinEnabled_;
 
     PairList cachedPairs_;
     bool hasList_ = false;
 public:
     Simulation(int totalTimeFrame, StructureMode mode,
-               std::unique_ptr<broad::SpatialStructure> structure,
+               std::optional<std::variant<broad::UniformGrid, broad::Octree>> structure,
                bool skinEnabled)
         : totalTimeFrame_(totalTimeFrame), mode_(mode),
           structure_(std::move(structure)), skinEnabled_(skinEnabled) {}
@@ -63,13 +66,15 @@ public:
 
     StepStats stepSpatialStructure(StepStats& stats) {
         // 這裡沿用共同介面的邏輯（Build → narrow-phase）
-        bool needsBuild = !hasList_ || (skinEnabled_ && !verletCtrl_.listStillValid(particles_));
+        bool needsBuild = !hasList_ || (skinEnabled_ && !verlet::listStillValid(particles_));
         // TODO: 上次提醒過你的 bug 還在這裡——
         //       skinEnabled_==false 時，這個判斷式對嗎？
 
         if (needsBuild) {
-            cachedPairs_ = structure_->Build(particles_, skinEnabled_);
-            if (skinEnabled_) verletCtrl_.recordSnapshot(particles_);
+            cachedPairs_ = std::visit([this](auto& s) {
+                return s.Build(particles_, skinEnabled_);
+            }, *structure_);
+            if (skinEnabled_) verlet::recordBroadPhaseSnapshot(particles_);
             hasList_ = true;
             stats.broadPhaseExecuted = true;
         }

@@ -4,16 +4,12 @@
 #include <algorithm>
 #include <cstdint>
 #include <glm/glm.hpp>
-#include <glm/gtx/norm.hpp> // 為了使用 glm::distance2
-
-// 假設 Particle 定義於此或外部引入
-// #include "particle.h"
+#include <glm/gtx/norm.hpp> 
+#include "particle.h"
 
 
 
 namespace broad {
-
-
 
 class UniformGrid {
 private:
