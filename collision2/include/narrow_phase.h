@@ -6,7 +6,7 @@
 namespace narrow {
 
 inline float overlap(const Particle& a, const Particle& b) {
-    return a.radius + b.radius - glm::length(a.pos - b.pos);
+    return (a.radius + b.radius)*(a.radius + b.radius) - glm::distance2(a.pos, b.pos);
 }
 
 inline bool colliding(const Particle& a, const Particle& b) {
