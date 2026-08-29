@@ -9,7 +9,14 @@
 #include <iostream>
 #include <glm/glm.hpp>
 
-
+struct StepStats {
+    bool broadPhaseExecuted = false;
+    double broadPhaseSeconds = 0.0;
+    double narrowPhaseSeconds = 0.0;
+    int broadPhasePairs = 0;
+    int collisionCount = 0;
+    // TODO: 你覺得還需要記錄哪些？(對應你之前想的CSV欄位)
+};
 enum class StructureMode {
     BruteForce,
     UniformGrid,
