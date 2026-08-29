@@ -83,10 +83,10 @@ std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, flo
 }
 
 int main() {
-    std::vector<Particle> particles = generateScenario(ScenarioType::DenseCluster, (size_t)50000, 100.0f);
+    std::vector<Particle> particles = generateScenario(ScenarioType::DenseCluster, (size_t)1500, 100.0f);
     // 1. BruteForce
     auto start1 = std::chrono::high_resolution_clock::now();
-    //PairList pairs1 = BruteForce(particles);
+    PairList pairs1 = BruteForce(particles);
     auto end1 = std::chrono::high_resolution_clock::now();
 
     // 2. Uniform Grid
@@ -100,12 +100,15 @@ int main() {
     auto start3 = std::chrono::high_resolution_clock::now();
     PairList pairs3 = oct.Build(particles, false);
     auto end3 = std::chrono::high_resolution_clock::now();
-    std::cout << "BruteForce: " 
-              << std::chrono::duration<double, std::milli>(end1 - start1).count() << " ms\n";
-    std::cout << "UniformGrid: " 
-              << std::chrono::duration<double, std::milli>(end2 - start2).count() << " ms\n";
-    std::cout << "Octree: " 
-              << std::chrono::duration<double, std::milli>(end3 - start3).count() << " ms\n";
+
+    std::cout << pairs1.size() << " " << pairs2.size() << " " << pairs3.size();
+
+    //std::cout << "BruteForce: " 
+    //          << std::chrono::duration<double, std::milli>(end1 - start1).count() << " ms\n";
+    //std::cout << "UniformGrid: " 
+    //          << std::chrono::duration<double, std::milli>(end2 - start2).count() << " ms\n";
+    //std::cout << "Octree: " 
+    //          << std::chrono::duration<double, std::milli>(end3 - start3).count() << " ms\n";
     /*for (auto& p1: pairs1) {
         std::cout << "[Brute Force]: " << p1.first << ", " << p1.second << std::endl;
     }
