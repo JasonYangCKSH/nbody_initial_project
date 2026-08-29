@@ -9,7 +9,7 @@
 #include <vector>
 #include <chrono>
 #include <iostream>
-#include <optional>
+#include <memory>
 #include <variant>
 #include <glm/glm.hpp>
 
@@ -34,14 +34,14 @@ private:
     std::vector<Particle> particles_;
 
     StructureMode mode_;
-    std::optional<std::variant<broad::UniformGrid, broad::Octree>> structure_;  // 只有UniformGrid/Octree用得到,brute force時可以是std::nullopt
+    std::unique_ptr<std::variant<broad::UniformGrid, broad::Octree>> structure_;  // 只有UniformGrid/Octree用得到,brute force時可以是nullptr
     bool skinEnabled_;
 
     PairList cachedPairs_;
     bool hasList_ = false;
 public:
     Simulation(int totalTimeFrame, StructureMode mode,
-               std::optional<std::variant<broad::UniformGrid, broad::Octree>> structure,
+               std::unique_ptr<std::variant<broad::UniformGrid, broad::Octree>> structure,
                bool skinEnabled)
         : totalTimeFrame_(totalTimeFrame), mode_(mode),
           structure_(std::move(structure)), skinEnabled_(skinEnabled) {}
