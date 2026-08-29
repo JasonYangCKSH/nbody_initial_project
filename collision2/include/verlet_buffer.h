@@ -9,7 +9,7 @@ namespace verlet {
 
 inline void updateLocalSkin(std::vector<Particle>& particles, float K, float dt) {
     for (auto& p : particles) {
-        p.skin = K * glm::length(p.vel) * dt + 0.5f * glm::length(p.acc) * dt * dt;
+        p.skin = K * glm::length(p.vel) * dt + 0.5f * K * K * glm::length(p.acc) * dt * dt;
     }
 }
 
