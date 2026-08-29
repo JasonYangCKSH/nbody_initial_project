@@ -51,13 +51,7 @@ private:
         return glm::ivec3(glm::floor(pos / cellSize_));
     }
 
-    // 輔助函式：檢測兩粒子是否碰撞/重疊
-    static bool checkOverlap(const Particle& p1, const Particle& p2, bool withSkin) {
-        float radiusSum = p1.radius + p2.radius;
-        if (withSkin) radiusSum += p1.skin + p2.skin;
-        float distSq = glm::distance2(p1.pos, p2.pos);
-        return distSq <= (radiusSum * radiusSum);
-    }
+
 
 public:
     explicit UniformGrid(float cellSize) : cellSize_(cellSize) {}
@@ -99,10 +93,9 @@ public:
                 for (size_t j = i + 1; j < cellEnd; ++j) {
                     int idxA = entries[i].particleIdx;
                     int idxB = entries[j].particleIdx;
-                    if (checkOverlap(particles[idxA], particles[idxB], withSkin)) {
-                        if (idxA > idxB) std::swap(idxA, idxB);
-                        pairs.emplace_back(idxA, idxB);
-                    }
+
+                    if (idxA > idxB) std::swap(idxA, idxB);
+                    pairs.emplace_back(idxA, idxB);
                 }
             }
 
@@ -120,12 +113,10 @@ public:
                     int idxA = entries[i].particleIdx;
                     for (auto it = range.first; it != range.second; ++it) {
                         int idxB = it->particleIdx;
-                        if (checkOverlap(particles[idxA], particles[idxB], withSkin)) {
-                            int a = idxA;
-                            int b = idxB;
-                            if (a > b) std::swap(a, b); // 規範化 pair 索引順序
-                            pairs.emplace_back(a, b);
-                        }
+                        int a = idxA;
+                        int b = idxB;
+                        if (a > b) std::swap(a, b); // 規範化 pair 索引順序
+                        pairs.emplace_back(a, b);    
                     }
                 }
             }
@@ -183,12 +174,7 @@ private:
         return glm::ivec3(gx, gy, gz);
     }
 
-    static bool checkOverlap(const Particle& p1, const Particle& p2, bool withSkin) {
-        float radiusSum = p1.radius + p2.radius;
-        if (withSkin) radiusSum += p1.skin + p2.skin;
-        float distSq = glm::distance2(p1.pos, p2.pos);
-        return distSq <= (radiusSum * radiusSum);
-    }
+
 
     void collideLeaf(size_t start, size_t end,
                      const std::vector<OctreeEntry>& entries,
@@ -198,10 +184,9 @@ private:
             for (size_t j = i + 1; j < end; ++j) {
                 int idxA = entries[i].particleIdx;
                 int idxB = entries[j].particleIdx;
-                if (checkOverlap(particles[idxA], particles[idxB], withSkin)) {
-                    if (idxA > idxB) std::swap(idxA, idxB);
-                    pairs.emplace_back(idxA, idxB);
-                }
+                if (idxA > idxB) std::swap(idxA, idxB);
+                pairs.emplace_back(idxA, idxB);
+                
             }
         }
     }
