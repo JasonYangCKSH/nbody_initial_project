@@ -1,5 +1,4 @@
 #pragma once
-#define GLM_ENABLE_EXPERIMENTAL
 #include "particle.h"
 #include "broad_phase.h"
 #include "narrow_phase.h"
@@ -48,20 +47,11 @@ private:
 
     PairList cachedPairs_;
     bool hasList_ = false;
-public:
-    Simulation(int totalTimeFrame, StructureMode mode,
-               std::unique_ptr<std::variant<broad::UniformGrid, broad::Octree>> structure,
-               bool skinEnabled)
-        : totalTimeFrame_(totalTimeFrame), mode_(mode),
-          structure_(std::move(structure)), skinEnabled_(skinEnabled) {}
-    void InitializeParticles(std::vector<Particle> initial) {
-        particles_ = std::move(initial);
-    }
     StepStats step() {
         StepStats stats;
         if (mode_ == StructureMode::BruteForce)
             return stepBruteForce(stats);
-        
+
         return stepSpatialStructure(stats);
     }
 
@@ -74,6 +64,7 @@ public:
                 }
             }
         }
+        applyCollisionResponse(particles_, stats.collisions);
         integrate(particles_);
         ++currentTimeFrame_;
         return stats;
@@ -86,7 +77,11 @@ public:
             cachedPairs_ = std::visit([this](auto& s) {
                 return s.Build(particles_, skinEnabled_);
             }, *structure_);
-            if (skinEnabled_) verlet::recordBroadPhaseSnapshot(particles_);
+            if (skinEnabled_) {
+                verlet::updateLocalSkin(particles_, cfg_.K, cfg_.dt);
+                verlet::capSkinToCellSize(particles_, cfg_.cellSize);
+                verlet::recordBroadPhaseSnapshot(particles_);
+            }
             hasList_ = true;
             stats.broadPhaseExecuted = true;
         }
@@ -99,9 +94,29 @@ public:
             }
         }
 
+        applyCollisionResponse(particles_, stats.collisions);
         integrate(particles_);
         ++currentTimeFrame_;
         return stats;
+    }
+
+    // Penalty-based contact response: overlapping particles push each other
+    // apart with a spring force (F = K * penetration), feeding into acc so
+    // integrate() carries it into this step's velocity/position update.
+    void applyCollisionResponse(std::vector<Particle>& particles,
+                                 const std::vector<std::pair<int, int>>& collisions) {
+        for (auto [i, j] : collisions) {
+            Particle& a = particles[i];
+            Particle& b = particles[j];
+            glm::vec3 delta = a.pos - b.pos;
+            float dist = glm::length(delta);
+            float penetration = (a.radius + b.radius) - dist;
+            if (penetration <= 0.0f) continue;
+            glm::vec3 normal = (dist > 1e-6f) ? (delta / dist) : glm::vec3(0.0f, 1.0f, 0.0f);
+            glm::vec3 force = cfg_.K * penetration * normal;
+            a.acc += force;
+            b.acc -= force;
+        }
     }
 
     void integrate(std::vector<Particle>& particles) {
@@ -113,4 +128,30 @@ public:
             p.acc = newAcc;
         }
     }
+public:
+    Simulation(int totalTimeFrame, StructureMode mode,
+               std::unique_ptr<std::variant<broad::UniformGrid, broad::Octree>> structure,
+               bool skinEnabled, SimConfig cfg = SimConfig{})
+        : totalTimeFrame_(totalTimeFrame), mode_(mode),
+          structure_(std::move(structure)), skinEnabled_(skinEnabled), cfg_(cfg) {}
+
+    void InitializeParticles(std::vector<Particle> initial) {
+        particles_ = std::move(initial);
+        currentTimeFrame_ = 0;
+    }
+
+    std::vector<StepStats> runForFrames(int totalFrames) {
+        std::vector<StepStats> history;
+        history.reserve(totalFrames);
+
+        const int remainingFrames = std::max(0, totalTimeFrame_ - currentTimeFrame_);
+        const int framesToRun = std::min(totalFrames, remainingFrames);
+
+        for (int i = 0; i < framesToRun; ++i) {
+            history.push_back(step());
+        }
+
+        return history;
+    }
+
 };

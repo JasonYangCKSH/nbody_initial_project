@@ -182,22 +182,43 @@ private:
                 int idxB = entries[j].particleIdx;
                 if (idxA > idxB) std::swap(idxA, idxB);
                 pairs.emplace_back(idxA, idxB);
-                
+
             }
         }
+    }
+
+    // A split into 8 octants is only safe if no particle's collision reach
+    // (radius, plus skin buffer if enabled) crosses the shared mid-planes —
+    // otherwise a colliding pair could be separated into different octants
+    // and never get compared again (collideLeaf only tests within one node).
+    bool canSplit(size_t start, size_t end,
+                  const std::vector<OctreeEntry>& entries,
+                  const std::vector<Particle>& particles,
+                  bool withSkin, const glm::vec3& nodeMin, float nodeSize) const {
+        glm::vec3 mid = nodeMin + glm::vec3(nodeSize * 0.5f);
+        for (size_t i = start; i < end; ++i) {
+            const Particle& p = particles[entries[i].particleIdx];
+            float reach = p.radius + (withSkin ? p.skin : 0.0f);
+            glm::vec3 d = glm::abs(p.pos - mid);
+            if (d.x <= reach || d.y <= reach || d.z <= reach) return false;
+        }
+        return true;
     }
 
     void processNode(size_t start, size_t end, int currentDepth,
                      const std::vector<OctreeEntry>& entries,
                      const std::vector<Particle>& particles,
-                     bool withSkin, PairList& pairs) const {
+                     bool withSkin, const glm::vec3& nodeMin, float nodeSize,
+                     PairList& pairs) const {
         size_t count = end - start;
         if (count <= 1) return;
-        if (count <= static_cast<size_t>(leafCapacity_) || currentDepth >= maxDepth_) {
+        bool atCapacity = count <= static_cast<size_t>(leafCapacity_) || currentDepth >= maxDepth_;
+        if (atCapacity || !canSplit(start, end, entries, particles, withSkin, nodeMin, nodeSize)) {
             collideLeaf(start, end, entries, particles, withSkin, pairs);
             return;
         }
         int shift = 3 * (maxDepth_ - 1 - currentDepth);
+        float childSize = nodeSize * 0.5f;
         size_t childStart = start;
         for (int octant = 0; octant < 8; ++octant) {
             if (childStart >= end) break;
@@ -212,7 +233,12 @@ private:
             );
             size_t childEnd = std::distance(entries.begin(), it);
             if (childEnd > childStart) {
-                processNode(childStart, childEnd, currentDepth + 1, entries, particles, withSkin, pairs);
+                glm::vec3 childMin = nodeMin + glm::vec3(
+                    (octant & 1) ? childSize : 0.0f,
+                    (octant & 2) ? childSize : 0.0f,
+                    (octant & 4) ? childSize : 0.0f);
+                processNode(childStart, childEnd, currentDepth + 1, entries, particles,
+                            withSkin, childMin, childSize, pairs);
             }
             childStart = childEnd;
         }
@@ -236,7 +262,8 @@ public:
 
         PairList pairs;
         if (!entries.empty()) {
-            processNode(0, entries.size(), 0, entries, particles, withSkin, pairs);
+            glm::vec3 rootMin(-worldSize_ * 0.5f);
+            processNode(0, entries.size(), 0, entries, particles, withSkin, rootMin, worldSize_, pairs);
         }
         return pairs;
     }

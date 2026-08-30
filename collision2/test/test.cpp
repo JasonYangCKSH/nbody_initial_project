@@ -7,6 +7,7 @@
 #include "particle.h"
 #include "broad_phase.h"
 #include "brute_force.h"
+#include "simulation.h"
 
 enum class ScenarioType {
     UnitTest_TwoOverLapping,

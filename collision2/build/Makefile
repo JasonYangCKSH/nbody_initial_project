@@ -117,6 +117,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named bench
+
+# Build rule for target.
+bench: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bench
+.PHONY : bench
+
+# fast build rule for target.
+bench/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/build
+.PHONY : bench/fast
+
+#=============================================================================
 # Target rules for targets named test
 
 # Build rule for target.
@@ -128,6 +141,30 @@ test: cmake_check_build_system
 test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
 .PHONY : test/fast
+
+bench/bench.o: bench/bench.cpp.o
+.PHONY : bench/bench.o
+
+# target to build an object file
+bench/bench.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.o
+.PHONY : bench/bench.cpp.o
+
+bench/bench.i: bench/bench.cpp.i
+.PHONY : bench/bench.i
+
+# target to preprocess a source file
+bench/bench.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.i
+.PHONY : bench/bench.cpp.i
+
+bench/bench.s: bench/bench.cpp.s
+.PHONY : bench/bench.s
+
+# target to generate assembly for a file
+bench/bench.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.s
+.PHONY : bench/bench.cpp.s
 
 test/test.o: test/test.cpp.o
 .PHONY : test/test.o
@@ -161,7 +198,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... bench"
 	@echo "... test"
+	@echo "... bench/bench.o"
+	@echo "... bench/bench.i"
+	@echo "... bench/bench.s"
 	@echo "... test/test.o"
 	@echo "... test/test.i"
 	@echo "... test/test.s"
