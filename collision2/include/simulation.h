@@ -19,20 +19,22 @@ enum class Method {
 
 // 一次模擬跑期間固定不變的參數
 struct SimulationConfig {
-    // 基礎
-    float dt = 1.0f / 60.0f;
-    float K = 2.0f;  // skin 公式的 K 值
-    bool hasSkin = false;
+    float dt;
+    float K;
+    bool hasSkin;
 
-    Method method = Method::UniformGrid;
+    Method method;
+    float worldSize;
 
-    // uniform grid 專屬
-    float cellSize = 1.0f;
-
-    // octree 專屬
-    int maxDepth = 8;
-    int leafCapacity = 8;
-    float worldSize = 100.0f;
+    float cellSize;
+    int maxDepth;
+    int leafCapacity;
+    SimulationConfig(
+        float dt = 1.0f / 60.0f, float K = 2.0f, bool hasSkin = false,
+        Method method = Method::UniformGrid, float cellSize = 1.0f,
+        int maxDepth = 8, int leafCapacity = 8, float worldSize = 100.0f
+    ): dt(dt),K(K),hasSkin(hasSkin),method(method),cellSize(cellSize),
+       maxDepth(maxDepth),leafCapacity(leafCapacity),worldSize(worldSize){}
 };
 
 // 每一幀量測到的結果，供 bench/test 讀取

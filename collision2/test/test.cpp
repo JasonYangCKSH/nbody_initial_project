@@ -8,23 +8,25 @@ int main() {
     float worldSize = 100.0f;
 
     // build particles scene-----------------------------------------------------
-    std::vector<Particle> particles = scenario::uniformCloud(10000, worldSize, 1.0f, 1.0f );
+    //auto particles = scenario::two_particle_bounce_scenario();
+    std::vector<Particle> particles = scenario::explosion(10000, worldSize, 1.0f, 1.0f );
     // --------------------------------------------------------------
 
     // set up configuration------------------------------------------
-    SimulationConfig cfg;
-    cfg.dt = 1.0f / 60.0f;
-    cfg.K = 2.0f;
-    cfg.method = Method::Octree;
-    cfg.hasSkin = true;
-    cfg.cellSize = 1.0f;
-    cfg.maxDepth = 7;
-    cfg.leafCapacity = 200;
-    cfg.worldSize = worldSize;
+    SimulationConfig cfg(
+        1.0f / 60.0f,       // dt
+        2.0f,                // K
+        true,                // hasSkin
+        Method::Octree,      // method
+        1.0f,                // cellSize
+        7,                   // maxDepth
+        2,                 // leafCapacity
+        worldSize            // worldSize
+    );
     // --------------------------------------------------------------
     
     // build Simulation system---------------------------------------
-    int totalFrames = 2;
+    int totalFrames = 5;
     Simulation sim(particles, cfg, totalFrames);
     std::vector<FrameStats> frameStats;
     frameStats = sim.run();
