@@ -3,6 +3,8 @@
 #include <utility>
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp> 
 #include "particle.h"
@@ -48,6 +50,26 @@ private:
     }
 
 
+    mutable int cachedCellRadius_ = -1;
+    mutable std::vector<glm::ivec3> cachedForwardOffsets_;
+
+    const std::vector<glm::ivec3>& forwardOffsetsFor(int cellRadius) const {
+        if (cellRadius != cachedCellRadius_) {
+            cachedForwardOffsets_.clear();
+            for (int dz = -cellRadius; dz <= cellRadius; ++dz) {
+                for (int dy = -cellRadius; dy <= cellRadius; ++dy) {
+                    for (int dx = -cellRadius; dx <= cellRadius; ++dx) {
+                        if (dx == 0 && dy == 0 && dz == 0) continue;
+                        bool forward = (dy > 0) || (dy == 0 && dx > 0) ||
+                                       (dy == 0 && dx == 0 && dz > 0);
+                        if (forward) cachedForwardOffsets_.push_back({dx, dy, dz});
+                    }
+                }
+            }
+            cachedCellRadius_ = cellRadius;
+        }
+        return cachedForwardOffsets_;
+    }
 
 public:
     explicit UniformGrid(float cellSize) : cellSize_(cellSize) {}
@@ -67,77 +89,86 @@ public:
         // 使用內部定義的 operator< 進行排序
         std::sort(entries.begin(), entries.end());
 
-        // 2. 從左下到右上 traverse 每個 cell (前向搜尋半空間)
-        //
-        // A fixed 1-ring (13 offsets) only covers particles whose reach
-        // (radius + skin) is at most half the cell size. When a particle's
-        // reach is larger than that, two colliding particles can sit many
-        // cells apart, so the search radius must grow with the largest
-        // reach present. Two cells k cells apart (k >= 1) are at least
-        // (k-1)*cellSize_ apart in world space, so k must satisfy
-        // (k-1)*cellSize_ <= reach_i + reach_j <= 2*maxReach for every
-        // colliding pair to be found.
+    
         int cellRadius = std::max(
             1, static_cast<int>(std::ceil((2.0f * maxReach) / cellSize_)) + 1);
 
-        std::vector<glm::ivec3> forwardOffsets;
-        for (int dz = -cellRadius; dz <= cellRadius; ++dz) {
-            for (int dy = -cellRadius; dy <= cellRadius; ++dy) {
-                for (int dx = -cellRadius; dx <= cellRadius; ++dx) {
-                    if (dx == 0 && dy == 0 && dz == 0) continue;
-                    bool forward = (dy > 0) || (dy == 0 && dx > 0) ||
-                                   (dy == 0 && dx == 0 && dz > 0);
-                    if (forward) forwardOffsets.push_back({dx, dy, dz});
+        PairList pairs;
+        size_t n = entries.size();
+
+        // 2-1. Group entries into per-cell runs, and emit intra-cell pairs
+        // as we go (this part is unavoidable and cheap either way).
+        struct CellGroup {
+            glm::ivec3 coord;
+            size_t start, end;
+        };
+        std::vector<CellGroup> groups;
+        {
+            size_t cellStart = 0;
+            while (cellStart < n) {
+                uint64_t currentKey = entries[cellStart].key;
+                size_t cellEnd = cellStart + 1;
+                while (cellEnd < n && entries[cellEnd].key == currentKey) {
+                    cellEnd++;
                 }
+                for (size_t i = cellStart; i < cellEnd; ++i) {
+                    for (size_t j = i + 1; j < cellEnd; ++j) {
+                        int idxA = entries[i].particleIdx;
+                        int idxB = entries[j].particleIdx;
+                        if (idxA > idxB) std::swap(idxA, idxB);
+                        pairs.emplace_back(idxA, idxB);
+                    }
+                }
+                groups.push_back({posToCell(particles[entries[cellStart].particleIdx].pos),
+                                   cellStart, cellEnd});
+                cellStart = cellEnd;
             }
         }
 
-        PairList pairs;
-        size_t n = entries.size();
-        size_t cellStart = 0;
 
-        while (cellStart < n) {
-            uint64_t currentKey = entries[cellStart].key;
-            size_t cellEnd = cellStart + 1;
-            while (cellEnd < n && entries[cellEnd].key == currentKey) {
-                cellEnd++;
-            }
+        size_t numGroups = groups.size();
+        long long cubeSide = 2LL * cellRadius + 1;
+        long long forwardOffsetCount = (cubeSide * cubeSide * cubeSide - 1) / 2;
 
-            // 2-1 先比對自身 cell 的 particles (內部兩兩比對)
-            for (size_t i = cellStart; i < cellEnd; ++i) {
-                for (size_t j = i + 1; j < cellEnd; ++j) {
-                    int idxA = entries[i].particleIdx;
-                    int idxB = entries[j].particleIdx;
-
-                    if (idxA > idxB) std::swap(idxA, idxB);
-                    pairs.emplace_back(idxA, idxB);
-                }
-            }
-
-            // 2-2 再比對鄰居 cell 的 particles
-            glm::ivec3 currentCell = posToCell(particles[entries[cellStart].particleIdx].pos);
-            for (const auto& offset : forwardOffsets) {
-                glm::ivec3 targetCell = currentCell + offset;
-                uint64_t targetKey = encodeMorton3D(targetCell);
-
-                // 修正：使用 Dummy Entry 進行安全的 equal_range 搜尋
-                ParticleCellEntry targetDummy{targetKey, 0};
-                auto range = std::equal_range(entries.begin(), entries.end(), targetDummy);
-
-                for (size_t i = cellStart; i < cellEnd; ++i) {
-                    int idxA = entries[i].particleIdx;
-                    for (auto it = range.first; it != range.second; ++it) {
-                        int idxB = it->particleIdx;
-                        int a = idxA;
-                        int b = idxB;
-                        if (a > b) std::swap(a, b); // 規範化 pair 索引順序
-                        pairs.emplace_back(a, b);    
+        if (static_cast<long long>(numGroups) <= forwardOffsetCount) {
+            for (size_t a = 0; a < numGroups; ++a) {
+                for (size_t b = a + 1; b < numGroups; ++b) {
+                    glm::ivec3 d = groups[a].coord - groups[b].coord;
+                    if (std::abs(d.x) <= cellRadius && std::abs(d.y) <= cellRadius &&
+                        std::abs(d.z) <= cellRadius) {
+                        for (size_t i = groups[a].start; i < groups[a].end; ++i) {
+                            int idxA = entries[i].particleIdx;
+                            for (size_t j = groups[b].start; j < groups[b].end; ++j) {
+                                int idxB = entries[j].particleIdx;
+                                int x = idxA, y = idxB;
+                                if (x > y) std::swap(x, y);
+                                pairs.emplace_back(x, y);
+                            }
+                        }
                     }
                 }
             }
+        } else {
+            const std::vector<glm::ivec3>& forwardOffsets = forwardOffsetsFor(cellRadius);
+            for (const auto& g : groups) {
+                for (const auto& offset : forwardOffsets) {
+                    glm::ivec3 targetCell = g.coord + offset;
+                    uint64_t targetKey = encodeMorton3D(targetCell);
 
-            // 移動到下一個 Cell
-            cellStart = cellEnd;
+                    ParticleCellEntry targetDummy{targetKey, 0};
+                    auto range = std::equal_range(entries.begin(), entries.end(), targetDummy);
+
+                    for (size_t i = g.start; i < g.end; ++i) {
+                        int idxA = entries[i].particleIdx;
+                        for (auto it = range.first; it != range.second; ++it) {
+                            int idxB = it->particleIdx;
+                            int a = idxA, b = idxB;
+                            if (a > b) std::swap(a, b);
+                            pairs.emplace_back(a, b);
+                        }
+                    }
+                }
+            }
         }
 
         // 3. 回傳 Pair List
@@ -206,10 +237,6 @@ private:
         }
     }
 
-    // A split into 8 octants is only safe if no particle's collision reach
-    // (radius, plus skin buffer if enabled) crosses the shared mid-planes —
-    // otherwise a colliding pair could be separated into different octants
-    // and never get compared again (collideLeaf only tests within one node).
     bool canSplit(size_t start, size_t end,
                   const std::vector<OctreeEntry>& entries,
                   const std::vector<Particle>& particles,

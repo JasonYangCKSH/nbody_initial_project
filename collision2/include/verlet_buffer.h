@@ -13,19 +13,13 @@ inline void updateLocalSkin(std::vector<Particle>& particles, float K, float dt)
     }
 }
 
-inline void updateSkinRadius(std::vector<Particle>& particles) {
 
-    for (auto& p : particles) {
-        p.skin = p.radius;
-    }
-}
 
 inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) {
     assert(cellSize > 0.0f && "message");
-    //if (cellSize <= 0.0f) throw std::invalid_argument("cellSize must be positive");
 
+    const float maxSkin = cellSize * 0.5f;
     for (auto& p : particles) {
-        float maxSkin = std::max(cellSize / 2 - p.radius, 0.0f);
         p.skin = std::clamp(p.skin, 0.0f, maxSkin);
     }
 }
