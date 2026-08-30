@@ -50,7 +50,7 @@ std::vector<StepStats> runSimulation(StructureMode mode,
                                     int frames) {
     SimConfig cfg;
     cfg.dt = 1.0f / 60.0f;
-    cfg.K = 200.0f;
+    cfg.K = 2.0f;
     cfg.cellSize = 1.0f;
 
     std::unique_ptr<std::variant<broad::UniformGrid, broad::Octree>> structure;

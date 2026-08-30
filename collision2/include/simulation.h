@@ -18,8 +18,7 @@ struct StepStats {
     double narrowPhaseSeconds = 0.0;
     int broadPhasePairs = 0;
     int collisionCount = 0;
-    // TODO: 你覺得還需要記錄哪些？(對應你之前想的CSV欄位)
-    bool rebuild;
+    bool rebuild = false;
     std::vector<std::pair<int, int>> collisions;
 };
 struct SimConfig {
@@ -72,8 +71,10 @@ private:
 
     StepStats stepSpatialStructure(StepStats& stats) {
         bool needsBuild = !hasList_ || !skinEnabled_ || !verlet::listStillValid(particles_);
+        stats.rebuild = needsBuild;
 
         if (needsBuild) {
+            auto broadStart = std::chrono::high_resolution_clock::now();
             cachedPairs_ = std::visit([this](auto& s) {
                 return s.Build(particles_, skinEnabled_);
             }, *structure_);
@@ -82,17 +83,22 @@ private:
                 verlet::capSkinToCellSize(particles_, cfg_.cellSize);
                 verlet::recordBroadPhaseSnapshot(particles_);
             }
+            auto broadEnd = std::chrono::high_resolution_clock::now();
+            stats.broadPhaseSeconds = std::chrono::duration<double>(broadEnd - broadStart).count();
             hasList_ = true;
             stats.broadPhaseExecuted = true;
         }
         stats.broadPhasePairs = (int)cachedPairs_.size();
 
+        auto narrowStart = std::chrono::high_resolution_clock::now();
         for (auto [i, j] : cachedPairs_) {
             if (narrow::colliding(particles_[i], particles_[j])) {
                 ++stats.collisionCount;
                 stats.collisions.emplace_back(i, j);
             }
         }
+        auto narrowEnd = std::chrono::high_resolution_clock::now();
+        stats.narrowPhaseSeconds = std::chrono::duration<double>(narrowEnd - narrowStart).count();
 
         applyCollisionResponse(particles_, stats.collisions);
         integrate(particles_);
