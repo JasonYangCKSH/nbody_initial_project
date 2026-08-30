@@ -5,26 +5,26 @@
 int main() {
 
 
-
+    float worldSize = 100.0f;
 
     // build particles scene-----------------------------------------------------
-    std::vector<Particle> particles = scenario::uniformCloud(100000, 100.0f, 1.0f, 1.0f );
+    std::vector<Particle> particles = scenario::uniformCloud(10000, worldSize, 1.0f, 1.0f );
     // --------------------------------------------------------------
 
     // set up configuration------------------------------------------
     SimulationConfig cfg;
     cfg.dt = 1.0f / 60.0f;
     cfg.K = 2.0f;
-    cfg.method = Method::UniformGrid;
-    cfg.hasSkin = false;
+    cfg.method = Method::Octree;
+    cfg.hasSkin = true;
     cfg.cellSize = 1.0f;
     cfg.maxDepth = 7;
-    cfg.leafCapacity = 30;
-    cfg.worldSize = 100.0f;
+    cfg.leafCapacity = 200;
+    cfg.worldSize = worldSize;
     // --------------------------------------------------------------
     
     // build Simulation system---------------------------------------
-    int totalFrames = 6;
+    int totalFrames = 2;
     Simulation sim(particles, cfg, totalFrames);
     std::vector<FrameStats> frameStats;
     frameStats = sim.run();
