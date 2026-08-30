@@ -1,9 +1,12 @@
 #include "simulation.h"
 #include "scenario.h"
-#include "brute_force.h"
 #include <vector>
 #include <iostream>
 int main() {
+
+
+
+
     // build particles scene-----------------------------------------------------
     std::vector<Particle> particles = scenario::two_particle_bounce_scenario();
     // --------------------------------------------------------------
@@ -25,6 +28,6 @@ int main() {
     // --------------------------------------------------------------
 
 
-    
+
 }
 
