@@ -71,6 +71,12 @@ public:
         //       還是已經是真正碰撞的配對？回頭看你的 bruteForce() 實作，
         //       裡面用的判定式 dist <= rSum，這個算出來的東西，
         //       已經是「真正碰撞」還是還只是「候選配對」？
+        StepStats stepstats;
+        for (int i = 0; i < particles_; ++i) {
+            for (int j = i + 1; j < particles_; ++j) {
+                if (narrow::colliding(particles_[i], particles_[j])) cachedPairs_.emplace_back(i, j);
+            }
+        }
     }
 
     StepStats stepSpatialStructure(StepStats& stats) {
