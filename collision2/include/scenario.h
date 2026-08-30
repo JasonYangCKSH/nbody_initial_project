@@ -27,15 +27,20 @@ inline std::vector<Particle> two_particle_bounce_scenario() {
 // Roughly uniform, low-velocity cloud: mimics a settled / near-equilibrium
 // bed, and the "homogeneous, MD-like" regime where a single global skin is
 // expected to work reasonably well.
-inline std::vector<Particle> uniformCloud(int n, float boxSize, float radius, float speed, unsigned seed = 1) {
+//
+// 座標以原點為中心，範圍 [-boxSize/2, boxSize/2]，跟 broad::Octree 的 root
+// 定義一致（root.center = origin, halfExtent = worldSize/2，見 broad_phase.h），
+// 這樣 boxSize 才能直接當 SimulationConfig::worldSize 使用。
+inline std::vector<Particle> uniformCloud(int n, float boxSize, float radius, float speed, float acc,  unsigned seed = 1) {
     std::mt19937 rng(seed);
-    std::uniform_real_distribution<float> posDist(0.0f, boxSize);
+    std::uniform_real_distribution<float> posDist(-boxSize * 0.5f, boxSize * 0.5f);
     std::uniform_real_distribution<float> velDist(-speed, speed);
-
+    std::uniform_real_distribution<float> accDist(-acc, acc);
     std::vector<Particle> particles(n);
     for (auto& p : particles) {
         p.pos = {posDist(rng), posDist(rng), posDist(rng)};
         p.vel = {velDist(rng), velDist(rng), velDist(rng)};
+        p.acc = {accDist(rng), accDist(rng), accDist(rng)};
         p.radius = radius;
         p.posAtLastBroadPhase = p.pos;
     }
@@ -45,11 +50,13 @@ inline std::vector<Particle> uniformCloud(int n, float boxSize, float radius, fl
 // Particles radiating outward from the domain center at high, varied speed:
 // stresses the automatic update condition with large, non-uniform per-step
 // displacements.
+//
+// center 對齊 broad::Octree 的 root（原點），見 uniformCloud() 上方的說明。
 inline std::vector<Particle> explosion(int n, float boxSize, float radius, float speed, unsigned seed = 4) {
     std::mt19937 rng(seed);
     std::uniform_real_distribution<float> dirDist(-1.0f, 1.0f);
     std::uniform_real_distribution<float> speedDist(0.2f * speed, speed);
-    glm::vec3 center(boxSize * 0.5f);
+    glm::vec3 center(0.0f);
 
     std::vector<Particle> particles(n);
     for (auto& p : particles) {

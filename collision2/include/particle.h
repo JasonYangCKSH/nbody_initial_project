@@ -8,7 +8,7 @@ struct Particle {
     glm::vec3 vel{0.0};
     glm::vec3 acc{0.0};
     float radius = 0.0f;
-
+    float mass = 1.0f;
 
     glm::vec3 posAtLastBroadPhase{0.0f};
     float skin = 0.0f;

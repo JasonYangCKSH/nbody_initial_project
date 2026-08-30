@@ -9,6 +9,7 @@
 #include "narrow_phase.h"
 #include "verlet_buffer.h"
 #include "brute_force.h"  // 若你 header 檔名不同，請對應修正
+#include "collision_response.h"
 
 // 要測試的 broad-phase / baseline 演算法
 enum class Method {
@@ -146,6 +147,7 @@ private:
             p.vel += p.acc * config_.dt;
             p.pos += p.vel * config_.dt;
         }
+        response::reflectOffWalls(particles_, config_.worldSize);
     }
 
     bool needsRebuild() const {
@@ -172,18 +174,9 @@ private:
         return pairs;
     }
 
-    // 依據 collisionPairs 進行碰撞回應 / 速度與加速度修正
+    // 依據 collisionPairs 進行碰撞回應：一般質量彈性碰撞（見 collision_response.h）
     void resolveCollisions(const PairList& collisions) {
-        for (const auto& [i, j] : collisions) {
-            auto& a = particles_[i];
-            auto& b = particles_[j];
-
-            // 這裡先保留簡單的相互作用，若你原本有碰撞回應函式，可放在這裡
-            // 例如：交換速度、反向法向速度、更新 acc 等
-            // 目前先保持不動，讓 integration 負責最終更新
-            (void)a;
-            (void)b;
-        }
+        response::resolveCollisions(particles_, collisions);
     }
 
     std::vector<Particle> particles_;

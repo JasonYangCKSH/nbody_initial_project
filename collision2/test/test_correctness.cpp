@@ -19,6 +19,7 @@
 #include "narrow_phase.h"
 #include "brute_force.h"
 #include "verlet_buffer.h"
+#include "collision_response.h"
 #include "scenario.h"
 
 #include <functional>
@@ -39,6 +40,13 @@ PairSet toSet(const PairList& pairs) {
         s.emplace(a, b);
     }
     return s;
+}
+
+PairList toList(const PairSet& s) {
+    PairList pairs;
+    pairs.reserve(s.size());
+    for (const auto& p : s) pairs.push_back(p);
+    return pairs;
 }
 
 struct CheckResult {
@@ -199,7 +207,7 @@ void runStaticSuite(int& totalChecks, int& failedChecks) {
     {
         Scene s;
         s.name = "scenario_uniformCloud_500";
-        s.particles = scenario::uniformCloud(500, 40.0f, 1.0f, 1.5f, 11);
+        s.particles = scenario::uniformCloud(50000, 40.0f, 1.0f, 1.5f, 10.0f, 11);
         s.worldSize = 40.0f;
         s.cellSize = 3.0f;
         scenes.push_back(std::move(s));
@@ -240,15 +248,20 @@ void runStaticSuite(int& totalChecks, int& failedChecks) {
 }
 
 // ---------------------------------------------------------------------------
-// Part 2: 動態 skin 測試 —— 複製 Simulation::step() 的 rebuild 判斷邏輯，
-// 驗證「skin 有效期間內沿用舊 candidate list」這個假設是否真的安全。
+// Part 2: 動態 skin 測試 —— 複製 Simulation::step() 的完整每幀節奏（build/reuse ->
+// 比對 -> 彈性碰撞回應 -> integrate + 牆壁反彈），驗證「skin 有效期間內沿用舊
+// candidate list」這個假設在粒子會反彈、速度會瞬間反轉的真實軌跡下仍然安全。
+//
+// 碰撞回應／牆壁反彈用的是 truth（BruteForce 算出的真實碰撞），而不是被測試中的
+// cached candidate list，這樣物理軌跡本身不會受被測方法的 bug 影響，維持一份
+// 乾淨、獨立於待測項目的參考軌跡。
 // ---------------------------------------------------------------------------
 
 using BuildFn = std::function<PairList(const std::vector<Particle>&, bool)>;
 
 bool runDynamicSkinTest(const std::string& label, const BuildFn& build, std::vector<Particle> particles,
-                         bool hasSkin, bool capSkinToCell, float K, float dt, float cellSize, int frames,
-                         int& totalChecks, int& failedChecks) {
+                         bool hasSkin, bool capSkinToCell, float K, float dt, float cellSize, float worldSize,
+                         int frames, int& totalChecks, int& failedChecks) {
     bool allOk = true;
     PairList cached;
     bool needRebuild = true;
@@ -277,10 +290,14 @@ bool runDynamicSkinTest(const std::string& label, const BuildFn& build, std::vec
             printResult(r);
         }
 
+        // 跟 Simulation::step() 同樣的順序：先用真實碰撞做彈性碰撞回應，
+        // 再 integrate（含牆壁反彈），驅動下一幀的粒子狀態。
+        response::resolveCollisions(particles, toList(truth));
         for (auto& p : particles) {
             p.vel += p.acc * dt;
             p.pos += p.vel * dt;
         }
+        response::reflectOffWalls(particles, worldSize);
 
         needRebuild = !verlet::listStillValid(particles);
     }
@@ -295,7 +312,7 @@ void runDynamicSuite(int& totalChecks, int& failedChecks) {
 
     const float worldSize = 30.0f;
     const float cellSize = 3.0f;
-    const float K = 20.0f;
+    const float K = 0.0f;
     const float dt = 1.0f / 60.0f;
     const int frames = 40;
 
@@ -304,7 +321,7 @@ void runDynamicSuite(int& totalChecks, int& failedChecks) {
         std::vector<Particle> particles;
     };
     std::vector<DynamicCase> cases = {
-        {"uniformCloud_1000", scenario::uniformCloud(1000, worldSize, 1.0f, 1.5f, 21)},
+        {"uniformCloud_1000", scenario::uniformCloud(1000, worldSize, 1.0f, 1.5f, 20000.0f, 21)},
         {"explosion_1000", scenario::explosion(1000, worldSize, 1.0f, 1.0f, 22)},
     };
 
@@ -315,13 +332,13 @@ void runDynamicSuite(int& totalChecks, int& failedChecks) {
 
     for (auto& c : cases) {
         runDynamicSkinTest(c.namePrefix + " | UniformGrid no-skin", gridBuild, c.particles, /*hasSkin=*/false,
-                            /*capSkinToCell=*/true, K, dt, cellSize, frames, totalChecks, failedChecks);
+                            /*capSkinToCell=*/true, K, dt, cellSize, worldSize, frames, totalChecks, failedChecks);
         runDynamicSkinTest(c.namePrefix + " | UniformGrid+Skin", gridBuild, c.particles, /*hasSkin=*/true,
-                            /*capSkinToCell=*/true, K, dt, cellSize, frames, totalChecks, failedChecks);
+                            /*capSkinToCell=*/true, K, dt, cellSize, worldSize, frames, totalChecks, failedChecks);
         runDynamicSkinTest(c.namePrefix + " | Octree no-skin", octreeBuild, c.particles, /*hasSkin=*/false,
-                            /*capSkinToCell=*/false, K, dt, cellSize, frames, totalChecks, failedChecks);
+                            /*capSkinToCell=*/false, K, dt, cellSize, worldSize, frames, totalChecks, failedChecks);
         runDynamicSkinTest(c.namePrefix + " | Octree+Skin", octreeBuild, c.particles, /*hasSkin=*/true,
-                            /*capSkinToCell=*/false, K, dt, cellSize, frames, totalChecks, failedChecks);
+                            /*capSkinToCell=*/false, K, dt, cellSize, worldSize, frames, totalChecks, failedChecks);
     }
 }
 
