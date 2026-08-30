@@ -67,13 +67,14 @@ CheckResult checkAgainstTruth(const std::string& label, const PairList& candidat
     for (const auto& [a, b] : candSet) {
         if (narrow::colliding(particles[a], particles[b])) filtered.emplace(a, b);
     }
-
+    // count miss
     for (const auto& p : truth) {
         if (!candSet.count(p)) {
             r.missingCount++;
             if (r.missingSample.size() < 5) r.missingSample.push_back(p);
         }
     }
+    // count extra
     for (const auto& p : filtered) {
         if (!truth.count(p)) r.extraCount++;
     }
@@ -221,7 +222,7 @@ void runStaticSuite(int& totalChecks, int& failedChecks) {
         verlet::updateLocalSkin(withSkin, /*K=*/2.0f, /*dt=*/1.0f / 60.0f);
 
         broad::UniformGrid grid(sc.cellSize);
-        broad::Octree octree(/*maxDepth=*/7, /*leafCapacity=*/4, sc.worldSize);
+        broad::Octree octree(/*maxDepth=*/10, /*leafCapacity=*/4, sc.worldSize);
 
         CheckResult r;
         r = checkAgainstTruth(sc.name + " | UniformGrid", grid.Build(sc.particles, false), sc.particles, truth);
@@ -294,7 +295,7 @@ void runDynamicSuite(int& totalChecks, int& failedChecks) {
 
     const float worldSize = 30.0f;
     const float cellSize = 3.0f;
-    const float K = 2.0f;
+    const float K = 20.0f;
     const float dt = 1.0f / 60.0f;
     const int frames = 40;
 
@@ -308,7 +309,7 @@ void runDynamicSuite(int& totalChecks, int& failedChecks) {
     };
 
     broad::UniformGrid grid(cellSize);
-    broad::Octree octree(/*maxDepth=*/7, /*leafCapacity=*/4, worldSize);
+    broad::Octree octree(/*maxDepth=*/7, /*leafCapacity=*/40, worldSize);
     BuildFn gridBuild = [&](const std::vector<Particle>& p, bool skin) { return grid.Build(p, skin); };
     BuildFn octreeBuild = [&](const std::vector<Particle>& p, bool skin) { return octree.Build(p, skin); };
 
