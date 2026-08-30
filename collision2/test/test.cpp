@@ -1,123 +1,131 @@
-#include <iostream>
-#include <vector>
 #include <algorithm>
-#include <random>
-#include <cmath>
-#include <chrono>
-#include "particle.h"
-#include "broad_phase.h"
-#include "brute_force.h"
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <variant>
+#include <vector>
+
 #include "simulation.h"
 
-enum class ScenarioType {
-    UnitTest_TwoOverLapping,
-    UnitTest_BarelyTouching,
-    UnitTest_NoTouching,
-    UniformRandom,
-    DenseCluster
-};
-std::vector<Particle> generateScenario(ScenarioType type, size_t macroCount, float worldSize) {
-    std::vector<Particle> particles;
+using PairList = std::vector<std::pair<int, int>>;
 
-    switch (type) {
-        // --- 微觀單元測試 ---
-        case ScenarioType::UnitTest_TwoOverLapping: {
-            Particle p1, p2;
-            p1.pos = glm::vec3(0.0f, 0.0f, 0.0f); p1.radius = 0.5f; p1.skin = 0.05f;
-            p2.pos = glm::vec3(0.5f, 0.0f, 0.0f); p2.radius = 0.5f; p2.skin = 0.05f;
-            particles = {p1, p2};
-            break;
-        }
-        case ScenarioType::UnitTest_BarelyTouching: {
-            Particle p1, p2;
-            p1.pos = glm::vec3(0.0f, 0.0f, 0.0f); p1.radius = 0.5f; p1.skin = 0.0f;
-            p2.pos = glm::vec3(1.0f, 0.0f, 0.0f); p2.radius = 0.5f; p2.skin = 0.0f; // 距離剛好等於 r1 + r2
-            particles = {p1, p2};
-            break;
-        }
-
-        case ScenarioType::UnitTest_NoTouching: {
-            Particle p1, p2;
-            p1.pos = glm::vec3(0.0f, 0.0f, 0.0f); p1.radius = 0.5f; p1.skin = 0.0f;
-            p2.pos = glm::vec3(2.0f, 0.0f, 0.0f); p2.radius = 0.5f; p2.skin = 0.0f;
-            particles = {p1, p2};
-            break;
-        }
-        // --- 宏觀極端測試 ---
-        case ScenarioType::UniformRandom: {
-            particles.reserve(macroCount);
-            std::mt19937 rng(42); 
-            float halfSize = worldSize * 0.45f; 
-            std::uniform_real_distribution<float> posDist(-halfSize, halfSize);
-            std::uniform_real_distribution<float> radiusDist(0.1f, 0.5f);
-
-            for (size_t i = 0; i < macroCount; ++i) {
-                Particle p;
-                p.pos = glm::vec3(posDist(rng), posDist(rng), posDist(rng));
-                p.radius = radiusDist(rng);
-                p.skin = 0.02f;
-                particles.push_back(p);
-            }
-            break;
-        }
-        case ScenarioType::DenseCluster: {
-            particles.reserve(macroCount);
-            std::mt19937 rng(42);
-            // 使用高斯分佈 (標準差設為世界大小的 2%)，強行將 99% 粒子塞在中心極小區域
-            std::normal_distribution<float> posDist(0.0f, worldSize * 0.02f);
-            std::uniform_real_distribution<float> radiusDist(0.1f, 0.5f);
-
-            for (size_t i = 0; i < macroCount; ++i) {
-                Particle p;
-                p.pos = glm::vec3(posDist(rng), posDist(rng), posDist(rng));
-                p.radius = radiusDist(rng);
-                p.skin = 0.02f;
-                particles.push_back(p);
-            }
-            break;        
-        }
-        default: {
-            break;
-        }
+PairList canonicalize(const PairList& pairs) {
+    PairList result = pairs;
+    for (auto& [a, b] : result) {
+        if (a > b) std::swap(a, b);
     }
+    std::sort(result.begin(), result.end());
+    result.erase(std::unique(result.begin(), result.end()), result.end());
+    return result;
+}
+
+std::string formatPairs(const PairList& pairs) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < pairs.size(); ++i) {
+        if (i != 0) oss << ", ";
+        oss << "(" << pairs[i].first << "," << pairs[i].second << ")";
+    }
+    return oss.str();
+}
+
+std::vector<Particle> makeTestParticles() {
+    auto particles = scenario::two_particle_bounce_scenario();
+    particles.resize(3);
+
+    particles[2].pos = glm::vec3(2.1f, 0.0f, 0.0f);
+    particles[2].vel = glm::vec3(-0.8f, 0.0f, 0.0f);
+    particles[2].acc = glm::vec3(0.0f, 0.0f, 0.0f);
+    particles[2].radius = 0.5f;
+    particles[2].skin = 0.05f;
+
     return particles;
 }
 
+std::vector<StepStats> runSimulation(StructureMode mode,
+                                    bool skinEnabled,
+                                    const std::vector<Particle>& initial,
+                                    int frames) {
+    SimConfig cfg;
+    cfg.dt = 1.0f / 60.0f;
+    cfg.K = 200.0f;
+    cfg.cellSize = 1.0f;
+
+    std::unique_ptr<std::variant<broad::UniformGrid, broad::Octree>> structure;
+    if (mode == StructureMode::UniformGrid) {
+        structure = std::make_unique<std::variant<broad::UniformGrid, broad::Octree>>(
+            broad::UniformGrid(1.0f));
+    } else if (mode == StructureMode::Octree) {
+        structure = std::make_unique<std::variant<broad::UniformGrid, broad::Octree>>(
+            broad::Octree(3, 2, 8.0f));
+    }
+
+    Simulation sim(frames, mode, std::move(structure), skinEnabled, cfg);
+    sim.InitializeParticles(initial);
+    return sim.runForFrames(frames);
+}
+
+bool compareHistory(const std::string& name,
+                   const std::vector<StepStats>& expected,
+                   const std::vector<StepStats>& actual) {
+    if (expected.size() != actual.size()) {
+        std::cout << "FAIL: " << name << "\n";
+        std::cout << "  expected frames: " << expected.size() << "\n";
+        std::cout << "  actual frames:   " << actual.size() << "\n";
+        return false;
+    }
+
+    for (size_t frame = 0; frame < expected.size(); ++frame) {
+        const auto& e = expected[frame];
+        const auto& a = actual[frame];
+        PairList expectedPairs = canonicalize(e.collisions);
+        PairList actualPairs = canonicalize(a.collisions);
+
+        if (e.collisionCount != a.collisionCount || expectedPairs != actualPairs) {
+            std::cout << "FAIL: " << name << " at frame " << frame << "\n";
+            std::cout << "  expected collisionCount: " << e.collisionCount << "\n";
+            std::cout << "  actual collisionCount:   " << a.collisionCount << "\n";
+            std::cout << "  expected pairs: " << formatPairs(expectedPairs) << "\n";
+            std::cout << "  actual pairs:   " << formatPairs(actualPairs) << "\n";
+            return false;
+        }
+    }
+
+    std::cout << "PASS: " << name << "\n";
+    return true;
+}
+
 int main() {
-    std::vector<Particle> particles = generateScenario(ScenarioType::DenseCluster, (size_t)1500, 100.0f);
-    // 1. BruteForce
-    auto start1 = std::chrono::high_resolution_clock::now();
-    PairList pairs1 = BruteForce(particles);
-    auto end1 = std::chrono::high_resolution_clock::now();
+    const int frames = 200;
+    auto initialParticles = makeTestParticles();
 
-    // 2. Uniform Grid
-    broad::UniformGrid uni(0.8);
-    auto start2 = std::chrono::high_resolution_clock::now();
-    PairList pairs2 = uni.Build(particles, false);
-    auto end2 = std::chrono::high_resolution_clock::now();
+    auto expected = runSimulation(StructureMode::BruteForce, false, initialParticles, frames);
 
-    // 3. Linear Octree
-    broad::Octree oct(1, 1, 100.0f);
-    auto start3 = std::chrono::high_resolution_clock::now();
-    PairList pairs3 = oct.Build(particles, false);
-    auto end3 = std::chrono::high_resolution_clock::now();
+    bool ok = true;
+    ok &= compareHistory("brute force", expected, expected);
 
-    std::cout << pairs1.size() << " " << pairs2.size() << " " << pairs3.size();
+    ok &= compareHistory("uniform grid",
+                         expected,
+                         runSimulation(StructureMode::UniformGrid, false, initialParticles, frames));
 
-    //std::cout << "BruteForce: " 
-    //          << std::chrono::duration<double, std::milli>(end1 - start1).count() << " ms\n";
-    //std::cout << "UniformGrid: " 
-    //          << std::chrono::duration<double, std::milli>(end2 - start2).count() << " ms\n";
-    //std::cout << "Octree: " 
-    //          << std::chrono::duration<double, std::milli>(end3 - start3).count() << " ms\n";
-    /*for (auto& p1: pairs1) {
-        std::cout << "[Brute Force]: " << p1.first << ", " << p1.second << std::endl;
+    ok &= compareHistory("uniform grid + skin",
+                         expected,
+                         runSimulation(StructureMode::UniformGrid, true, initialParticles, frames));
+
+    ok &= compareHistory("octree",
+                         expected,
+                         runSimulation(StructureMode::Octree, false, initialParticles, frames));
+
+    ok &= compareHistory("octree + skin",
+                         expected,
+                         runSimulation(StructureMode::Octree, true, initialParticles, frames));
+
+    if (!ok) {
+        std::cout << "\nSimulation implementations do not match brute force across multiple frames.\n";
+        return 1;
     }
-    for (auto& p2: pairs2) {
-        std::cout << "[Uniform Grid]: " << p2.first << ", " << p2.second << std::endl;
-    }
-    for (auto& p3: pairs3) {
-        std::cout << "[Octree]: " << p3.first << ", " << p3.second << std::endl;
 
-    }*/
+    std::cout << "\nAll simulation modes match brute force across " << frames << " frames.\n";
+    return 0;
 }
