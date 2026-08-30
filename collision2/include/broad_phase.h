@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <cmath>
 #include <unordered_map>
+#include <memory>
+#include <array>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "particle.h"
@@ -92,117 +94,108 @@ public:
     }
 };
 
+// Pointer-based octree：實際建出樹狀節點結構（而非用 Morton code 排序後
+// 在扁平陣列上二分搜尋子節點範圍），每次 Build 都在區域變數上從根重建，
+// 不保留跨呼叫的狀態，維持與舊版一致的「stateless per call」外部行為。
 class Octree {
 private:
     int maxDepth_;
     int leafCapacity_;
     float worldSize_;
 
-    struct OctreeEntry {
-        uint64_t key;
-        int particleIdx;
-
-        bool operator<(const OctreeEntry& other) const {
-            return key < other.key;
-        }
+    struct Node {
+        glm::vec3 center{0.0f};
+        float halfExtent = 0.0f;
+        std::vector<int> indices;                     // 只有 leaf 會存
+        std::array<std::unique_ptr<Node>, 8> children; // 未分裂前為 null
+        bool isLeaf() const { return children[0] == nullptr; }
     };
 
-    static uint64_t expandBits3D(uint64_t vec) {
-        vec &= 0x1FFFFFULL;
-        vec = (vec | (vec << 32)) & 0x1F00000000FFFFULL;
-        vec = (vec | (vec << 16)) & 0x1F0000FF0000FFULL;
-        vec = (vec | (vec <<  8)) & 0x100F00F00F00F00FULL;
-        vec = (vec | (vec <<  4)) & 0x10C30C30C30C30C3ULL;
-        vec = (vec | (vec <<  2)) & 0x1249249249249249ULL;
-        return vec;
+    static int childIndex(const glm::vec3& center, const glm::vec3& pos) {
+        int idx = 0;
+        if (pos.x >= center.x) idx |= 1;
+        if (pos.y >= center.y) idx |= 2;
+        if (pos.z >= center.z) idx |= 4;
+        return idx;
     }
 
-    static uint64_t encodeMorton3D(glm::ivec3 gridCoord) {
-        uint64_t x = expandBits3D(static_cast<uint64_t>(gridCoord.x));
-        uint64_t y = expandBits3D(static_cast<uint64_t>(gridCoord.y));
-        uint64_t z = expandBits3D(static_cast<uint64_t>(gridCoord.z));
-        return (z << 2) | (y << 1) | x;
+    static glm::vec3 childCenter(const glm::vec3& parentCenter, float parentHalfExtent, int childIdx) {
+        float q = parentHalfExtent * 0.5f;
+        glm::vec3 offset(
+            (childIdx & 1) ? q : -q,
+            (childIdx & 2) ? q : -q,
+            (childIdx & 4) ? q : -q);
+        return parentCenter + offset;
     }
 
-    glm::ivec3 posToGrid(const glm::vec3& pos) const {
-        glm::vec3 normalizedPos = pos + glm::vec3(worldSize_ * 0.5f);
-        float gridSize = worldSize_ / static_cast<float>(1 << maxDepth_);
-        int maxGridIdx = (1 << maxDepth_) - 1;
-
-        int gx = std::clamp(static_cast<int>(glm::floor(normalizedPos.x / gridSize)), 0, maxGridIdx);
-        int gy = std::clamp(static_cast<int>(glm::floor(normalizedPos.y / gridSize)), 0, maxGridIdx);
-        int gz = std::clamp(static_cast<int>(glm::floor(normalizedPos.z / gridSize)), 0, maxGridIdx);
-
-        return glm::ivec3(gx, gy, gz);
-    }
-
-
-
-    void collideLeaf(size_t start, size_t end,
-                     const std::vector<OctreeEntry>& entries,
-                     const std::vector<Particle>& particles,
-                     bool withSkin, PairList& pairs) const {
-        for (size_t i = start; i < end; ++i) {
-            for (size_t j = i + 1; j < end; ++j) {
-                int idxA = entries[i].particleIdx;
-                int idxB = entries[j].particleIdx;
-                if (idxA > idxB) std::swap(idxA, idxB);
-                pairs.emplace_back(idxA, idxB);
-
+    void insert(Node* node, const std::vector<Particle>& particles, int idx, int depth) const {
+        if (node->isLeaf()) {
+            node->indices.push_back(idx);
+            if (static_cast<int>(node->indices.size()) > leafCapacity_ && depth < maxDepth_) {
+                split(node, particles, depth);
             }
-        }
-    }
-
-    bool canSplit(size_t start, size_t end,
-                  const std::vector<OctreeEntry>& entries,
-                  const std::vector<Particle>& particles,
-                  bool withSkin, const glm::vec3& nodeMin, float nodeSize) const {
-        glm::vec3 mid = nodeMin + glm::vec3(nodeSize * 0.5f);
-        for (size_t i = start; i < end; ++i) {
-            const Particle& p = particles[entries[i].particleIdx];
-            float reach = p.radius + (withSkin ? p.skin : 0.0f);
-            glm::vec3 d = glm::abs(p.pos - mid);
-            if (d.x <= reach || d.y <= reach || d.z <= reach) return false;
-        }
-        return true;
-    }
-
-    void processNode(size_t start, size_t end, int currentDepth,
-                     const std::vector<OctreeEntry>& entries,
-                     const std::vector<Particle>& particles,
-                     bool withSkin, const glm::vec3& nodeMin, float nodeSize,
-                     PairList& pairs) const {
-        size_t count = end - start;
-        if (count <= 1) return;
-        bool atCapacity = count <= static_cast<size_t>(leafCapacity_) || currentDepth >= maxDepth_;
-        if (atCapacity || !canSplit(start, end, entries, particles, withSkin, nodeMin, nodeSize)) {
-            collideLeaf(start, end, entries, particles, withSkin, pairs);
             return;
         }
-        int shift = 3 * (maxDepth_ - 1 - currentDepth);
-        float childSize = nodeSize * 0.5f;
-        size_t childStart = start;
-        for (int octant = 0; octant < 8; ++octant) {
-            if (childStart >= end) break;
-            auto it = std::lower_bound(
-                entries.begin() + childStart,
-                entries.begin() + end,
-                octant + 1,
-                [shift](const OctreeEntry& entry, int targetOctant) {
-                    int currentOctant = static_cast<int>((entry.key >> shift) & 7ULL);
-                    return currentOctant < targetOctant;
-                }
-            );
-            size_t childEnd = std::distance(entries.begin(), it);
-            if (childEnd > childStart) {
-                glm::vec3 childMin = nodeMin + glm::vec3(
-                    (octant & 1) ? childSize : 0.0f,
-                    (octant & 2) ? childSize : 0.0f,
-                    (octant & 4) ? childSize : 0.0f);
-                processNode(childStart, childEnd, currentDepth + 1, entries, particles,
-                            withSkin, childMin, childSize, pairs);
+        int c = childIndex(node->center, particles[idx].pos);
+        insert(node->children[c].get(), particles, idx, depth + 1);
+    }
+
+    void split(Node* node, const std::vector<Particle>& particles, int depth) const {
+        for (int c = 0; c < 8; ++c) {
+            node->children[c] = std::make_unique<Node>();
+            node->children[c]->center = childCenter(node->center, node->halfExtent, c);
+            node->children[c]->halfExtent = node->halfExtent * 0.5f;
+        }
+        // 內部節點不存粒子，重新把既有 indices 分派到新生成的子節點。
+        std::vector<int> existing;
+        existing.swap(node->indices);
+        for (int idx : existing) {
+            insert(node, particles, idx, depth);
+        }
+    }
+
+    void collectLeaves(Node* node, std::vector<Node*>& leaves) const {
+        if (node->isLeaf()) {
+            if (!node->indices.empty()) leaves.push_back(node);
+            return;
+        }
+        for (auto& child : node->children) collectLeaves(child.get(), leaves);
+    }
+
+    static void addPair(int a, int b, PairList& pairs) {
+        if (a > b) std::swap(a, b);
+        pairs.emplace_back(a, b);
+    }
+
+    static bool boxesOverlap(const Node* a, const Node* b, float margin) {
+        glm::vec3 d = glm::abs(a->center - b->center);
+        float reach = a->halfExtent + b->halfExtent + margin;
+        return d.x <= reach && d.y <= reach && d.z <= reach;
+    }
+
+    // Correctness-first 的配對收集：先蒐集所有 leaf，再對每一對（skin 擴張後）
+    // bounding box 可能重疊的 leaf 做全配對，跟 /collision 版一致，換取實作
+    // 簡單、易驗證；之後若成為瓶頸再優化走訪方式。
+    void collectPairs(const std::vector<Node*>& leaves, const std::vector<Particle>& particles,
+                       bool withSkin, PairList& pairs) const {
+        float maxReach = 0.0f;
+        for (const auto& p : particles) {
+            maxReach = std::max(maxReach, p.radius + (withSkin ? p.skin : 0.0f));
+        }
+        float margin = 2.0f * maxReach;
+
+        for (size_t i = 0; i < leaves.size(); ++i) {
+            const auto& idxA = leaves[i]->indices;
+            for (size_t a = 0; a < idxA.size(); ++a)
+                for (size_t b = a + 1; b < idxA.size(); ++b)
+                    addPair(idxA[a], idxA[b], pairs);
+
+            for (size_t j = i + 1; j < leaves.size(); ++j) {
+                if (!boxesOverlap(leaves[i], leaves[j], margin)) continue;
+                for (int a : idxA)
+                    for (int b : leaves[j]->indices)
+                        addPair(a, b, pairs);
             }
-            childStart = childEnd;
         }
     }
 
@@ -211,22 +204,19 @@ public:
         : maxDepth_(maxDepth), leafCapacity_(leafCapacity), worldSize_(worldSize) {}
 
     PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        std::vector<OctreeEntry> entries;
-        entries.reserve(particles.size());
+        Node root;
+        root.center = glm::vec3(0.0f);
+        root.halfExtent = worldSize_ * 0.5f;
 
-        for (size_t i = 0; i < particles.size(); ++i) {
-            glm::ivec3 grid = posToGrid(particles[i].pos);
-            uint64_t key = encodeMorton3D(grid);
-            entries.push_back({key, static_cast<int>(i)});
+        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+            insert(&root, particles, i, 0);
         }
 
-        std::sort(entries.begin(), entries.end());
+        std::vector<Node*> leaves;
+        collectLeaves(&root, leaves);
 
         PairList pairs;
-        if (!entries.empty()) {
-            glm::vec3 rootMin(-worldSize_ * 0.5f);
-            processNode(0, entries.size(), 0, entries, particles, withSkin, rootMin, worldSize_, pairs);
-        }
+        collectPairs(leaves, particles, withSkin, pairs);
         return pairs;
     }
 };

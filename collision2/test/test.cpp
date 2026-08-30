@@ -16,10 +16,10 @@ int main() {
     cfg.dt = 1.0f / 60.0f;
     cfg.K = 2.0f;
     cfg.method = Method::UniformGrid;
-    cfg.hasSkin = true;
+    cfg.hasSkin = false;
     cfg.cellSize = 1.0f;
-    cfg.maxDepth = 8;
-    cfg.leafCapacity = 8;
+    cfg.maxDepth = 7;
+    cfg.leafCapacity = 30;
     cfg.worldSize = 100.0f;
     // --------------------------------------------------------------
     

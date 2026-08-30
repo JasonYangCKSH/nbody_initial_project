@@ -167,11 +167,16 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
   /usr/include/assert.h \
   /usr/include/c++/15/algorithm \
   /usr/include/c++/15/array \
+  /usr/include/c++/15/backward/auto_ptr.h \
   /usr/include/c++/15/backward/binders.h \
   /usr/include/c++/15/bit \
   /usr/include/c++/15/bits/algorithmfwd.h \
+  /usr/include/c++/15/bits/align.h \
   /usr/include/c++/15/bits/alloc_traits.h \
+  /usr/include/c++/15/bits/allocated_ptr.h \
   /usr/include/c++/15/bits/allocator.h \
+  /usr/include/c++/15/bits/atomic_base.h \
+  /usr/include/c++/15/bits/atomic_lockfree_defines.h \
   /usr/include/c++/15/bits/basic_ios.h \
   /usr/include/c++/15/bits/basic_ios.tcc \
   /usr/include/c++/15/bits/basic_string.h \
@@ -220,6 +225,9 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
   /usr/include/c++/15/bits/range_access.h \
   /usr/include/c++/15/bits/refwrap.h \
   /usr/include/c++/15/bits/requires_hosted.h \
+  /usr/include/c++/15/bits/shared_ptr.h \
+  /usr/include/c++/15/bits/shared_ptr_atomic.h \
+  /usr/include/c++/15/bits/shared_ptr_base.h \
   /usr/include/c++/15/bits/specfun.h \
   /usr/include/c++/15/bits/std_abs.h \
   /usr/include/c++/15/bits/std_function.h \
@@ -234,6 +242,7 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
   /usr/include/c++/15/bits/stl_iterator_base_types.h \
   /usr/include/c++/15/bits/stl_numeric.h \
   /usr/include/c++/15/bits/stl_pair.h \
+  /usr/include/c++/15/bits/stl_raw_storage_iter.h \
   /usr/include/c++/15/bits/stl_relops.h \
   /usr/include/c++/15/bits/stl_tempbuf.h \
   /usr/include/c++/15/bits/stl_uninitialized.h \
@@ -243,6 +252,7 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
   /usr/include/c++/15/bits/string_view.tcc \
   /usr/include/c++/15/bits/stringfwd.h \
   /usr/include/c++/15/bits/uniform_int_dist.h \
+  /usr/include/c++/15/bits/unique_ptr.h \
   /usr/include/c++/15/bits/unordered_map.h \
   /usr/include/c++/15/bits/uses_allocator.h \
   /usr/include/c++/15/bits/uses_allocator_args.h \
@@ -272,6 +282,7 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
   /usr/include/c++/15/ext/aligned_buffer.h \
   /usr/include/c++/15/ext/alloc_traits.h \
   /usr/include/c++/15/ext/atomicity.h \
+  /usr/include/c++/15/ext/concurrence.h \
   /usr/include/c++/15/ext/numeric_traits.h \
   /usr/include/c++/15/ext/string_conversions.h \
   /usr/include/c++/15/ext/type_traits.h \
@@ -282,11 +293,13 @@ CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision
   /usr/include/c++/15/iostream \
   /usr/include/c++/15/istream \
   /usr/include/c++/15/limits \
+  /usr/include/c++/15/memory \
   /usr/include/c++/15/new \
   /usr/include/c++/15/numeric \
   /usr/include/c++/15/ostream \
   /usr/include/c++/15/pstl/execution_defs.h \
   /usr/include/c++/15/pstl/glue_algorithm_defs.h \
+  /usr/include/c++/15/pstl/glue_memory_defs.h \
   /usr/include/c++/15/pstl/glue_numeric_defs.h \
   /usr/include/c++/15/pstl/pstl_config.h \
   /usr/include/c++/15/random \
@@ -506,8 +519,6 @@ test: /lib64/ld-linux-x86-64.so.2 \
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_base.h:
 
-/usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h:
-
 /usr/lib/gcc/x86_64-linux-gnu/15/include/stddef.h:
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/c++config.h:
@@ -585,8 +596,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
 /usr/include/x86_64-linux-gnu/bits/select.h:
-
-/usr/include/x86_64-linux-gnu/bits/select-decl.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 
@@ -696,6 +705,10 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/pstl/glue_numeric_defs.h:
 
+/usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h:
+
+/usr/include/c++/15/pstl/glue_memory_defs.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
 
 /usr/include/c++/15/numeric:
@@ -721,6 +734,26 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
 
 /usr/include/c++/15/debug/assertions.h:
+
+/usr/include/x86_64-linux-gnu/asm/types.h:
+
+/usr/include/c++/15/cwctype:
+
+/usr/include/c++/15/cwchar:
+
+/usr/include/c++/15/cstdio:
+
+/usr/include/c++/15/cstdint:
+
+/usr/include/errno.h:
+
+/usr/include/c++/15/cstddef:
+
+/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
+
+/usr/include/c++/15/concepts:
+
+/usr/include/c++/15/cmath:
 
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
@@ -824,10 +857,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_half.hpp:
 
-/usr/include/x86_64-linux-gnu/asm/types.h:
-
-/usr/include/c++/15/cwctype:
-
 /home/jason/nbody_initial_project/collision2/include/glm/detail/func_matrix.inl:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float4x3_precision.hpp:
@@ -847,8 +876,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /usr/include/x86_64-linux-gnu/bits/fp-logb.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/compute_vector_decl.hpp:
-
-/usr/include/c++/15/cstdint:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_float3.hpp:
 
@@ -922,6 +949,10 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat4x4.inl:
 
+/usr/include/x86_64-linux-gnu/bits/select-decl.h:
+
+/usr/include/c++/15/bits/atomic_lockfree_defines.h:
+
 /usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h:
 
 /usr/include/c++/15/bits/memory_resource.h:
@@ -937,8 +968,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
 
 /home/jason/nbody_initial_project/collision2/include/broad_phase.h:
-
-/home/jason/nbody_initial_project/collision2/include/glm/detail/compute_vector_relational.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/func_exponential.inl:
 
@@ -1002,6 +1031,8 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat2x4.hpp:
 
+/usr/include/c++/15/backward/auto_ptr.h:
+
 /usr/include/c++/15/bits/exception_defines.h:
 
 /usr/include/c++/15/bits/stl_heap.h:
@@ -1015,6 +1046,10 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /usr/lib/gcc/x86_64-linux-gnu/15/include/float.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float3x2.hpp:
+
+/usr/include/c++/15/ctime:
+
+/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double4x2_precision.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/mat3x2.hpp:
 
@@ -1030,11 +1065,11 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/bits/stl_function.h:
 
-/usr/include/c++/15/cwchar:
-
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_double4.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/_fixes.hpp:
+
+/usr/include/c++/15/memory:
 
 /home/jason/nbody_initial_project/collision2/include/glm/gtx/norm.inl:
 
@@ -1060,6 +1095,8 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double2x3_precision.hpp:
 
+/usr/include/c++/15/bits/unique_ptr.h:
+
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_bool2_precision.hpp:
 
 /usr/include/c++/15/tr1/poly_laguerre.tcc:
@@ -1076,11 +1113,9 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double4x4.hpp:
 
+/usr/include/c++/15/ext/concurrence.h:
+
 /usr/include/c++/15/bits/exception_ptr.h:
-
-/usr/include/errno.h:
-
-/usr/include/c++/15/cstddef:
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/gthr.h:
 
@@ -1107,8 +1142,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float3x3_precision.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_int4_sized.hpp:
-
-/usr/include/c++/15/bits/stl_uninitialized.h:
 
 /usr/include/c++/15/pstl/execution_defs.h:
 
@@ -1160,8 +1193,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/gtx/component_wise.hpp:
 
-/usr/include/c++/15/cmath:
-
 /home/jason/nbody_initial_project/collision2/include/glm/packing.hpp:
 
 /usr/include/linux/limits.h:
@@ -1196,6 +1227,8 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/assert.h:
 
+/usr/include/c++/15/bits/stl_raw_storage_iter.h:
+
 /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o:
 
 /usr/include/c++/15/bits/range_access.h:
@@ -1213,6 +1246,14 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /usr/include/asm-generic/posix_types.h:
 
 /usr/include/c++/15/bit:
+
+/usr/include/c++/15/bits/align.h:
+
+/usr/include/c++/15/iostream:
+
+/usr/include/c++/15/bits/vector.tcc:
+
+/usr/include/c++/15/bits/atomic_base.h:
 
 /usr/lib/x86_64-linux-gnu/libm.so.6:
 
@@ -1245,6 +1286,10 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double4x2.hpp:
 
 /usr/include/c++/15/bits/version.h:
+
+/usr/include/c++/15/compare:
+
+/usr/include/c++/15/bits/cxxabi_forced.h:
 
 /usr/include/c++/15/ostream:
 
@@ -1292,6 +1337,8 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat4x3.inl:
 
+/usr/include/c++/15/bits/allocated_ptr.h:
+
 /usr/include/c++/15/bits/istream.tcc:
 
 /usr/include/c++/15/bits/locale_facets.tcc:
@@ -1318,6 +1365,20 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/bits/random.tcc:
 
+/home/jason/nbody_initial_project/collision2/include/glm/detail/compute_vector_relational.hpp:
+
+/usr/include/c++/15/bits/shared_ptr.h:
+
+/usr/include/c++/15/bits/erase_if.h:
+
+/usr/include/c++/15/bits/stringfwd.h:
+
+/usr/include/c++/15/bits/shared_ptr_atomic.h:
+
+/usr/include/c++/15/bits/stl_uninitialized.h:
+
+/usr/include/c++/15/bits/shared_ptr_base.h:
+
 /usr/include/c++/15/backward/binders.h:
 
 /usr/include/c++/15/bits/specfun.h:
@@ -1326,15 +1387,7 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/bits/std_function.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
-
-/usr/include/c++/15/concepts:
-
 /usr/include/c++/15/bits/stl_algo.h:
-
-/usr/include/c++/15/bits/cxxabi_forced.h:
-
-/usr/include/c++/15/compare:
 
 /usr/include/c++/15/bits/stl_iterator.h:
 
@@ -1358,10 +1411,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/bits/string_view.tcc:
 
-/usr/include/c++/15/bits/erase_if.h:
-
-/usr/include/c++/15/bits/stringfwd.h:
-
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
 /usr/include/c++/15/bits/unordered_map.h:
@@ -1378,16 +1427,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/bits/utility.h:
 
-/usr/include/c++/15/iostream:
-
-/usr/include/c++/15/bits/vector.tcc:
-
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float4x3.hpp:
 
 /usr/include/c++/15/cerrno:
-
-/usr/include/c++/15/cstdio:
-
-/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double4x2_precision.hpp:
-
-/usr/include/c++/15/ctime:
