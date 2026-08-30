@@ -66,24 +66,21 @@ public:
     }
 
     StepStats stepBruteForce(StepStats& stats) {
-        // TODO: 你自己想一下這裡該怎麼寫
-        //       提示：brute::bruteForce() 直接回傳的是candidate pairs
-        //       還是已經是真正碰撞的配對？回頭看你的 bruteForce() 實作，
-        //       裡面用的判定式 dist <= rSum，這個算出來的東西，
-        //       已經是「真正碰撞」還是還只是「候選配對」？
-        StepStats stepstats;
-        for (int i = 0; i < particles_; ++i) {
-            for (int j = i + 1; j < particles_; ++j) {
-                if (narrow::colliding(particles_[i], particles_[j])) cachedPairs_.emplace_back(i, j);
+        for (int i = 0; i < (int)particles_.size(); ++i) {
+            for (int j = i + 1; j < (int)particles_.size(); ++j) {
+                if (narrow::colliding(particles_[i], particles_[j])) {
+                    ++stats.collisionCount;
+                    stats.collisions.emplace_back(i, j);
+                }
             }
         }
+        integrate(particles_);
+        ++currentTimeFrame_;
+        return stats;
     }
 
     StepStats stepSpatialStructure(StepStats& stats) {
-        // 這裡沿用共同介面的邏輯（Build → narrow-phase）
-        bool needsBuild = !hasList_ || (skinEnabled_ && !verlet::listStillValid(particles_));
-        // TODO: 上次提醒過你的 bug 還在這裡——
-        //       skinEnabled_==false 時，這個判斷式對嗎？
+        bool needsBuild = !hasList_ || !skinEnabled_ || !verlet::listStillValid(particles_);
 
         if (needsBuild) {
             cachedPairs_ = std::visit([this](auto& s) {
@@ -95,16 +92,25 @@ public:
         }
         stats.broadPhasePairs = (int)cachedPairs_.size();
 
-        int collisions = 0;
         for (auto [i, j] : cachedPairs_) {
-            if (narrow::colliding(particles_[i], particles_[j])) ++collisions;
+            if (narrow::colliding(particles_[i], particles_[j])) {
+                ++stats.collisionCount;
+                stats.collisions.emplace_back(i, j);
+            }
         }
-        stats.collisionCount = collisions;
 
         integrate(particles_);
         ++currentTimeFrame_;
         return stats;
     }
 
-    void integrate(std::vector<Particle>& particles) { /* TODO */ }
+    void integrate(std::vector<Particle>& particles) {
+        static const glm::vec3 gravity(0.0f, -9.81f, 0.0f);
+        for (auto& p : particles) {
+            p.pos += p.vel * cfg_.dt + 0.5f * p.acc * cfg_.dt * cfg_.dt;
+            glm::vec3 newAcc = gravity;
+            p.vel += 0.5f * (p.acc + newAcc) * cfg_.dt;
+            p.acc = newAcc;
+        }
+    }
 };
