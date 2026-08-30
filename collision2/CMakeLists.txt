@@ -11,3 +11,4 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(bench bench/bench.cpp)
 add_executable(test test/test.cpp)
+add_executable(test_correctness test/test_correctness.cpp)

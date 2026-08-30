@@ -142,6 +142,19 @@ test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
 .PHONY : test/fast
 
+#=============================================================================
+# Target rules for targets named test_correctness
+
+# Build rule for target.
+test_correctness: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_correctness
+.PHONY : test_correctness
+
+# fast build rule for target.
+test_correctness/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/build
+.PHONY : test_correctness/fast
+
 bench/bench.o: bench/bench.cpp.o
 .PHONY : bench/bench.o
 
@@ -190,6 +203,30 @@ test/test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test/test.cpp.s
 .PHONY : test/test.cpp.s
 
+test/test_correctness.o: test/test_correctness.cpp.o
+.PHONY : test/test_correctness.o
+
+# target to build an object file
+test/test_correctness.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/test/test_correctness.cpp.o
+.PHONY : test/test_correctness.cpp.o
+
+test/test_correctness.i: test/test_correctness.cpp.i
+.PHONY : test/test_correctness.i
+
+# target to preprocess a source file
+test/test_correctness.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/test/test_correctness.cpp.i
+.PHONY : test/test_correctness.cpp.i
+
+test/test_correctness.s: test/test_correctness.cpp.s
+.PHONY : test/test_correctness.s
+
+# target to generate assembly for a file
+test/test_correctness.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/test/test_correctness.cpp.s
+.PHONY : test/test_correctness.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -200,12 +237,16 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... bench"
 	@echo "... test"
+	@echo "... test_correctness"
 	@echo "... bench/bench.o"
 	@echo "... bench/bench.i"
 	@echo "... bench/bench.s"
 	@echo "... test/test.o"
 	@echo "... test/test.i"
 	@echo "... test/test.s"
+	@echo "... test/test_correctness.o"
+	@echo "... test/test_correctness.i"
+	@echo "... test/test_correctness.s"
 .PHONY : help
 
 
