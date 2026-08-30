@@ -4,6 +4,7 @@
 CMakeFiles/test.dir/test/test.cpp.o
  /home/jason/nbody_initial_project/collision2/test/test.cpp
  /home/jason/nbody_initial_project/collision2/include/broad_phase.h
+ /home/jason/nbody_initial_project/collision2/include/brute_force.h
  /home/jason/nbody_initial_project/collision2/include/glm/common.hpp
  /home/jason/nbody_initial_project/collision2/include/glm/detail/func_exponential.inl
  /home/jason/nbody_initial_project/collision2/include/glm/detail/func_vector_relational.inl

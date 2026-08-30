@@ -5,173 +5,89 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cmath>
+#include <unordered_map>
 #include <glm/glm.hpp>
-#include <glm/gtx/norm.hpp> 
+#include <glm/gtx/norm.hpp>
 #include "particle.h"
 
 
 
 namespace broad {
 
+// Linked-cell 版本的 uniform grid：假設 cellSize 已經大到能容納最大的
+// extended bounding sphere（radius + skin，見 verlet::capSkinToCellSize），
+// 因此只需要走訪同格 + 13 個「前向」鄰居格（half-shell stencil）就能
+// 涵蓋每一對可能相互作用的粒子，不用像過去 Morton 排序那樣依賴可變的
+// cellRadius。
 class UniformGrid {
 private:
     float cellSize_;
-
-    struct ParticleCellEntry {
-        uint64_t key;
-        int particleIdx;
-
-        bool operator<(const ParticleCellEntry& other) const {
-            return key < other.key;
-        }
-    };
-
-    static uint64_t expandBits3D(uint64_t vec) {
-        vec &= 0x1FFFFFULL;
-        vec = (vec | (vec << 32)) & 0x1F00000000FFFFULL;
-        vec = (vec | (vec << 16)) & 0x1F0000FF0000FFULL;
-        vec = (vec | (vec <<  8)) & 0x100F00F00F00F00FULL;
-        vec = (vec | (vec <<  4)) & 0x10C30C30C30C30C3ULL;
-        vec = (vec | (vec <<  2)) & 0x1249249249249249ULL;
-        return vec;
-    }
-
-    static uint64_t encodeMorton3D(glm::ivec3 cellCoord) {
-        constexpr int64_t OFFSET = 1 << 20; 
-        uint64_t x = expandBits3D(static_cast<uint64_t>(cellCoord.x + OFFSET));
-        uint64_t y = expandBits3D(static_cast<uint64_t>(cellCoord.y + OFFSET));
-        uint64_t z = expandBits3D(static_cast<uint64_t>(cellCoord.z + OFFSET));
-        
-        return (z << 2) | (y << 1) | x;
-    }
 
     glm::ivec3 posToCell(const glm::vec3& pos) const {
         return glm::ivec3(glm::floor(pos / cellSize_));
     }
 
+    static int64_t key(glm::ivec3 c) {
+        constexpr int64_t OFFSET = 1 << 20;
+        int64_t x = c.x + OFFSET, y = c.y + OFFSET, z = c.z + OFFSET;
+        return (x << 42) ^ (y << 21) ^ z;
+    }
 
-    mutable int cachedCellRadius_ = -1;
-    mutable std::vector<glm::ivec3> cachedForwardOffsets_;
-
-    const std::vector<glm::ivec3>& forwardOffsetsFor(int cellRadius) const {
-        if (cellRadius != cachedCellRadius_) {
-            cachedForwardOffsets_.clear();
-            for (int dz = -cellRadius; dz <= cellRadius; ++dz) {
-                for (int dy = -cellRadius; dy <= cellRadius; ++dy) {
-                    for (int dx = -cellRadius; dx <= cellRadius; ++dx) {
-                        if (dx == 0 && dy == 0 && dz == 0) continue;
-                        bool forward = (dy > 0) || (dy == 0 && dx > 0) ||
-                                       (dy == 0 && dx == 0 && dz > 0);
-                        if (forward) cachedForwardOffsets_.push_back({dx, dy, dz});
-                    }
-                }
-            }
-            cachedCellRadius_ = cellRadius;
-        }
-        return cachedForwardOffsets_;
+    static glm::ivec3 decode(int64_t k) {
+        constexpr int64_t OFFSET = 1 << 20;
+        constexpr int64_t MASK = (1 << 21) - 1;
+        int64_t z = k & MASK;
+        int64_t y = (k >> 21) & MASK;
+        int64_t x = (k >> 42) & MASK;
+        return glm::ivec3(static_cast<int>(x - OFFSET), static_cast<int>(y - OFFSET), static_cast<int>(z - OFFSET));
     }
 
 public:
     explicit UniformGrid(float cellSize) : cellSize_(cellSize) {}
 
     PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        // 1. Store particles to cells
-        std::vector<ParticleCellEntry> entries;
-        entries.reserve(particles.size());
-        float maxReach = 0.0f;
+        (void)withSkin;  // 半徑固定為 1 格，withSkin 只保留給呼叫端介面一致
+
+        std::unordered_map<int64_t, std::vector<int>> cells;
+        cells.reserve(particles.size());
         for (size_t i = 0; i < particles.size(); ++i) {
-            glm::ivec3 cell = posToCell(particles[i].pos);
-            uint64_t key = encodeMorton3D(cell);
-            entries.push_back({key, static_cast<int>(i)});
-            maxReach = std::max(maxReach, particles[i].radius + (withSkin ? particles[i].skin : 0.0f));
+            cells[key(posToCell(particles[i].pos))].push_back(static_cast<int>(i));
         }
 
-        // 使用內部定義的 operator< 進行排序
-        std::sort(entries.begin(), entries.end());
-
-    
-        int cellRadius = std::max(
-            1, static_cast<int>(std::ceil((2.0f * maxReach) / cellSize_)) + 1);
+        // 13 個「前向」鄰居 offset，加上同一格自己，恰好走訪每一對格子一次，
+        // 等同過去用 cellA 座標 < cellB 座標去重的規則。
+        static const glm::ivec3 kForwardOffsets[13] = {
+            {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {-1, 1, 0},
+            {1, 0, -1}, {1, 1, -1}, {0, 1, -1}, {-1, 1, -1},
+            {1, 0, 1}, {1, 1, 1}, {0, 1, 1}, {-1, 1, 1},
+            {0, 0, 1},
+        };
 
         PairList pairs;
-        size_t n = entries.size();
+        for (const auto& [k, cellA] : cells) {
+            glm::ivec3 base = decode(k);
 
-        // 2-1. Group entries into per-cell runs, and emit intra-cell pairs
-        // as we go (this part is unavoidable and cheap either way).
-        struct CellGroup {
-            glm::ivec3 coord;
-            size_t start, end;
-        };
-        std::vector<CellGroup> groups;
-        {
-            size_t cellStart = 0;
-            while (cellStart < n) {
-                uint64_t currentKey = entries[cellStart].key;
-                size_t cellEnd = cellStart + 1;
-                while (cellEnd < n && entries[cellEnd].key == currentKey) {
-                    cellEnd++;
-                }
-                for (size_t i = cellStart; i < cellEnd; ++i) {
-                    for (size_t j = i + 1; j < cellEnd; ++j) {
-                        int idxA = entries[i].particleIdx;
-                        int idxB = entries[j].particleIdx;
-                        if (idxA > idxB) std::swap(idxA, idxB);
-                        pairs.emplace_back(idxA, idxB);
-                    }
-                }
-                groups.push_back({posToCell(particles[entries[cellStart].particleIdx].pos),
-                                   cellStart, cellEnd});
-                cellStart = cellEnd;
-            }
-        }
-
-
-        size_t numGroups = groups.size();
-        long long cubeSide = 2LL * cellRadius + 1;
-        long long forwardOffsetCount = (cubeSide * cubeSide * cubeSide - 1) / 2;
-
-        if (static_cast<long long>(numGroups) <= forwardOffsetCount) {
-            for (size_t a = 0; a < numGroups; ++a) {
-                for (size_t b = a + 1; b < numGroups; ++b) {
-                    glm::ivec3 d = groups[a].coord - groups[b].coord;
-                    if (std::abs(d.x) <= cellRadius && std::abs(d.y) <= cellRadius &&
-                        std::abs(d.z) <= cellRadius) {
-                        for (size_t i = groups[a].start; i < groups[a].end; ++i) {
-                            int idxA = entries[i].particleIdx;
-                            for (size_t j = groups[b].start; j < groups[b].end; ++j) {
-                                int idxB = entries[j].particleIdx;
-                                int x = idxA, y = idxB;
-                                if (x > y) std::swap(x, y);
-                                pairs.emplace_back(x, y);
-                            }
-                        }
-                    }
+            for (size_t a = 0; a < cellA.size(); ++a) {
+                for (size_t b = a + 1; b < cellA.size(); ++b) {
+                    int x = cellA[a], y = cellA[b];
+                    if (x > y) std::swap(x, y);
+                    pairs.emplace_back(x, y);
                 }
             }
-        } else {
-            const std::vector<glm::ivec3>& forwardOffsets = forwardOffsetsFor(cellRadius);
-            for (const auto& g : groups) {
-                for (const auto& offset : forwardOffsets) {
-                    glm::ivec3 targetCell = g.coord + offset;
-                    uint64_t targetKey = encodeMorton3D(targetCell);
 
-                    ParticleCellEntry targetDummy{targetKey, 0};
-                    auto range = std::equal_range(entries.begin(), entries.end(), targetDummy);
-
-                    for (size_t i = g.start; i < g.end; ++i) {
-                        int idxA = entries[i].particleIdx;
-                        for (auto it = range.first; it != range.second; ++it) {
-                            int idxB = it->particleIdx;
-                            int a = idxA, b = idxB;
-                            if (a > b) std::swap(a, b);
-                            pairs.emplace_back(a, b);
-                        }
+            for (const auto& offset : kForwardOffsets) {
+                auto it = cells.find(key(base + offset));
+                if (it == cells.end()) continue;
+                for (int a : cellA) {
+                    for (int b : it->second) {
+                        int x = a, y = b;
+                        if (x > y) std::swap(x, y);
+                        pairs.emplace_back(x, y);
                     }
                 }
             }
         }
 
-        // 3. 回傳 Pair List
         return pairs;
     }
 };

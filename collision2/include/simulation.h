@@ -8,9 +8,11 @@
 #include "broad_phase.h"
 #include "narrow_phase.h"
 #include "verlet_buffer.h"
+#include "brute_force.h"  // 若你 header 檔名不同，請對應修正
 
-// 要測試的 broad-phase 演算法
-enum class BroadPhaseMethod {
+// 要測試的 broad-phase / baseline 演算法
+enum class Method {
+    BruteForce,    // 單一獨立基準方法，不參與 broad-phase / narrow-phase 設定
     UniformGrid,
     Octree,
 };
@@ -20,8 +22,9 @@ struct SimulationConfig {
     // 基礎
     float dt = 1.0f / 60.0f;
     float K = 2.0f;  // skin 公式的 K 值
+    bool hasSkin = false;
 
-    BroadPhaseMethod method = BroadPhaseMethod::UniformGrid;
+    Method method = Method::UniformGrid;
 
     // uniform grid 專屬
     float cellSize = 1.0f;
@@ -40,7 +43,7 @@ struct FrameStats {
     double narrowPhaseTimeMs = 0.0;
     bool didRebuild = false;
 
-    PairList candidatePairs;  // 本幀有效的 broad-phase 候選清單（rebuild 或沿用上次的）
+    PairList candidatePairs;  // 本幀有效的 broad-phase 候選清單
     PairList collisionPairs;  // narrow-phase 篩選後的實際碰撞清單
 
     size_t candidateCount() const { return candidatePairs.size(); }
@@ -54,44 +57,65 @@ public:
           config_(config),
           totalFrames_(totalFrames),
           broadPhase_(broad::UniformGrid(config.cellSize)) {
-        if (config_.method == BroadPhaseMethod::Octree) {
+        if (config_.method == Method::Octree) {
             broadPhase_ = broad::Octree(config_.maxDepth, config_.leafCapacity, config_.worldSize);
         }
     }
 
-    // 跑一幀：積分位置 -> 視需要 rebuild broad-phase -> narrow-phase，回傳本幀統計
+    // 跑一幀：先做 collision 判定，再處理 collision response，最後才 integration
     const FrameStats& step() {
-        integrate();
-
         FrameStats stats;
         stats.frameIndex = currentFrame_;
 
-        stats.didRebuild = needsRebuild();
-        if (stats.didRebuild) {
+        if (config_.method == Method::BruteForce) {
+            // 直接用 brute force 基準法，不走 broad-phase / narrow-phase 流程
             auto t0 = std::chrono::high_resolution_clock::now();
-            cachedCandidates_ = buildBroadPhase();
+            PairList brutePairs = BruteForce(particles_);
             auto t1 = std::chrono::high_resolution_clock::now();
-            stats.broadPhaseTimeMs = std::chrono::duration<double, std::milli>(t1 - t0).count();
 
-            verlet::recordBroadPhaseSnapshot(particles_);
-            verlet::updateLocalSkin(particles_, config_.K, config_.dt);
-            if (config_.method == BroadPhaseMethod::UniformGrid) {
-                verlet::capSkinToCellSize(particles_, config_.cellSize);
+            stats.broadPhaseTimeMs = 0.0;
+            stats.narrowPhaseTimeMs =
+                std::chrono::duration<double, std::milli>(t1 - t0).count();
+
+            stats.didRebuild = false;
+            stats.candidatePairs = brutePairs;
+            stats.collisionPairs = brutePairs;
+        } else {
+            stats.didRebuild = needsRebuild();
+            if (stats.didRebuild) {
+                auto t0 = std::chrono::high_resolution_clock::now();
+                cachedCandidates_ = buildBroadPhase();
+                auto t1 = std::chrono::high_resolution_clock::now();
+                stats.broadPhaseTimeMs = std::chrono::duration<double, std::milli>(t1 - t0).count();
+
+                verlet::recordBroadPhaseSnapshot(particles_);
+                if (config_.hasSkin) {
+                    verlet::updateLocalSkin(particles_, config_.K, config_.dt);
+                    if (config_.method == Method::UniformGrid) {
+                        verlet::capSkinToCellSize(particles_, config_.cellSize);
+                    }
+                }
             }
+
+            auto t2 = std::chrono::high_resolution_clock::now();
+            PairList collisions;
+            for (const auto& [i, j] : cachedCandidates_) {
+                if (narrow::colliding(particles_[i], particles_[j])) {
+                    collisions.emplace_back(i, j);
+                }
+            }
+            auto t3 = std::chrono::high_resolution_clock::now();
+            stats.narrowPhaseTimeMs = std::chrono::duration<double, std::milli>(t3 - t2).count();
+
+            stats.candidatePairs = cachedCandidates_;
+            stats.collisionPairs = std::move(collisions);
         }
 
-        auto t2 = std::chrono::high_resolution_clock::now();
-        PairList collisions;
-        for (const auto& [i, j] : cachedCandidates_) {
-            if (narrow::colliding(particles_[i], particles_[j])) {
-                collisions.emplace_back(i, j);
-            }
-        }
-        auto t3 = std::chrono::high_resolution_clock::now();
-        stats.narrowPhaseTimeMs = std::chrono::duration<double, std::milli>(t3 - t2).count();
+        // 先根據 collisionPairs 進行速度 / 加速度更新
+        resolveCollisions(stats.collisionPairs);
 
-        stats.candidatePairs = cachedCandidates_;
-        stats.collisionPairs = std::move(collisions);
+        // 最後才做 integration（verlet 位置/速度/加速度更新）
+        integrate();
 
         lastStats_ = std::move(stats);
         ++currentFrame_;
@@ -127,7 +151,37 @@ private:
     }
 
     PairList buildBroadPhase() const {
-        return std::visit([this](const auto& bp) { return bp.Build(particles_, true); }, broadPhase_);
+        return std::visit([this](const auto& bp) { return bp.Build(particles_, config_.hasSkin); }, broadPhase_);
+    }
+
+    // brute-force 基準法：完全不參與 broad-phase / narrow-phase 設定
+    PairList computeBruteForcePairs() const {
+        PairList pairs;
+        pairs.reserve(particles_.size() * (particles_.size() - 1) / 2);
+
+        for (size_t i = 0; i < particles_.size(); ++i) {
+            for (size_t j = i + 1; j < particles_.size(); ++j) {
+                if (narrow::colliding(particles_[i], particles_[j])) {
+                    pairs.emplace_back(static_cast<int>(i), static_cast<int>(j));
+                }
+            }
+        }
+
+        return pairs;
+    }
+
+    // 依據 collisionPairs 進行碰撞回應 / 速度與加速度修正
+    void resolveCollisions(const PairList& collisions) {
+        for (const auto& [i, j] : collisions) {
+            auto& a = particles_[i];
+            auto& b = particles_[j];
+
+            // 這裡先保留簡單的相互作用，若你原本有碰撞回應函式，可放在這裡
+            // 例如：交換速度、反向法向速度、更新 acc 等
+            // 目前先保持不動，讓 integration 負責最終更新
+            (void)a;
+            (void)b;
+        }
     }
 
     std::vector<Particle> particles_;

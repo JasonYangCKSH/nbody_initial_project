@@ -3,6 +3,7 @@
 
 CMakeFiles/test.dir/test/test.cpp.o: /home/jason/nbody_initial_project/collision2/test/test.cpp \
   /home/jason/nbody_initial_project/collision2/include/broad_phase.h \
+  /home/jason/nbody_initial_project/collision2/include/brute_force.h \
   /home/jason/nbody_initial_project/collision2/include/glm/common.hpp \
   /home/jason/nbody_initial_project/collision2/include/glm/detail/func_exponential.inl \
   /home/jason/nbody_initial_project/collision2/include/glm/detail/func_vector_relational.inl \
@@ -717,6 +718,10 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/exception:
 
+/usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
+
+/usr/include/c++/15/debug/assertions.h:
+
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/qualifier.hpp:
@@ -829,6 +834,12 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/clocale:
 
+/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float4x2_precision.hpp:
+
+/usr/include/c++/15/unordered_map:
+
+/usr/include/c++/15/chrono:
+
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float3x4_precision.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/wchar2.h:
@@ -881,10 +892,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat3x2.hpp:
 
-/usr/include/x86_64-linux-gnu/c++/15/bits/gthr.h:
-
-/home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat2x4.inl:
-
 /usr/include/c++/15/bits/std_abs.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat4x4.hpp:
@@ -897,10 +904,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float2x4_precision.hpp:
 
-/home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat2x3.inl:
-
-/usr/include/c++/15/bits/ostream.tcc:
-
 /usr/include/c++/15/cstdlib:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/scalar_common.hpp:
@@ -910,6 +913,8 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /home/jason/nbody_initial_project/collision2/include/glm/mat2x4.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double2x4.hpp:
+
+/home/jason/nbody_initial_project/collision2/include/glm/detail/type_vec1.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float2x2.hpp:
 
@@ -948,6 +953,28 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /usr/include/c++/15/initializer_list:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_vec4.hpp:
+
+/home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat2x3.inl:
+
+/usr/include/c++/15/bits/ostream.tcc:
+
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+
+/usr/include/c++/15/tr1/ell_integral.tcc:
+
+/home/jason/nbody_initial_project/collision2/include/glm/detail/func_geometric.inl:
+
+/usr/include/stdlib.h:
+
+/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float2x3.hpp:
+
+/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double4x3_precision.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/stdio2-decl.h:
+
+/usr/include/linux/posix_types.h:
+
+/home/jason/nbody_initial_project/collision2/include/glm/vector_relational.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat3x3.hpp:
 
@@ -1013,26 +1040,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 
 /usr/include/c++/15/bits/streambuf_iterator.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdio2-decl.h:
-
-/usr/include/linux/posix_types.h:
-
-/home/jason/nbody_initial_project/collision2/include/glm/vector_relational.hpp:
-
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
-
-/usr/include/c++/15/tr1/ell_integral.tcc:
-
-/home/jason/nbody_initial_project/collision2/include/glm/detail/func_geometric.inl:
-
-/usr/include/stdlib.h:
-
-/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float2x3.hpp:
-
-/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double4x3_precision.hpp:
-
-/home/jason/nbody_initial_project/collision2/include/glm/detail/type_vec1.hpp:
-
 /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_bool4_precision.hpp:
@@ -1052,12 +1059,6 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float2x2_precision.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double2x3_precision.hpp:
-
-/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float4x2_precision.hpp:
-
-/usr/include/c++/15/unordered_map:
-
-/usr/include/c++/15/chrono:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_bool2_precision.hpp:
 
@@ -1080,6 +1081,12 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /usr/include/errno.h:
 
 /usr/include/c++/15/cstddef:
+
+/usr/include/x86_64-linux-gnu/c++/15/bits/gthr.h:
+
+/home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat2x4.inl:
+
+/home/jason/nbody_initial_project/collision2/include/brute_force.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float2x4.hpp:
 
@@ -1384,7 +1391,3 @@ CMakeFiles/test.dir/test/test.cpp.o:
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double4x2_precision.hpp:
 
 /usr/include/c++/15/ctime:
-
-/usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
-
-/usr/include/c++/15/debug/assertions.h:
