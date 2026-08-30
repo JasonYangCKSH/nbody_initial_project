@@ -21,6 +21,7 @@ struct StepStats {
     int collisionCount = 0;
     // TODO: 你覺得還需要記錄哪些？(對應你之前想的CSV欄位)
     bool rebuild;
+    std::vector<std::pair<int, int>> collisions;
 };
 struct SimConfig {
     float dt = 0.001f;
