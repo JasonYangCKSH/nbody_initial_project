@@ -56,22 +56,41 @@ public:
         // 1. Store particles to cells
         std::vector<ParticleCellEntry> entries;
         entries.reserve(particles.size());
+        float maxReach = 0.0f;
         for (size_t i = 0; i < particles.size(); ++i) {
-            glm::ivec3 cell = posToCell(particles[i].pos); 
+            glm::ivec3 cell = posToCell(particles[i].pos);
             uint64_t key = encodeMorton3D(cell);
             entries.push_back({key, static_cast<int>(i)});
+            maxReach = std::max(maxReach, particles[i].radius + (withSkin ? particles[i].skin : 0.0f));
         }
 
         // 使用內部定義的 operator< 進行排序
         std::sort(entries.begin(), entries.end());
 
-        // 2. 從左下到右上 traverse 每個 cell (13 個前向搜尋半導體)
-        static const glm::ivec3 kForwardOffsets[13] = {
-            {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {-1, 1, 0},
-            {1, 0, -1}, {1, 1, -1}, {0, 1, -1}, {-1, 1, -1},
-            {1, 0, 1}, {1, 1, 1}, {0, 1, 1}, {-1, 1, 1},
-            {0, 0, 1},
-        };
+        // 2. 從左下到右上 traverse 每個 cell (前向搜尋半空間)
+        //
+        // A fixed 1-ring (13 offsets) only covers particles whose reach
+        // (radius + skin) is at most half the cell size. When a particle's
+        // reach is larger than that, two colliding particles can sit many
+        // cells apart, so the search radius must grow with the largest
+        // reach present. Two cells k cells apart (k >= 1) are at least
+        // (k-1)*cellSize_ apart in world space, so k must satisfy
+        // (k-1)*cellSize_ <= reach_i + reach_j <= 2*maxReach for every
+        // colliding pair to be found.
+        int cellRadius = std::max(
+            1, static_cast<int>(std::ceil((2.0f * maxReach) / cellSize_)) + 1);
+
+        std::vector<glm::ivec3> forwardOffsets;
+        for (int dz = -cellRadius; dz <= cellRadius; ++dz) {
+            for (int dy = -cellRadius; dy <= cellRadius; ++dy) {
+                for (int dx = -cellRadius; dx <= cellRadius; ++dx) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+                    bool forward = (dy > 0) || (dy == 0 && dx > 0) ||
+                                   (dy == 0 && dx == 0 && dz > 0);
+                    if (forward) forwardOffsets.push_back({dx, dy, dz});
+                }
+            }
+        }
 
         PairList pairs;
         size_t n = entries.size();
@@ -97,7 +116,7 @@ public:
 
             // 2-2 再比對鄰居 cell 的 particles
             glm::ivec3 currentCell = posToCell(particles[entries[cellStart].particleIdx].pos);
-            for (const auto& offset : kForwardOffsets) {
+            for (const auto& offset : forwardOffsets) {
                 glm::ivec3 targetCell = currentCell + offset;
                 uint64_t targetKey = encodeMorton3D(targetCell);
 

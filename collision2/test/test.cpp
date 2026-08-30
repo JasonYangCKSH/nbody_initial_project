@@ -31,14 +31,15 @@ std::string formatPairs(const PairList& pairs) {
 }
 
 std::vector<Particle> makeTestParticles() {
-    auto particles = scenario::two_particle_bounce_scenario();
-    particles.resize(3);
+    //auto particles = scenario::two_particle_bounce_scenario();
+    auto particles = scenario::explosion(100, 100.0f, 1.0f, 2.0f, 1234);
+    //particles.resize(3);
 
-    particles[2].pos = glm::vec3(2.1f, 0.0f, 0.0f);
-    particles[2].vel = glm::vec3(-0.8f, 0.0f, 0.0f);
-    particles[2].acc = glm::vec3(0.0f, 0.0f, 0.0f);
-    particles[2].radius = 0.5f;
-    particles[2].skin = 0.05f;
+    //particles[2].pos = glm::vec3(2.1f, 0.0f, 0.0f);
+    //particles[2].vel = glm::vec3(-0.8f, 0.0f, 0.0f);
+    //particles[2].acc = glm::vec3(0.0f, 0.0f, 0.0f);
+    //particles[2].radius = 0.5f;
+    //particles[2].skin = 0.05f;
 
     return particles;
 }
@@ -97,7 +98,7 @@ bool compareHistory(const std::string& name,
 }
 
 int main() {
-    const int frames = 200;
+    const int frames = 2000;
     auto initialParticles = makeTestParticles();
 
     auto expected = runSimulation(StructureMode::BruteForce, false, initialParticles, frames);
