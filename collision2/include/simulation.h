@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <chrono>
 #include <variant>
 #include <vector>
@@ -113,6 +114,14 @@ public:
             stats.candidatePairs = cachedCandidates_;
             stats.collisionPairs = std::move(collisions);
         }
+
+        // resolveCollisions() 是逐對依序處理的衝量解法，同一幀內若有粒子同時涉及
+        // 兩個以上碰撞（collision cluster），處理順序會影響結果。candidatePairs
+        // 的順序取決於各 broad-phase 容器的走訪順序（unordered_map / leaf 走訪／…），
+        // 跨方法本來就不同，所以先排成跟 BruteForce() 一致的 (i,j) 升冪順序，
+        // 確保只要 broad-phase 沒漏抓碰撞，不同方法看到的處理順序也一致，
+        // 軌跡才不會單純因為容器走訪順序不同而分岔。
+        std::sort(stats.collisionPairs.begin(), stats.collisionPairs.end());
 
         // 先根據 collisionPairs 進行速度 / 加速度更新
         resolveCollisions(stats.collisionPairs);
