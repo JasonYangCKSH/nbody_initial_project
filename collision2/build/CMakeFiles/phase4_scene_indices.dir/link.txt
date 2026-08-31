@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/phase4_scene_indices.dir/link.d CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o -o phase4_scene_indices

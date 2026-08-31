@@ -130,6 +130,71 @@ bench/fast:
 .PHONY : bench/fast
 
 #=============================================================================
+# Target rules for targets named phase1_structural_octree
+
+# Build rule for target.
+phase1_structural_octree: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase1_structural_octree
+.PHONY : phase1_structural_octree
+
+# fast build rule for target.
+phase1_structural_octree/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_octree.dir/build.make CMakeFiles/phase1_structural_octree.dir/build
+.PHONY : phase1_structural_octree/fast
+
+#=============================================================================
+# Target rules for targets named phase1_structural_grid
+
+# Build rule for target.
+phase1_structural_grid: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase1_structural_grid
+.PHONY : phase1_structural_grid
+
+# fast build rule for target.
+phase1_structural_grid/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_grid.dir/build.make CMakeFiles/phase1_structural_grid.dir/build
+.PHONY : phase1_structural_grid/fast
+
+#=============================================================================
+# Target rules for targets named phase2_k_sweep
+
+# Build rule for target.
+phase2_k_sweep: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase2_k_sweep
+.PHONY : phase2_k_sweep
+
+# fast build rule for target.
+phase2_k_sweep/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/build
+.PHONY : phase2_k_sweep/fast
+
+#=============================================================================
+# Target rules for targets named phase2_dt_sweep
+
+# Build rule for target.
+phase2_dt_sweep: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase2_dt_sweep
+.PHONY : phase2_dt_sweep
+
+# fast build rule for target.
+phase2_dt_sweep/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_dt_sweep.dir/build.make CMakeFiles/phase2_dt_sweep.dir/build
+.PHONY : phase2_dt_sweep/fast
+
+#=============================================================================
+# Target rules for targets named phase4_scene_indices
+
+# Build rule for target.
+phase4_scene_indices: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase4_scene_indices
+.PHONY : phase4_scene_indices
+
+# fast build rule for target.
+phase4_scene_indices/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/build
+.PHONY : phase4_scene_indices/fast
+
+#=============================================================================
 # Target rules for targets named test
 
 # Build rule for target.
@@ -178,6 +243,126 @@ bench/bench.s: bench/bench.cpp.s
 bench/bench.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.s
 .PHONY : bench/bench.cpp.s
+
+bench/phase1_structural_grid.o: bench/phase1_structural_grid.cpp.o
+.PHONY : bench/phase1_structural_grid.o
+
+# target to build an object file
+bench/phase1_structural_grid.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_grid.dir/build.make CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.o
+.PHONY : bench/phase1_structural_grid.cpp.o
+
+bench/phase1_structural_grid.i: bench/phase1_structural_grid.cpp.i
+.PHONY : bench/phase1_structural_grid.i
+
+# target to preprocess a source file
+bench/phase1_structural_grid.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_grid.dir/build.make CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.i
+.PHONY : bench/phase1_structural_grid.cpp.i
+
+bench/phase1_structural_grid.s: bench/phase1_structural_grid.cpp.s
+.PHONY : bench/phase1_structural_grid.s
+
+# target to generate assembly for a file
+bench/phase1_structural_grid.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_grid.dir/build.make CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.s
+.PHONY : bench/phase1_structural_grid.cpp.s
+
+bench/phase1_structural_octree.o: bench/phase1_structural_octree.cpp.o
+.PHONY : bench/phase1_structural_octree.o
+
+# target to build an object file
+bench/phase1_structural_octree.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_octree.dir/build.make CMakeFiles/phase1_structural_octree.dir/bench/phase1_structural_octree.cpp.o
+.PHONY : bench/phase1_structural_octree.cpp.o
+
+bench/phase1_structural_octree.i: bench/phase1_structural_octree.cpp.i
+.PHONY : bench/phase1_structural_octree.i
+
+# target to preprocess a source file
+bench/phase1_structural_octree.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_octree.dir/build.make CMakeFiles/phase1_structural_octree.dir/bench/phase1_structural_octree.cpp.i
+.PHONY : bench/phase1_structural_octree.cpp.i
+
+bench/phase1_structural_octree.s: bench/phase1_structural_octree.cpp.s
+.PHONY : bench/phase1_structural_octree.s
+
+# target to generate assembly for a file
+bench/phase1_structural_octree.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_octree.dir/build.make CMakeFiles/phase1_structural_octree.dir/bench/phase1_structural_octree.cpp.s
+.PHONY : bench/phase1_structural_octree.cpp.s
+
+bench/phase2_dt_sweep.o: bench/phase2_dt_sweep.cpp.o
+.PHONY : bench/phase2_dt_sweep.o
+
+# target to build an object file
+bench/phase2_dt_sweep.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_dt_sweep.dir/build.make CMakeFiles/phase2_dt_sweep.dir/bench/phase2_dt_sweep.cpp.o
+.PHONY : bench/phase2_dt_sweep.cpp.o
+
+bench/phase2_dt_sweep.i: bench/phase2_dt_sweep.cpp.i
+.PHONY : bench/phase2_dt_sweep.i
+
+# target to preprocess a source file
+bench/phase2_dt_sweep.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_dt_sweep.dir/build.make CMakeFiles/phase2_dt_sweep.dir/bench/phase2_dt_sweep.cpp.i
+.PHONY : bench/phase2_dt_sweep.cpp.i
+
+bench/phase2_dt_sweep.s: bench/phase2_dt_sweep.cpp.s
+.PHONY : bench/phase2_dt_sweep.s
+
+# target to generate assembly for a file
+bench/phase2_dt_sweep.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_dt_sweep.dir/build.make CMakeFiles/phase2_dt_sweep.dir/bench/phase2_dt_sweep.cpp.s
+.PHONY : bench/phase2_dt_sweep.cpp.s
+
+bench/phase2_k_sweep.o: bench/phase2_k_sweep.cpp.o
+.PHONY : bench/phase2_k_sweep.o
+
+# target to build an object file
+bench/phase2_k_sweep.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/bench/phase2_k_sweep.cpp.o
+.PHONY : bench/phase2_k_sweep.cpp.o
+
+bench/phase2_k_sweep.i: bench/phase2_k_sweep.cpp.i
+.PHONY : bench/phase2_k_sweep.i
+
+# target to preprocess a source file
+bench/phase2_k_sweep.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/bench/phase2_k_sweep.cpp.i
+.PHONY : bench/phase2_k_sweep.cpp.i
+
+bench/phase2_k_sweep.s: bench/phase2_k_sweep.cpp.s
+.PHONY : bench/phase2_k_sweep.s
+
+# target to generate assembly for a file
+bench/phase2_k_sweep.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/bench/phase2_k_sweep.cpp.s
+.PHONY : bench/phase2_k_sweep.cpp.s
+
+bench/phase3_scene_indices.o: bench/phase3_scene_indices.cpp.o
+.PHONY : bench/phase3_scene_indices.o
+
+# target to build an object file
+bench/phase3_scene_indices.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o
+.PHONY : bench/phase3_scene_indices.cpp.o
+
+bench/phase3_scene_indices.i: bench/phase3_scene_indices.cpp.i
+.PHONY : bench/phase3_scene_indices.i
+
+# target to preprocess a source file
+bench/phase3_scene_indices.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.i
+.PHONY : bench/phase3_scene_indices.cpp.i
+
+bench/phase3_scene_indices.s: bench/phase3_scene_indices.cpp.s
+.PHONY : bench/phase3_scene_indices.s
+
+# target to generate assembly for a file
+bench/phase3_scene_indices.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.s
+.PHONY : bench/phase3_scene_indices.cpp.s
 
 test/test.o: test/test.cpp.o
 .PHONY : test/test.o
@@ -236,11 +421,31 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... bench"
+	@echo "... phase1_structural_grid"
+	@echo "... phase1_structural_octree"
+	@echo "... phase2_dt_sweep"
+	@echo "... phase2_k_sweep"
+	@echo "... phase4_scene_indices"
 	@echo "... test"
 	@echo "... test_correctness"
 	@echo "... bench/bench.o"
 	@echo "... bench/bench.i"
 	@echo "... bench/bench.s"
+	@echo "... bench/phase1_structural_grid.o"
+	@echo "... bench/phase1_structural_grid.i"
+	@echo "... bench/phase1_structural_grid.s"
+	@echo "... bench/phase1_structural_octree.o"
+	@echo "... bench/phase1_structural_octree.i"
+	@echo "... bench/phase1_structural_octree.s"
+	@echo "... bench/phase2_dt_sweep.o"
+	@echo "... bench/phase2_dt_sweep.i"
+	@echo "... bench/phase2_dt_sweep.s"
+	@echo "... bench/phase2_k_sweep.o"
+	@echo "... bench/phase2_k_sweep.i"
+	@echo "... bench/phase2_k_sweep.s"
+	@echo "... bench/phase3_scene_indices.o"
+	@echo "... bench/phase3_scene_indices.i"
+	@echo "... bench/phase3_scene_indices.s"
 	@echo "... test/test.o"
 	@echo "... test/test.i"
 	@echo "... test/test.s"

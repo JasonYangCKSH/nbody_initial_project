@@ -10,5 +10,12 @@ add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(bench bench/bench.cpp)
+
+add_executable(phase1_structural_octree bench/phase1_structural_octree.cpp)
+add_executable(phase1_structural_grid bench/phase1_structural_grid.cpp)
+add_executable(phase2_k_sweep bench/phase2_k_sweep.cpp)
+add_executable(phase2_dt_sweep bench/phase2_dt_sweep.cpp)
+add_executable(phase4_scene_indices bench/phase3_scene_indices.cpp)
+
 add_executable(test test/test.cpp)
 add_executable(test_correctness test/test_correctness.cpp)
