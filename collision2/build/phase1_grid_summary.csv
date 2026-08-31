@@ -1,0 +1,7 @@
+scenario      , cell_size_ratio, cell_size_actual,avg_total_time_s,total_time_std_s,avg_broad_phase_time_s,avg_narrow_phase_time_s,avg_candidates_per_frame,correctness_ok,repeat_count
+uniform_cloud ,            1.00,           2.0000,        0.185502,        0.018804,              0.181199,               0.001181,                 1761.63,             1,           5
+uniform_cloud ,            1.50,           3.0000,        0.196384,        0.009799,              0.187639,               0.003790,                 6145.49,             1,           5
+uniform_cloud ,            2.00,           4.0000,        0.206933,        0.026547,              0.190751,               0.007866,                14094.44,             1,           5
+uniform_cloud ,            3.00,           6.0000,        0.252598,        0.028795,              0.202937,               0.024073,                44444.45,             1,           5
+uniform_cloud ,            5.00,          10.0000,        0.409133,        0.079998,              0.246202,               0.087632,               175813.10,             1,           5
+uniform_cloud ,            8.00,          16.0000,        1.250478,        0.175540,              0.654370,               0.272671,               536144.55,             1,           5
