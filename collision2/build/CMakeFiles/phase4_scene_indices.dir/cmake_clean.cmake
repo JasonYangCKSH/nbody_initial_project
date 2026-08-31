@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/phase4_scene_indices.dir/link.d"
-  "CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o"
-  "CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o.d"
+  "CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o"
+  "CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o.d"
   "phase4_scene_indices"
   "phase4_scene_indices.pdb"
 )

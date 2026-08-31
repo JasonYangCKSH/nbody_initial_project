@@ -72,28 +72,28 @@ include CMakeFiles/phase4_scene_indices.dir/flags.make
 CMakeFiles/phase4_scene_indices.dir/codegen:
 .PHONY : CMakeFiles/phase4_scene_indices.dir/codegen
 
-CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o: CMakeFiles/phase4_scene_indices.dir/flags.make
-CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o: /home/jason/nbody_initial_project/collision2/bench/phase3_scene_indices.cpp
-CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o: CMakeFiles/phase4_scene_indices.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o -MF CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o.d -o CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o -c /home/jason/nbody_initial_project/collision2/bench/phase3_scene_indices.cpp
+CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o: CMakeFiles/phase4_scene_indices.dir/flags.make
+CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o: /home/jason/nbody_initial_project/collision2/bench/phase4_scene_indices.cpp
+CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o: CMakeFiles/phase4_scene_indices.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o -MF CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o.d -o CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o -c /home/jason/nbody_initial_project/collision2/bench/phase4_scene_indices.cpp
 
-CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jason/nbody_initial_project/collision2/bench/phase3_scene_indices.cpp > CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.i
+CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jason/nbody_initial_project/collision2/bench/phase4_scene_indices.cpp > CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.i
 
-CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jason/nbody_initial_project/collision2/bench/phase3_scene_indices.cpp -o CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.s
+CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jason/nbody_initial_project/collision2/bench/phase4_scene_indices.cpp -o CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.s
 
 # Object files for target phase4_scene_indices
 phase4_scene_indices_OBJECTS = \
-"CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o"
+"CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o"
 
 # External object files for target phase4_scene_indices
 phase4_scene_indices_EXTERNAL_OBJECTS =
 
-phase4_scene_indices: CMakeFiles/phase4_scene_indices.dir/bench/phase3_scene_indices.cpp.o
+phase4_scene_indices: CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o
 phase4_scene_indices: CMakeFiles/phase4_scene_indices.dir/build.make
 phase4_scene_indices: CMakeFiles/phase4_scene_indices.dir/compiler_depend.ts
 phase4_scene_indices: CMakeFiles/phase4_scene_indices.dir/link.txt
