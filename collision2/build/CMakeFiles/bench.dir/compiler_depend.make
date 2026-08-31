@@ -4,6 +4,7 @@
 CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collision2/bench/bench.cpp \
   /home/jason/nbody_initial_project/collision2/include/broad_phase.h \
   /home/jason/nbody_initial_project/collision2/include/brute_force.h \
+  /home/jason/nbody_initial_project/collision2/include/collision_response.h \
   /home/jason/nbody_initial_project/collision2/include/glm/common.hpp \
   /home/jason/nbody_initial_project/collision2/include/glm/detail/func_exponential.inl \
   /home/jason/nbody_initial_project/collision2/include/glm/detail/func_vector_relational.inl \
@@ -155,6 +156,7 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /home/jason/nbody_initial_project/collision2/include/narrow_phase.h \
   /home/jason/nbody_initial_project/collision2/include/particle.h \
   /home/jason/nbody_initial_project/collision2/include/scenario.h \
+  /home/jason/nbody_initial_project/collision2/include/simulation.h \
   /home/jason/nbody_initial_project/collision2/include/verlet_buffer.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
@@ -176,6 +178,7 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/bits/basic_string.tcc \
   /usr/include/c++/10/bits/char_traits.h \
   /usr/include/c++/10/bits/charconv.h \
+  /usr/include/c++/10/bits/codecvt.h \
   /usr/include/c++/10/bits/concept_check.h \
   /usr/include/c++/10/bits/cpp_type_traits.h \
   /usr/include/c++/10/bits/cxxabi_forced.h \
@@ -196,8 +199,11 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/bits/iterator_concepts.h \
   /usr/include/c++/10/bits/locale_classes.h \
   /usr/include/c++/10/bits/locale_classes.tcc \
+  /usr/include/c++/10/bits/locale_conv.h \
   /usr/include/c++/10/bits/locale_facets.h \
   /usr/include/c++/10/bits/locale_facets.tcc \
+  /usr/include/c++/10/bits/locale_facets_nonio.h \
+  /usr/include/c++/10/bits/locale_facets_nonio.tcc \
   /usr/include/c++/10/bits/localefwd.h \
   /usr/include/c++/10/bits/memoryfwd.h \
   /usr/include/c++/10/bits/move.h \
@@ -205,9 +211,11 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/bits/node_handle.h \
   /usr/include/c++/10/bits/ostream.tcc \
   /usr/include/c++/10/bits/ostream_insert.h \
+  /usr/include/c++/10/bits/parse_numbers.h \
   /usr/include/c++/10/bits/postypes.h \
   /usr/include/c++/10/bits/predefined_ops.h \
   /usr/include/c++/10/bits/ptr_traits.h \
+  /usr/include/c++/10/bits/quoted_string.h \
   /usr/include/c++/10/bits/random.h \
   /usr/include/c++/10/bits/random.tcc \
   /usr/include/c++/10/bits/range_access.h \
@@ -218,6 +226,7 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/bits/shared_ptr_atomic.h \
   /usr/include/c++/10/bits/shared_ptr_base.h \
   /usr/include/c++/10/bits/specfun.h \
+  /usr/include/c++/10/bits/sstream.tcc \
   /usr/include/c++/10/bits/std_abs.h \
   /usr/include/c++/10/bits/std_function.h \
   /usr/include/c++/10/bits/stl_algo.h \
@@ -249,6 +258,7 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/cctype \
   /usr/include/c++/10/cerrno \
   /usr/include/c++/10/cfloat \
+  /usr/include/c++/10/chrono \
   /usr/include/c++/10/climits \
   /usr/include/c++/10/clocale \
   /usr/include/c++/10/cmath \
@@ -257,6 +267,7 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/cstdint \
   /usr/include/c++/10/cstdio \
   /usr/include/c++/10/cstdlib \
+  /usr/include/c++/10/ctime \
   /usr/include/c++/10/cwchar \
   /usr/include/c++/10/cwctype \
   /usr/include/c++/10/debug/assertions.h \
@@ -272,11 +283,13 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/ext/type_traits.h \
   /usr/include/c++/10/functional \
   /usr/include/c++/10/initializer_list \
+  /usr/include/c++/10/iomanip \
   /usr/include/c++/10/ios \
   /usr/include/c++/10/iosfwd \
   /usr/include/c++/10/iostream \
   /usr/include/c++/10/istream \
   /usr/include/c++/10/limits \
+  /usr/include/c++/10/locale \
   /usr/include/c++/10/memory \
   /usr/include/c++/10/new \
   /usr/include/c++/10/numeric \
@@ -288,6 +301,8 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/pstl/glue_numeric_defs.h \
   /usr/include/c++/10/pstl/pstl_config.h \
   /usr/include/c++/10/random \
+  /usr/include/c++/10/ratio \
+  /usr/include/c++/10/sstream \
   /usr/include/c++/10/stdexcept \
   /usr/include/c++/10/streambuf \
   /usr/include/c++/10/string \
@@ -310,12 +325,14 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/c++/10/typeinfo \
   /usr/include/c++/10/unordered_map \
   /usr/include/c++/10/utility \
+  /usr/include/c++/10/variant \
   /usr/include/c++/10/vector \
   /usr/include/ctype.h \
   /usr/include/endian.h \
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
+  /usr/include/libintl.h \
   /usr/include/limits.h \
   /usr/include/linux/errno.h \
   /usr/include/linux/limits.h \
@@ -425,8 +442,10 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
   /usr/include/x86_64-linux-gnu/c++/10/bits/error_constants.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/gthr.h \
+  /usr/include/x86_64-linux-gnu/c++/10/bits/messages_members.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/opt_random.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/os_defines.h \
+  /usr/include/x86_64-linux-gnu/c++/10/bits/time_members.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -448,13 +467,13 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/lib/gcc/x86_64-linux-gnu/10/include/float.h:
 
-/usr/include/x86_64-linux-gnu/sys/types.h:
-
 /usr/include/x86_64-linux-gnu/sys/select.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/opt_random.h:
+
+/usr/include/x86_64-linux-gnu/c++/10/bits/messages_members.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h:
 
@@ -600,6 +619,8 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/vector:
 
+/usr/include/c++/10/variant:
+
 /usr/include/c++/10/utility:
 
 /usr/include/c++/10/unordered_map:
@@ -626,6 +647,12 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/stdexcept:
 
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
+/usr/include/c++/10/sstream:
+
+/usr/include/c++/10/ratio:
+
 /usr/include/c++/10/random:
 
 /usr/include/c++/10/pstl/pstl_config.h:
@@ -640,9 +667,9 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/memory:
 
-/usr/include/c++/10/istream:
+/usr/include/c++/10/locale:
 
-/usr/include/c++/10/iostream:
+/usr/include/c++/10/istream:
 
 /usr/include/c++/10/ios:
 
@@ -660,11 +687,25 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/ext/new_allocator.h:
 
+/usr/include/c++/10/ext/concurrence.h:
+
+/usr/include/c++/10/ext/atomicity.h:
+
+/usr/include/c++/10/ext/alloc_traits.h:
+
+/usr/include/c++/10/ext/aligned_buffer.h:
+
+/usr/include/c++/10/exception:
+
+/usr/include/c++/10/debug/debug.h:
+
+/usr/include/c++/10/ctime:
+
+/usr/include/c++/10/cstdlib:
+
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/qualifier.hpp:
-
-/usr/include/c++/10/bits/functexcept.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_uint3.hpp:
 
@@ -694,19 +735,15 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float2x3_precision.hpp:
 
-/home/jason/nbody_initial_project/collision2/include/glm/ext/vector_bool3_precision.hpp:
+/usr/include/c++/10/cwchar:
+
+/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double2x2_precision.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/scalar_uint_sized.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_vec3.inl:
-
-/usr/include/c++/10/pstl/glue_numeric_defs.h:
-
-/home/jason/nbody_initial_project/collision2/include/glm/ext/scalar_int_sized.hpp:
-
-/home/jason/nbody_initial_project/collision2/include/glm/ext/vector_double2_precision.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_vec3.hpp:
 
@@ -724,6 +761,8 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_vec2.hpp:
 
+/usr/include/c++/10/bits/codecvt.h:
+
 /home/jason/nbody_initial_project/collision2/include/glm/mat4x3.hpp:
 
 /usr/include/c++/10/bits/atomic_base.h:
@@ -740,6 +779,8 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_bool2.hpp:
 
+/usr/include/c++/10/iomanip:
+
 /usr/include/c++/10/bits/random.tcc:
 
 /usr/include/c++/10/tr1/ell_integral.tcc:
@@ -747,10 +788,6 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 /usr/include/c++/10/cerrno:
 
 /home/jason/nbody_initial_project/collision2/include/glm/mat2x3.hpp:
-
-/home/jason/nbody_initial_project/collision2/include/glm/detail/type_half.hpp:
-
-/usr/include/c++/10/bits/atomic_lockfree_defines.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/func_matrix.inl:
 
@@ -764,9 +801,17 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float4x2_precision.hpp:
 
+/home/jason/nbody_initial_project/collision2/include/glm/ext/vector_int4_sized.hpp:
+
+/home/jason/nbody_initial_project/collision2/include/glm/ext/vector_double2.hpp:
+
+/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float4x2.hpp:
+
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_int3_sized.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float3x4_precision.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/10/bits/time_members.h:
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/atomic_word.h:
 
@@ -794,10 +839,6 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat2x2.hpp:
 
-/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double2x2_precision.hpp:
-
-/usr/include/c++/10/cwchar:
-
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_uint4_sized.hpp:
@@ -805,12 +846,6 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat4x3.inl:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_int2.hpp:
-
-/usr/include/wctype.h:
-
-/usr/include/sched.h:
-
-/usr/include/c++/10/array:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat3x2.hpp:
 
@@ -842,6 +877,18 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/bits/node_handle.h:
 
+/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
+
+/home/jason/nbody_initial_project/collision2/include/verlet_buffer.h:
+
+/home/jason/nbody_initial_project/collision2/bench/bench.cpp:
+
+/usr/include/wctype.h:
+
+/usr/include/sched.h:
+
+/usr/include/c++/10/array:
+
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_double4.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/_fixes.hpp:
@@ -863,6 +910,14 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
 
 /home/jason/nbody_initial_project/collision2/include/broad_phase.h:
+
+/usr/include/c++/10/pstl/glue_numeric_defs.h:
+
+/home/jason/nbody_initial_project/collision2/include/glm/ext/scalar_int_sized.hpp:
+
+/home/jason/nbody_initial_project/collision2/include/glm/ext/vector_double2_precision.hpp:
+
+/usr/include/c++/10/bits/locale_facets_nonio.tcc:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/compute_vector_relational.hpp:
 
@@ -894,6 +949,10 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /home/jason/nbody_initial_project/collision2/include/glm/vector_relational.hpp:
 
+/home/jason/nbody_initial_project/collision2/include/glm/ext/vector_bool3_precision.hpp:
+
+/home/jason/nbody_initial_project/collision2/include/collision_response.h:
+
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_mat3x3.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/func_trigonometric.inl:
@@ -913,8 +972,6 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 /usr/include/x86_64-linux-gnu/bits/wchar2-decl.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double4x2.hpp:
-
-/usr/include/c++/10/ext/concurrence.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_int3.hpp:
 
@@ -970,6 +1027,8 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/x86_64-linux-gnu/c++/10/bits/ctype_base.h:
 
+/usr/include/libintl.h:
+
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double2x3_precision.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/type_half.inl:
@@ -996,8 +1055,6 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /home/jason/nbody_initial_project/collision2/include/brute_force.h:
 
-/usr/include/c++/10/cstdlib:
-
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float2x4.hpp:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float4x4.hpp:
@@ -1014,17 +1071,9 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/bits/stl_uninitialized.h:
 
-/home/jason/nbody_initial_project/collision2/include/glm/ext/vector_int4_sized.hpp:
+/usr/include/c++/10/debug/assertions.h:
 
-/home/jason/nbody_initial_project/collision2/include/glm/ext/vector_double2.hpp:
-
-/home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float4x2.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
-
-/home/jason/nbody_initial_project/collision2/bench/bench.cpp:
-
-/home/jason/nbody_initial_project/collision2/include/verlet_buffer.h:
+/home/jason/nbody_initial_project/collision2/include/glm/detail/func_packing.inl:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_bool3.hpp:
 
@@ -1035,6 +1084,10 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 /usr/include/features.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_float3x4.hpp:
+
+/home/jason/nbody_initial_project/collision2/include/glm/detail/type_half.hpp:
+
+/usr/include/c++/10/bits/atomic_lockfree_defines.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/fwd.hpp:
 
@@ -1078,6 +1131,10 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /home/jason/nbody_initial_project/collision2/include/scenario.h:
 
+/usr/include/c++/10/bits/functexcept.h:
+
+/home/jason/nbody_initial_project/collision2/include/simulation.h:
+
 /home/jason/nbody_initial_project/collision2/include/glm/detail/_vectorize.hpp:
 
 /usr/include/c++/10/bits/exception.h:
@@ -1102,6 +1159,8 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/backward/auto_ptr.h:
 
+/usr/include/c++/10/chrono:
+
 /home/jason/nbody_initial_project/collision2/include/glm/detail/func_integer.inl:
 
 /usr/include/c++/10/bits/algorithmfwd.h:
@@ -1117,10 +1176,6 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 /usr/include/c++/10/bits/basic_string.h:
 
 /usr/include/c++/10/bits/basic_string.tcc:
-
-/home/jason/nbody_initial_project/collision2/include/glm/detail/func_packing.inl:
-
-/usr/include/c++/10/debug/assertions.h:
 
 /usr/include/c++/10/bits/char_traits.h:
 
@@ -1152,6 +1207,10 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/bits/iterator_concepts.h:
 
+/usr/include/c++/10/iostream:
+
+/usr/include/c++/10/bits/quoted_string.h:
+
 /usr/include/x86_64-linux-gnu/bits/time64.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/vector_float2_precision.hpp:
@@ -1174,11 +1233,15 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/bits/ios_base.h:
 
+/usr/include/c++/10/bits/locale_conv.h:
+
 /usr/include/x86_64-linux-gnu/bits/cpu-set.h:
 
 /usr/include/c++/10/tr1/special_function_util.h:
 
 /usr/include/c++/10/bits/locale_facets.tcc:
+
+/usr/include/c++/10/bits/locale_facets_nonio.h:
 
 /usr/include/c++/10/bits/localefwd.h:
 
@@ -1206,6 +1269,8 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/bits/range_cmp.h:
 
+/usr/include/c++/10/bits/sstream.tcc:
+
 /usr/include/c++/10/bits/ranges_uninitialized.h:
 
 /home/jason/nbody_initial_project/collision2/include/glm/ext/matrix_double3x3_precision.hpp:
@@ -1228,6 +1293,10 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/bits/stl_bvector.h:
 
+/usr/include/c++/10/cwctype:
+
+/usr/include/c++/10/bits/stl_construct.h:
+
 /usr/include/wchar.h:
 
 /usr/include/c++/10/bits/stl_function.h:
@@ -1245,8 +1314,6 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 /usr/include/c++/10/bits/streambuf_iterator.h:
 
 /usr/include/c++/10/bits/stl_tempbuf.h:
-
-/usr/include/c++/10/debug/debug.h:
 
 /usr/include/linux/limits.h:
 
@@ -1272,13 +1339,13 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 
 /usr/include/c++/10/bits/uses_allocator.h:
 
+/usr/include/c++/10/bits/parse_numbers.h:
+
 /usr/include/c++/10/bits/vector.tcc:
 
 /home/jason/nbody_initial_project/collision2/include/glm/detail/compute_common.hpp:
 
 /usr/include/c++/10/cfloat:
-
-/usr/include/c++/10/exception:
 
 /usr/include/c++/10/climits:
 
@@ -1287,13 +1354,3 @@ CMakeFiles/bench.dir/bench/bench.cpp.o: /home/jason/nbody_initial_project/collis
 /usr/include/c++/10/concepts:
 
 /usr/include/c++/10/cstddef:
-
-/usr/include/c++/10/bits/stl_construct.h:
-
-/usr/include/c++/10/cwctype:
-
-/usr/include/c++/10/ext/aligned_buffer.h:
-
-/usr/include/c++/10/ext/alloc_traits.h:
-
-/usr/include/c++/10/ext/atomicity.h:
