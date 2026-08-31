@@ -1,8 +1,8 @@
-bench: \
+test_correctness: \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/Scrt1.o \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/crti.o \
   /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o \
-  CMakeFiles/bench.dir/bench/bench.cpp.o \
+  CMakeFiles/test_correctness.dir/test/test_correctness.cpp.o \
   /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
@@ -38,7 +38,7 @@ bench: \
 
 /usr/lib/gcc/x86_64-linux-gnu/15/crtbeginS.o:
 
-CMakeFiles/bench.dir/bench/bench.cpp.o:
+CMakeFiles/test_correctness.dir/test/test_correctness.cpp.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so:
 

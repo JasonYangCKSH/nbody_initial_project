@@ -43,7 +43,7 @@ struct BenchDefaults {
     int leafCapacity = 8;
     int maxDepth = 8;
     float boxSize = 60.0f;
-    int totalFrames = 40;
+    int totalFrames = 100;
 
     // 場景產生器參數（不在掃描變因裡，但同樣需要固定值）。
     float radius = 1.0f;
@@ -162,8 +162,8 @@ int main() {
     const std::vector<int> kValues = {0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000};
     const std::vector<std::string> scenarios = {"uniform_cloud", "explosion"};
     const std::vector<StructureMode> modes = {
-        {"brute_force", Method::BruteForce, false},   {"uniform_grid", Method::UniformGrid, false},
-        {"uniform_grid+skin", Method::UniformGrid, true}, {"octree", Method::Octree, false},
+        {"brute_force", Method::BruteForce, false},   //{"uniform_grid", Method::UniformGrid, false},
+        {"uniform_grid+skin", Method::UniformGrid, true}, //{"octree", Method::Octree, false},
         {"octree+skin", Method::Octree, true},
     };
 
@@ -182,6 +182,7 @@ int main() {
     for (const auto& scenarioName : scenarios) {
         for (int K : kValues) {
             for (const auto& mode : modes) {
+                if (mode.name == "brute_force"  && K != 0) continue;
                 auto t0 = std::chrono::high_resolution_clock::now();
                 runOne(scenarioName, K, mode, d, framesOut, summaryOut);
                 auto t1 = std::chrono::high_resolution_clock::now();
@@ -194,7 +195,7 @@ int main() {
                           << std::chrono::duration<double>(t1 - t0).count() << "s\n";
             }
         }
-        
+        break;
     }
 
     std::cerr << "done: bench_frames.csv (" << (totalRuns * static_cast<size_t>(d.totalFrames))
