@@ -1,6 +1,7 @@
 CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.o: \
  /home/jason/nbody_initial_project/collision2/bench/phase1_structural_grid.cpp \
  /usr/include/stdc-predef.h \
+ /home/jason/nbody_initial_project/collision2/bench/bench_runner.h \
  /home/jason/nbody_initial_project/collision2/include/simulation.h \
  /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algobase.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/c++config.h \
@@ -399,21 +400,21 @@ CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.o: \
  /usr/include/c++/15/bits/istream.tcc \
  /home/jason/nbody_initial_project/collision2/include/brute_force.h \
  /home/jason/nbody_initial_project/collision2/include/collision_response.h \
+ /usr/include/c++/15/iomanip /usr/include/c++/15/locale \
+ /usr/include/c++/15/bits/locale_facets_nonio.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/15/bits/codecvt.h \
+ /usr/include/c++/15/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/15/bits/locale_conv.h \
+ /usr/include/c++/15/bits/quoted_string.h /usr/include/c++/15/sstream \
+ /usr/include/c++/15/bits/sstream.tcc \
  /home/jason/nbody_initial_project/collision2/include/scenario.h \
  /usr/include/c++/15/random /usr/include/c++/15/bits/random.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h \
  /usr/include/c++/15/bits/random.tcc /usr/include/c++/15/numeric \
  /usr/include/c++/15/bits/stl_numeric.h \
  /usr/include/c++/15/pstl/glue_numeric_defs.h /usr/include/c++/15/fstream \
- /usr/include/c++/15/bits/codecvt.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/c++io.h \
- /usr/include/c++/15/bits/fstream.tcc /usr/include/c++/15/iomanip \
- /usr/include/c++/15/locale \
- /usr/include/c++/15/bits/locale_facets_nonio.h \
- /usr/include/x86_64-linux-gnu/c++/15/bits/time_members.h \
- /usr/include/x86_64-linux-gnu/c++/15/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/15/bits/locale_facets_nonio.tcc \
- /usr/include/c++/15/bits/locale_conv.h \
- /usr/include/c++/15/bits/quoted_string.h /usr/include/c++/15/sstream \
- /usr/include/c++/15/bits/sstream.tcc
+ /usr/include/c++/15/bits/fstream.tcc

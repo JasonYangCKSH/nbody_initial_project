@@ -30,7 +30,7 @@ struct ScenarioSpec {
 
 const std::vector<ScenarioSpec> kScenarios = {
     {"uniform_cloud", 100},
-    {"explosion", 200},
+    //{"explosion", 200},
 };
 
 std::vector<Particle> buildScenario(const ScenarioSpec& spec) {
@@ -38,7 +38,7 @@ std::vector<Particle> buildScenario(const ScenarioSpec& spec) {
         return scenario::uniformCloud(kParticleNum, kBoxSize, kRadius, kSpeed, kAcc, spec.seed);
     }
     // explosion() 沒有 acc 參數（見 scenario.h），kAcc 固定為 0 對這個 scenario 不影響。
-    return scenariao::explosion(kPrticleNum, kBoxSize, kRadius, kSpeed, spec.seed);
+    return scenario::explosion(kParticleNum, kBoxSize, kRadius, kSpeed, spec.seed);
 }
 
 std::string formatFixed(double value, int precision) {
