@@ -54,18 +54,27 @@ struct RunResult {
 // 粒子內容，呼叫方手上的 particles 必須維持乾淨的初始狀態，才能讓 runAndAverage()
 // 或呼叫端自己的多次呼叫，每次都是從同一組全新初始條件開始，不會被前一次呼叫污染。
 //
+// collectPairs 直接轉傳給 Simulation 建構子（見 simulation.h 對 FrameStats /
+// collectPairs 的說明）：純計時用的呼叫應該關閉，省掉逐幀複製整份候選/碰撞
+// PairList 的成本，避免這份複製動作污染量到的時間；candidateCount()/
+// collisionCount() 這兩個彙總數字不管開關與否都照樣正確（走的是 FrameStats
+// 內部的 cache 欄位，不是複製出來的 PairList 本身），下面的加總邏輯不需要
+// 因為這個開關而改變。
+//
 // 注意 Dead Code Elimination 風險：broadPhaseTimeMs / narrowPhaseTimeMs /
 // candidateCount() / collisionCount() 這幾個量測值，這裡全部都會被累加寫進回傳的
 // RunResult（並非「算完就丟」的中間值），呼叫端也一定會把 RunResult 寫進 CSV，
 // 確保整條路徑上沒有「算完但沒被使用」的結果，避免 -O2/-O3 把量測邏輯優化掉。
-inline RunResult runOnce(const std::vector<Particle>& particles, const SimulationConfig& cfg, int totalFrames) {
+inline RunResult runOnce(
+    const std::vector<Particle>& particles, const SimulationConfig& cfg, int totalFrames, bool collectPairs = true
+) {
     std::vector<Particle> particlesCopy(particles);
-    Simulation sim(std::move(particlesCopy), cfg, totalFrames);
+    Simulation sim(std::move(particlesCopy), cfg, totalFrames, collectPairs);
 
     // 計時只包住 run() 本身，不把後面的統計彙總算進去。
-    auto t0 = std::chrono::high_resolution_clock::now();
+    auto t0 = std::chrono::steady_clock::now();
     std::vector<FrameStats> history = sim.run();
-    auto t1 = std::chrono::high_resolution_clock::now();
+    auto t1 = std::chrono::steady_clock::now();
 
     RunResult result;
     result.totalTimeS = std::chrono::duration<double>(t1 - t0).count();
@@ -109,7 +118,10 @@ inline RunResult runAndAverage(
     std::vector<RunResult> runs;
     runs.reserve(static_cast<size_t>(repeatCount));
     for (int i = 0; i < repeatCount; ++i) {
-        runs.push_back(runOnce(particles, cfg, totalFrames));
+        // 純計時用的 repeat，一律關閉 collectPairs：這裡只需要 RunResult 裡的彙總
+        // 數字（時間、rebuildCount、avgCandidatesPerFrame…），不需要逐幀的完整
+        // PairList，關閉可以避免複製整份候選/碰撞清單干擾計時。
+        runs.push_back(runOnce(particles, cfg, totalFrames, /*collectPairs=*/false));
     }
 
     const double n = static_cast<double>(runs.size());
@@ -192,7 +204,10 @@ public:
             dt, /*K=*/0.0f, /*hasSkin=*/false, Method::BruteForce, /*cellSize=*/1.0f, /*maxDepth=*/8,
             /*leafCapacity=*/8, worldSize
         );
-        Simulation sim(std::move(particlesCopy), groundTruthCfg, totalFrames);
+        // collectPairs 一律開啟：下面要逐幀讀 f.collisionPairs 的完整內容來編碼、
+        // 快取成 ground truth，只有 count 是不夠的（見 simulation.h 對 collectPairs
+        // 的說明）。
+        Simulation sim(std::move(particlesCopy), groundTruthCfg, totalFrames, /*collectPairs=*/true);
         std::vector<FrameStats> history = sim.run();
 
         RunCollisions collisions;
@@ -254,7 +269,9 @@ inline CorrectnessCheck verifyAgainstBruteForce(
         cache.getOrCompute(particles, scenarioName, seed, cfgUnderTest.dt, totalFrames, cfgUnderTest.worldSize);
 
     std::vector<Particle> particlesCopy(particles);
-    Simulation sim(std::move(particlesCopy), cfgUnderTest, totalFrames);
+    // collectPairs 一律開啟：下面逐幀比對要用 history[frame].collisionPairs 的完整
+    // 內容，只有 count 沒辦法逐 pair 比對（見 simulation.h 對 collectPairs 的說明）。
+    Simulation sim(std::move(particlesCopy), cfgUnderTest, totalFrames, /*collectPairs=*/true);
     std::vector<FrameStats> history = sim.run();
 
     CorrectnessCheck result;

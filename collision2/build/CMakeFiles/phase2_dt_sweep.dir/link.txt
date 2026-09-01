@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/phase2_dt_sweep.dir/link.d CMakeFiles/phase2_dt_sweep.dir/bench/phase2_dt_sweep.cpp.o -o phase2_dt_sweep

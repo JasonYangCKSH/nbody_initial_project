@@ -1,5 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/phase4_scene_indices.dir/link.d"
   "CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o"
   "CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o.d"
   "phase4_scene_indices"

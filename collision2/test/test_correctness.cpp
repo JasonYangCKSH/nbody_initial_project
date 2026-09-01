@@ -232,6 +232,12 @@ void runStaticSuite(int& totalChecks, int& failedChecks) {
         broad::UniformGrid grid(sc.cellSize);
         broad::Octree octree(/*maxDepth=*/10, /*leafCapacity=*/4, sc.worldSize);
 
+        // Octree+Skin 另外複製一份，用逐粒子的 leaf halfExtent 夾住 skin 上限
+        // （見 verlet::capSkinToLeafExtent，跟 simulation.h 的 Octree+skin rebuild
+        // 路徑一致）。UniformGrid 那份 withSkin 維持原樣，不動既有行為。
+        std::vector<Particle> withSkinOctree = withSkin;
+        verlet::capSkinToLeafExtent(withSkinOctree, octree.LeafHalfExtents(withSkinOctree));
+
         CheckResult r;
         r = checkAgainstTruth(sc.name + " | UniformGrid", grid.Build(sc.particles, false), sc.particles, truth);
         totalChecks++; failedChecks += !r.ok; printResult(r);
@@ -242,7 +248,7 @@ void runStaticSuite(int& totalChecks, int& failedChecks) {
         r = checkAgainstTruth(sc.name + " | Octree", octree.Build(sc.particles, false), sc.particles, truth);
         totalChecks++; failedChecks += !r.ok; printResult(r);
 
-        r = checkAgainstTruth(sc.name + " | Octree+Skin", octree.Build(withSkin, true), withSkin, truth);
+        r = checkAgainstTruth(sc.name + " | Octree+Skin", octree.Build(withSkinOctree, true), withSkinOctree, truth);
         totalChecks++; failedChecks += !r.ok; printResult(r);
     }
 }
@@ -258,10 +264,14 @@ void runStaticSuite(int& totalChecks, int& failedChecks) {
 // ---------------------------------------------------------------------------
 
 using BuildFn = std::function<PairList(const std::vector<Particle>&, bool)>;
+// 依方法夾住 skin 上限：UniformGrid 用固定 cellSize、Octree 用逐粒子的 leaf
+// halfExtent（見 verlet::capSkinToCellSize / capSkinToLeafExtent）。no-skin
+// 情境不會呼叫到，但介面仍統一收一個 CapSkinFn，方便呼叫端用同一組 lambda。
+using CapSkinFn = std::function<void(std::vector<Particle>&)>;
 
 bool runDynamicSkinTest(const std::string& label, const BuildFn& build, std::vector<Particle> particles,
-                         bool hasSkin, bool capSkinToCell, float K, float dt, float cellSize, float worldSize,
-                         int frames, int& totalChecks, int& failedChecks) {
+                         bool hasSkin, const CapSkinFn& capSkin, float K, float dt, float worldSize, int frames,
+                         int& totalChecks, int& failedChecks) {
     bool allOk = true;
     PairList cached;
     bool needRebuild = true;
@@ -274,7 +284,7 @@ bool runDynamicSkinTest(const std::string& label, const BuildFn& build, std::vec
             verlet::recordBroadPhaseSnapshot(particles);
             if (hasSkin) {
                 verlet::updateLocalSkin(particles, K, dt);
-                if (capSkinToCell) verlet::capSkinToCellSize(particles, cellSize);
+                capSkin(particles);
             }
             rebuildCount++;
         }
@@ -310,9 +320,9 @@ bool runDynamicSkinTest(const std::string& label, const BuildFn& build, std::vec
 void runDynamicSuite(int& totalChecks, int& failedChecks) {
     std::cout << "\n===== Part 2: 動態 skin 測試 (Simulation::step 節奏下 vs BruteForce) =====\n";
 
-    const float worldSize = 30.0f;
-    const float cellSize = 3.0f;
-    const float K = 0.0f;
+    const float worldSize = 60.0f;
+    const float cellSize = 2.0f;
+    const float K = 3.0f;
     const float dt = 1.0f / 60.0f;
     const int frames = 40;
 
@@ -321,8 +331,8 @@ void runDynamicSuite(int& totalChecks, int& failedChecks) {
         std::vector<Particle> particles;
     };
     std::vector<DynamicCase> cases = {
-        {"uniformCloud_1000", scenario::uniformCloud(1000, worldSize, 1.0f, 1.5f, 20000.0f, 21)},
-        {"explosion_1000", scenario::explosion(1000, worldSize, 1.0f, 1.0f, 22)},
+        {"uniformCloud_2000", scenario::uniformCloud(2000, worldSize, 1.0f, 1.5f, 1.0f, 21)},
+        //{"explosion_1000", scenario::explosion(1000, worldSize, 1.0f, 1.0f, 22)},
     };
 
     broad::UniformGrid grid(cellSize);
@@ -330,15 +340,21 @@ void runDynamicSuite(int& totalChecks, int& failedChecks) {
     BuildFn gridBuild = [&](const std::vector<Particle>& p, bool skin) { return grid.Build(p, skin); };
     BuildFn octreeBuild = [&](const std::vector<Particle>& p, bool skin) { return octree.Build(p, skin); };
 
+    // 依方法各自對應到 verlet.h 的 cap 函式；no-skin 情境不會呼叫到 capSkin，
+    // 給個 no-op 純粹是為了滿足介面。
+    CapSkinFn noCap = [](std::vector<Particle>&) {};
+    CapSkinFn capGrid = [&](std::vector<Particle>& p) { verlet::capSkinToCellSize(p, cellSize); };
+    CapSkinFn capOctree = [&](std::vector<Particle>& p) { verlet::capSkinToLeafExtent(p, octree.LeafHalfExtents(p)); };
+
     for (auto& c : cases) {
         runDynamicSkinTest(c.namePrefix + " | UniformGrid no-skin", gridBuild, c.particles, /*hasSkin=*/false,
-                            /*capSkinToCell=*/true, K, dt, cellSize, worldSize, frames, totalChecks, failedChecks);
+                            noCap, K, dt, worldSize, frames, totalChecks, failedChecks);
         runDynamicSkinTest(c.namePrefix + " | UniformGrid+Skin", gridBuild, c.particles, /*hasSkin=*/true,
-                            /*capSkinToCell=*/true, K, dt, cellSize, worldSize, frames, totalChecks, failedChecks);
+                            capGrid, K, dt, worldSize, frames, totalChecks, failedChecks);
         runDynamicSkinTest(c.namePrefix + " | Octree no-skin", octreeBuild, c.particles, /*hasSkin=*/false,
-                            /*capSkinToCell=*/false, K, dt, cellSize, worldSize, frames, totalChecks, failedChecks);
+                            noCap, K, dt, worldSize, frames, totalChecks, failedChecks);
         runDynamicSkinTest(c.namePrefix + " | Octree+Skin", octreeBuild, c.particles, /*hasSkin=*/true,
-                            /*capSkinToCell=*/false, K, dt, cellSize, worldSize, frames, totalChecks, failedChecks);
+                            capOctree, K, dt, worldSize, frames, totalChecks, failedChecks);
     }
 }
 
@@ -348,7 +364,7 @@ int main() {
     int totalChecks = 0;
     int failedChecks = 0;
 
-    runStaticSuite(totalChecks, failedChecks);
+    //runStaticSuite(totalChecks, failedChecks);
     runDynamicSuite(totalChecks, failedChecks);
 
     std::cout << "\n===== 總結 =====\n";

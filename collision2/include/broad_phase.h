@@ -48,9 +48,18 @@ public:
     explicit UniformGrid(float cellSize) : cellSize_(cellSize) {}
 
     PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        (void)withSkin;  // 半徑固定為 1 格，withSkin 只保留給呼叫端介面一致
-
+        //(void)withSkin;  // 半徑固定為 1 格，withSkin 只保留給呼叫端介面一致
+    #ifndef NDEBUG
+        float maxRadius = 0.0f;
+        for (const auto& p : particles) {
+            maxRadius = std::max(maxRadius, p.radius);
+        }
+        assert(cellSize_ >= 2.0f * maxRadius &&
+            "cellSize must be at least the largest particle's diameter, "
+            "otherwise the neighbor-cell search (Algorithm 1) can miss collisions");
+    #endif
         std::unordered_map<int64_t, std::vector<int>> cells;
+    
         cells.reserve(particles.size());
         for (size_t i = 0; i < particles.size(); ++i) {
             cells[key(posToCell(particles[i].pos))].push_back(static_cast<int>(i));
@@ -215,9 +224,48 @@ public:
         std::vector<Node*> leaves;
         collectLeaves(&root, leaves);
 
+
+    #ifndef NDEBUG
+        for (const Node* leaf : leaves) {
+            for (int idx : leaf->indices) {
+                assert(leaf->halfExtent >= particles[idx].radius &&
+                    "leaf halfExtent smaller than particle radius: "
+                    "either leafCapacity is too small for this particle density, "
+                    "or maxDepth allows splitting past a sane physical scale");
+            }
+        }
+    #endif
+
+
         PairList pairs;
         collectPairs(leaves, particles, withSkin, pairs);
         return pairs;
+    }
+
+    // 依目前的樹狀結構，回傳每個粒子所在 leaf 的 halfExtent（index 對應
+    // particles 的下標），供 verlet::capSkinToLeafExtent() 依粒子實際所在
+    // leaf 的大小夾住 skin 上限（Octree 各 leaf 大小不一，不像 UniformGrid
+    // 只有單一 cellSize，所以不能用同一個全域上限）。Node 型別維持 private，
+    // 對外只回傳這個扁平陣列。
+    std::vector<float> LeafHalfExtents(const std::vector<Particle>& particles) const {
+        Node root;
+        root.center = glm::vec3(0.0f);
+        root.halfExtent = worldSize_ * 0.5f;
+
+        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
+            insert(&root, particles, i, 0);
+        }
+
+        std::vector<Node*> leaves;
+        collectLeaves(&root, leaves);
+
+        std::vector<float> halfExtents(particles.size(), 0.0f);
+        for (Node* leaf : leaves) {
+            for (int idx : leaf->indices) {
+                halfExtents[idx] = leaf->halfExtent;
+            }
+        }
+        return halfExtents;
     }
 };
 

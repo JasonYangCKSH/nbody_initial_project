@@ -17,9 +17,9 @@
 // 校準後的結構參數 —— 來源是 phase1 的輸出結果，這裡只是抄一份定值進來，
 // phase1 重跑出新結果後要記得回來同步更新。
 // ---------------------------------------------------------------------------
-constexpr int kOctreeLeafCapacity = 8;      // TODO: 依 phase1_octree_summary.csv 更新
+constexpr int kOctreeLeafCapacity = 16;      // TODO: 依 phase1_octree_summary.csv 更新
 constexpr int kOctreeMaxDepth = 8;          // TODO: 依 phase1_octree_summary.csv 更新
-constexpr float kGridCellSizeRatio = 2.0f;  // TODO: 依 phase1_grid_summary.csv 更新（乘上 2*radius 得實際 cellSize）
+constexpr float kGridCellSizeRatio = 1.5f;  // TODO: 依 phase1_grid_summary.csv 更新（乘上 2*radius 得實際 cellSize）
 
 namespace {
 
@@ -30,7 +30,7 @@ constexpr int kParticleNum = 2000;
 constexpr float kRadius = 1.0f;
 constexpr float kSpeed = 1.5f;
 constexpr float kAcc = 0.0f;
-constexpr int kTotalFrames = 3000;  // 必須明顯大於最大的 K 值（1000），才能真的看到多次 rebuild
+constexpr int kTotalFrames = 1000;  // 必須明顯大於最大的 K 值（1000），才能真的看到多次 rebuild
 constexpr int kRepeatCount = 5;
 
 const std::vector<float> kKValues = {0.0f, 1.0f, 2.0f, 5.0f, 10.0f, 20.0f, 50.0f, 100.0f, 200.0f, 500.0f, 1000.0f};
@@ -132,7 +132,7 @@ int main() {
     auto runCombo = [&](const ScenarioSpec& spec, const std::vector<Particle>& particles,
                          const std::string& structureMode, float kForCsv, const SimulationConfig& cfg) {
         ++comboIndex;
-        auto t0 = std::chrono::high_resolution_clock::now();
+        auto t0 = std::chrono::steady_clock::now();
 
         RunResult perf = runAndAverage(particles, cfg, kTotalFrames, kRepeatCount);
         // 計時區塊到這裡結束，正確性驗證與逐幀資料擷取都獨立於計時之外進行。
@@ -140,7 +140,7 @@ int main() {
             verifyAgainstBruteForce(particles, cfg, kTotalFrames, bfCache, spec.name, spec.seed);
         std::vector<FrameStats> history = runForFrameHistory(particles, cfg, kTotalFrames);
 
-        auto t1 = std::chrono::high_resolution_clock::now();
+        auto t1 = std::chrono::steady_clock::now();
         double comboElapsedS = std::chrono::duration<double>(t1 - t0).count();
 
         if (!check.allMatch) {
