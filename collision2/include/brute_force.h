@@ -1,15 +1,13 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <vector>
+#include "narrow_phase.h"
 inline PairList BruteForce(const std::vector<Particle>& particles) {
     PairList pairs;
     const size_t n = particles.size();
     for (size_t i = 0; i < n; ++i) {
         for (size_t j = i + 1; j < n; ++j) {
-            float radiusSum = particles[i].radius + particles[j].radius;
-            
-            float dist = glm::distance2(particles[i].pos, particles[j].pos); 
-            if (dist <= radiusSum * radiusSum) {
+            if (narrow::colliding(particles[i], particles[j])) {
                 pairs.emplace_back(static_cast<int>(i), static_cast<int>(j));
             }
         }

@@ -41,8 +41,8 @@ struct ScenarioSpec {
 };
 
 const std::vector<ScenarioSpec> kScenarios = {
-    {"uniform_cloud", 100},
-    //{"explosion", 200},
+    //{"uniform_cloud", 100},
+    {"explosion", 100},
 };
 
 std::vector<Particle> buildScenario(const ScenarioSpec& spec) {

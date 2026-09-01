@@ -29,7 +29,7 @@
 // 校準後的結構參數 —— 沿用 phase2_k_sweep.cpp 開頭那組值，來源是 phase1 的輸出結果。
 // phase1 重跑出新結果後要記得回來同步更新。
 // ---------------------------------------------------------------------------
-constexpr int kOctreeLeafCapacity = 8;  // TODO: 依 phase1_octree_summary.csv 更新
+constexpr int kOctreeLeafCapacity = 16;  // TODO: 依 phase1_octree_summary.csv 更新
 constexpr int kOctreeMaxDepth = 8;      // TODO: 依 phase1_octree_summary.csv 更新
 
 namespace {
@@ -40,7 +40,7 @@ constexpr float kBoxSize = 60.0f;
 constexpr float kRadius = 1.0f;
 constexpr float kMeanSpeed = 1.5f;
 constexpr float kAccMagnitude = 0.5f;  // 固定給一個小的非零值，避免退化成 0；這個 phase 不掃描
-constexpr int kTotalFrames = 3000;     // 必須明顯大於最大的 K 值（1000），才能真的看到多次 rebuild
+constexpr int kTotalFrames = 2000;     // 必須明顯大於最大的 K 值（1000），才能真的看到多次 rebuild
 constexpr int kRepeatCount = 3;        // 組合數較多（25 場景 x 8 個 K），比 phase2 少一點控制總時間
 constexpr unsigned kSceneSeedBase = 2000;
 
@@ -180,11 +180,11 @@ int main() {
         for (float k : kKValues) {
             ++comboIndex;
 
-            auto t0 = std::chrono::high_resolution_clock::now();
+            auto t0 = std::chrono::steady_clock::now();
 
             SimulationConfig cfg(
-                kDt, k, /*hasSkin=*/true, Method::Octree,
-                /*cellSize=*/1.0f, kOctreeMaxDepth, kOctreeLeafCapacity, kBoxSize
+                kDt, k, /*hasSkin=*/true, Method::UniformGrid,
+                /*cellSize=*/3.0f, kOctreeMaxDepth, kOctreeLeafCapacity, kBoxSize
             );
 
             RunResult perf = runAndAverage(particles, cfg, kTotalFrames, kRepeatCount);
@@ -192,7 +192,7 @@ int main() {
             CorrectnessCheck check =
                 verifyAgainstBruteForce(particles, cfg, kTotalFrames, bfCache, spec.name, spec.seed);
 
-            auto t1 = std::chrono::high_resolution_clock::now();
+            auto t1 = std::chrono::steady_clock::now();
             double comboElapsedS = std::chrono::duration<double>(t1 - t0).count();
 
             if (!check.allMatch) {
