@@ -27,7 +27,7 @@ inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) 
 }
 inline void capSkinToLeafExtent(std::vector<Particle>& particles, const std::vector<float>& leafHalfExtents) {
     assert(particles.size() == leafHalfExtents.size() && "message");
-
+    
     for (size_t idx = 0; idx < particles.size(); ++idx) {
         const float maxSkin = leafHalfExtents[idx] - particles[idx].radius;
         particles[idx].skin = std::clamp(particles[idx].skin, 0.0f, std::max(0.0f, maxSkin));
