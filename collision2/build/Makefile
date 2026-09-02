@@ -169,30 +169,17 @@ phase2_k_sweep/fast:
 .PHONY : phase2_k_sweep/fast
 
 #=============================================================================
-# Target rules for targets named phase3_dt_sweep
+# Target rules for targets named phase3_spatial_cluster
 
 # Build rule for target.
-phase3_dt_sweep: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase3_dt_sweep
-.PHONY : phase3_dt_sweep
+phase3_spatial_cluster: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase3_spatial_cluster
+.PHONY : phase3_spatial_cluster
 
 # fast build rule for target.
-phase3_dt_sweep/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_dt_sweep.dir/build.make CMakeFiles/phase3_dt_sweep.dir/build
-.PHONY : phase3_dt_sweep/fast
-
-#=============================================================================
-# Target rules for targets named phase4_scene_indices
-
-# Build rule for target.
-phase4_scene_indices: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase4_scene_indices
-.PHONY : phase4_scene_indices
-
-# fast build rule for target.
-phase4_scene_indices/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/build
-.PHONY : phase4_scene_indices/fast
+phase3_spatial_cluster/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/build
+.PHONY : phase3_spatial_cluster/fast
 
 #=============================================================================
 # Target rules for targets named test
@@ -316,53 +303,29 @@ bench/phase2_k_sweep.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/bench/phase2_k_sweep.cpp.s
 .PHONY : bench/phase2_k_sweep.cpp.s
 
-bench/phase3_dt_sweep.o: bench/phase3_dt_sweep.cpp.o
-.PHONY : bench/phase3_dt_sweep.o
+bench/phase3_spatial_cluster.o: bench/phase3_spatial_cluster.cpp.o
+.PHONY : bench/phase3_spatial_cluster.o
 
 # target to build an object file
-bench/phase3_dt_sweep.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_dt_sweep.dir/build.make CMakeFiles/phase3_dt_sweep.dir/bench/phase3_dt_sweep.cpp.o
-.PHONY : bench/phase3_dt_sweep.cpp.o
+bench/phase3_spatial_cluster.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/bench/phase3_spatial_cluster.cpp.o
+.PHONY : bench/phase3_spatial_cluster.cpp.o
 
-bench/phase3_dt_sweep.i: bench/phase3_dt_sweep.cpp.i
-.PHONY : bench/phase3_dt_sweep.i
-
-# target to preprocess a source file
-bench/phase3_dt_sweep.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_dt_sweep.dir/build.make CMakeFiles/phase3_dt_sweep.dir/bench/phase3_dt_sweep.cpp.i
-.PHONY : bench/phase3_dt_sweep.cpp.i
-
-bench/phase3_dt_sweep.s: bench/phase3_dt_sweep.cpp.s
-.PHONY : bench/phase3_dt_sweep.s
-
-# target to generate assembly for a file
-bench/phase3_dt_sweep.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_dt_sweep.dir/build.make CMakeFiles/phase3_dt_sweep.dir/bench/phase3_dt_sweep.cpp.s
-.PHONY : bench/phase3_dt_sweep.cpp.s
-
-bench/phase4_scene_indices.o: bench/phase4_scene_indices.cpp.o
-.PHONY : bench/phase4_scene_indices.o
-
-# target to build an object file
-bench/phase4_scene_indices.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.o
-.PHONY : bench/phase4_scene_indices.cpp.o
-
-bench/phase4_scene_indices.i: bench/phase4_scene_indices.cpp.i
-.PHONY : bench/phase4_scene_indices.i
+bench/phase3_spatial_cluster.i: bench/phase3_spatial_cluster.cpp.i
+.PHONY : bench/phase3_spatial_cluster.i
 
 # target to preprocess a source file
-bench/phase4_scene_indices.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.i
-.PHONY : bench/phase4_scene_indices.cpp.i
+bench/phase3_spatial_cluster.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/bench/phase3_spatial_cluster.cpp.i
+.PHONY : bench/phase3_spatial_cluster.cpp.i
 
-bench/phase4_scene_indices.s: bench/phase4_scene_indices.cpp.s
-.PHONY : bench/phase4_scene_indices.s
+bench/phase3_spatial_cluster.s: bench/phase3_spatial_cluster.cpp.s
+.PHONY : bench/phase3_spatial_cluster.s
 
 # target to generate assembly for a file
-bench/phase4_scene_indices.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/bench/phase4_scene_indices.cpp.s
-.PHONY : bench/phase4_scene_indices.cpp.s
+bench/phase3_spatial_cluster.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/bench/phase3_spatial_cluster.cpp.s
+.PHONY : bench/phase3_spatial_cluster.cpp.s
 
 test/test.o: test/test.cpp.o
 .PHONY : test/test.o
@@ -424,8 +387,7 @@ help:
 	@echo "... phase1_structural_grid"
 	@echo "... phase1_structural_octree"
 	@echo "... phase2_k_sweep"
-	@echo "... phase3_dt_sweep"
-	@echo "... phase4_scene_indices"
+	@echo "... phase3_spatial_cluster"
 	@echo "... test"
 	@echo "... test_correctness"
 	@echo "... bench/bench.o"
@@ -440,12 +402,9 @@ help:
 	@echo "... bench/phase2_k_sweep.o"
 	@echo "... bench/phase2_k_sweep.i"
 	@echo "... bench/phase2_k_sweep.s"
-	@echo "... bench/phase3_dt_sweep.o"
-	@echo "... bench/phase3_dt_sweep.i"
-	@echo "... bench/phase3_dt_sweep.s"
-	@echo "... bench/phase4_scene_indices.o"
-	@echo "... bench/phase4_scene_indices.i"
-	@echo "... bench/phase4_scene_indices.s"
+	@echo "... bench/phase3_spatial_cluster.o"
+	@echo "... bench/phase3_spatial_cluster.i"
+	@echo "... bench/phase3_spatial_cluster.s"
 	@echo "... test/test.o"
 	@echo "... test/test.i"
 	@echo "... test/test.s"

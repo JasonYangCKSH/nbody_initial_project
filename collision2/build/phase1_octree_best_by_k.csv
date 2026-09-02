@@ -1,9 +1,0 @@
-scenario      ,       K, best_leaf_capacity, best_max_depth,avg_total_time_s
-uniform_cloud ,       0,                 16,              8,        1.066027
-uniform_cloud ,       1,                 32,              8,        1.060716
-uniform_cloud ,       2,                 16,              6,        0.835895
-uniform_cloud ,       5,                 16,             10,        0.485270
-uniform_cloud ,      10,                 16,              8,        0.331586
-uniform_cloud ,      20,                 16,             10,        0.238483
-uniform_cloud ,      50,                 16,              8,        0.435093
-uniform_cloud ,     100,                 16,              6,        0.494058

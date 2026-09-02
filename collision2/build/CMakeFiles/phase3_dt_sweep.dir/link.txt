@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/phase3_dt_sweep.dir/bench/phase3_dt_sweep.cpp.o -o phase3_dt_sweep 

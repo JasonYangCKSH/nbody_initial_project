@@ -67,8 +67,7 @@ all: CMakeFiles/bench.dir/all
 all: CMakeFiles/phase1_structural_octree.dir/all
 all: CMakeFiles/phase1_structural_grid.dir/all
 all: CMakeFiles/phase2_k_sweep.dir/all
-all: CMakeFiles/phase3_dt_sweep.dir/all
-all: CMakeFiles/phase4_scene_indices.dir/all
+all: CMakeFiles/phase3_spatial_cluster.dir/all
 all: CMakeFiles/test.dir/all
 all: CMakeFiles/test_correctness.dir/all
 .PHONY : all
@@ -82,8 +81,7 @@ clean: CMakeFiles/bench.dir/clean
 clean: CMakeFiles/phase1_structural_octree.dir/clean
 clean: CMakeFiles/phase1_structural_grid.dir/clean
 clean: CMakeFiles/phase2_k_sweep.dir/clean
-clean: CMakeFiles/phase3_dt_sweep.dir/clean
-clean: CMakeFiles/phase4_scene_indices.dir/clean
+clean: CMakeFiles/phase3_spatial_cluster.dir/clean
 clean: CMakeFiles/test.dir/clean
 clean: CMakeFiles/test_correctness.dir/clean
 .PHONY : clean
@@ -193,56 +191,30 @@ CMakeFiles/phase2_k_sweep.dir/clean:
 .PHONY : CMakeFiles/phase2_k_sweep.dir/clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/phase3_dt_sweep.dir
+# Target rules for target CMakeFiles/phase3_spatial_cluster.dir
 
 # All Build rule for target.
-CMakeFiles/phase3_dt_sweep.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_dt_sweep.dir/build.make CMakeFiles/phase3_dt_sweep.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_dt_sweep.dir/build.make CMakeFiles/phase3_dt_sweep.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=9,10 "Built target phase3_dt_sweep"
-.PHONY : CMakeFiles/phase3_dt_sweep.dir/all
+CMakeFiles/phase3_spatial_cluster.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=9,10 "Built target phase3_spatial_cluster"
+.PHONY : CMakeFiles/phase3_spatial_cluster.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/phase3_dt_sweep.dir/rule: cmake_check_build_system
+CMakeFiles/phase3_spatial_cluster.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jason/nbody_initial_project/collision2/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/phase3_dt_sweep.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/phase3_spatial_cluster.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jason/nbody_initial_project/collision2/build/CMakeFiles 0
-.PHONY : CMakeFiles/phase3_dt_sweep.dir/rule
+.PHONY : CMakeFiles/phase3_spatial_cluster.dir/rule
 
 # Convenience name for target.
-phase3_dt_sweep: CMakeFiles/phase3_dt_sweep.dir/rule
-.PHONY : phase3_dt_sweep
+phase3_spatial_cluster: CMakeFiles/phase3_spatial_cluster.dir/rule
+.PHONY : phase3_spatial_cluster
 
 # clean rule for target.
-CMakeFiles/phase3_dt_sweep.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_dt_sweep.dir/build.make CMakeFiles/phase3_dt_sweep.dir/clean
-.PHONY : CMakeFiles/phase3_dt_sweep.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/phase4_scene_indices.dir
-
-# All Build rule for target.
-CMakeFiles/phase4_scene_indices.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=11,12 "Built target phase4_scene_indices"
-.PHONY : CMakeFiles/phase4_scene_indices.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/phase4_scene_indices.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jason/nbody_initial_project/collision2/build/CMakeFiles 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/phase4_scene_indices.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jason/nbody_initial_project/collision2/build/CMakeFiles 0
-.PHONY : CMakeFiles/phase4_scene_indices.dir/rule
-
-# Convenience name for target.
-phase4_scene_indices: CMakeFiles/phase4_scene_indices.dir/rule
-.PHONY : phase4_scene_indices
-
-# clean rule for target.
-CMakeFiles/phase4_scene_indices.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase4_scene_indices.dir/build.make CMakeFiles/phase4_scene_indices.dir/clean
-.PHONY : CMakeFiles/phase4_scene_indices.dir/clean
+CMakeFiles/phase3_spatial_cluster.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/clean
+.PHONY : CMakeFiles/phase3_spatial_cluster.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/test.dir
@@ -251,7 +223,7 @@ CMakeFiles/phase4_scene_indices.dir/clean:
 CMakeFiles/test.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=13,14 "Built target test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=11,12 "Built target test"
 .PHONY : CMakeFiles/test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -277,7 +249,7 @@ CMakeFiles/test.dir/clean:
 CMakeFiles/test_correctness.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=15,16 "Built target test_correctness"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/jason/nbody_initial_project/collision2/build/CMakeFiles --progress-num=13,14 "Built target test_correctness"
 .PHONY : CMakeFiles/test_correctness.dir/all
 
 # Build rule for subdir invocation for target.

@@ -48,46 +48,7 @@ inline std::vector<Particle> uniformCloud(int n, float boxSize, float radius, fl
     return particles;
 }
 
-// Particles radiating outward from the domain center at high, varied speed:
-// stresses the automatic update condition with large, non-uniform per-step
-// displacements.
-//
-// center 對齊 broad::Octree 的 root（原點），見 uniformCloud() 上方的說明。
-// 跟 uniformCloud() 的差別：uniformCloud 用 uniform_real_distribution(-speed, speed)
-// 對每一軸獨立取樣，速度大小的變異程度完全被 speed 這個上界綁死，沒辦法在固定平均
-// 速度下單獨調整「速度異質性」。這裡改成先用常態分佈取樣「速度大小」（mean=meanSpeed,
-// std=meanSpeed*speedCV，取絕對值避免負值），方向另外用均勻隨機單位向量取樣，
-// 讓 meanSpeed 跟 speedCV 兩者可以獨立控制。
-//
-// 位置分佈、acc 的取樣方式（每軸獨立 uniform(-accMagnitude, accMagnitude)）沿用
-// uniformCloud() 的設計，座標系跟 broad::Octree 的 root 定義一致（見 uniformCloud()
-// 上方的說明）。
-inline std::vector<Particle> synthesizeScene(
-    int particleNum, float boxSize, float radius, float meanSpeed, float speedCV, float accMagnitude,
-    unsigned seed
-) {
-    std::mt19937 rng(seed);
-    std::uniform_real_distribution<float> posDist(-boxSize * 0.5f, boxSize * 0.5f);
-    std::normal_distribution<float> speedMagDist(meanSpeed, meanSpeed * speedCV);
-    std::uniform_real_distribution<float> dirDist(-1.0f, 1.0f);
-    std::uniform_real_distribution<float> accDist(-accMagnitude, accMagnitude);
 
-    std::vector<Particle> particles(particleNum);
-    for (auto& p : particles) {
-        p.pos = {posDist(rng), posDist(rng), posDist(rng)};
-
-        // 速度大小取絕對值避免常態分佈取樣出負值（speedCV 夠大時尾端機率不為零），
-        // 方向再另外用均勻隨機單位向量取樣，兩者獨立，速度大小的變異不會混進方向裡。
-        float speedMag = std::abs(speedMagDist(rng));
-        glm::vec3 dir = glm::normalize(glm::vec3(dirDist(rng), dirDist(rng), dirDist(rng)));
-        p.vel = dir * speedMag;
-
-        p.acc = {accDist(rng), accDist(rng), accDist(rng)};
-        p.radius = radius;
-        p.posAtLastBroadPhase = p.pos;
-    }
-    return particles;
-}
 
 inline std::vector<Particle> explosion(int n, float boxSize, float radius, float speed, unsigned seed = 4) {
     std::mt19937 rng(seed);
@@ -103,6 +64,58 @@ inline std::vector<Particle> explosion(int n, float boxSize, float radius, float
         p.radius = radius;
         p.posAtLastBroadPhase = p.pos;
     }
+    return particles;
+}
+inline std::vector<Particle> spatialCluster(int n, float boxSize, float radius, float  speed, float acc,
+                                            float clusterFactor,  // 0: uniform  distributed 1: all  particles cluster in hotspot
+                                            float hotspotSpread,
+                                            int hotspotCount,      // 熱點數量
+                                            unsigned seed = 5) {
+    assert(hotspotCount > 0 && "hotspot number cannot be negative.");
+    std::mt19937 rng(seed);
+
+
+    const float hotspotRange = boxSize * 0.4f;
+    std::uniform_real_distribution<float> hotspotCenterDist(-hotspotRange, hotspotRange);
+
+    std::vector<glm::vec3> hotspots(hotspotCount);
+    for (auto& h: hotspots) {
+        h = {hotspotCenterDist(rng), hotspotCenterDist(rng),  hotspotCenterDist(rng)};
+    }
+
+    std::uniform_real_distribution<float> posDist(-boxSize * 0.5f, boxSize * 0.5f);
+    std::uniform_real_distribution<float> velDist(-speed, speed);
+    std::uniform_real_distribution<float> accDist(-acc, acc);
+    std::uniform_real_distribution<float> clusterChoiceDist(0.0f, 1.0f);
+    std::uniform_int_distribution<int> hotspotPickDist(0, hotspotCount - 1);
+    std::normal_distribution<float> hotspotOffsetDist(0.0f, hotspotSpread);
+
+    // 不管落在均勻分支還是熱點分支，一律 clamp 進「扣掉粒子半徑」的合法範圍，
+    // 確保生成當下就沒有粒子違反 domain 邊界（跟粒子本身的物理大小一致）。
+    const float clampMin = -boxSize * 0.5f + radius;
+    const float clampMax = boxSize * 0.5f - radius;
+
+    std::vector<Particle> particles(n);
+    for (auto& p: particles) {
+        glm::vec3 pos;
+        if (clusterChoiceDist(rng) < clusterFactor) {
+            const glm::vec3& center = hotspots[hotspotPickDist(rng)];
+            pos = center + glm::vec3(hotspotOffsetDist(rng), hotspotOffsetDist(rng), hotspotOffsetDist(rng));
+        } else {
+            pos = {posDist(rng), posDist(rng), posDist(rng)};
+        }
+
+        pos.x = std::clamp(pos.x, clampMin, clampMax);
+        pos.y = std::clamp(pos.y, clampMin, clampMax);
+        pos.z = std::clamp(pos.z, clampMin, clampMax);
+        p.pos = pos;
+
+        p.vel = {velDist(rng), velDist(rng), velDist(rng)};
+        p.acc = {accDist(rng), accDist(rng),  accDist(rng)};
+        p.radius = radius;
+        p.posAtLastBroadPhase = p.pos;
+    }
+
     return particles;
 }
 

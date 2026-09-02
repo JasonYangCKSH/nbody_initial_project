@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/phase3_spatial_cluster.dir/bench/phase3_spatial_cluster.cpp.o -o phase3_spatial_cluster 

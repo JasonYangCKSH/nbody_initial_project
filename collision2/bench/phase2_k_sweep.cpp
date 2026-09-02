@@ -41,8 +41,8 @@ struct ScenarioSpec {
 };
 
 const std::vector<ScenarioSpec> kScenarios = {
-    //{"uniform_cloud", 100},
-    {"explosion", 100},
+    {"uniform_cloud", 100},
+    //{"explosion", 100},
 };
 
 std::vector<Particle> buildScenario(const ScenarioSpec& spec) {
@@ -76,9 +76,7 @@ std::string formatK(float k) {
 // 跑一次來取得「這組 repeatCount 裡最後一次 repeat」的逐幀資料是安全的，不會跟
 // runAndAverage() 內部真正計時用的那些 repeat 產生落差。這次額外的跑動本身不計時，
 // 不會污染 bench_summary.csv 裡的效能數字。
-std::vector<FrameStats> runForFrameHistory(
-    const std::vector<Particle>& particles, const SimulationConfig& cfg, int totalFrames
-) {
+std::vector<FrameStats> runForFrameHistory(const std::vector<Particle>& particles, const SimulationConfig& cfg, int totalFrames) {
     std::vector<Particle> particlesCopy(particles);
     Simulation sim(std::move(particlesCopy), cfg, totalFrames);
     return sim.run();
