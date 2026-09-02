@@ -25,11 +25,12 @@ constexpr float kDt = 1.0f / 60.0f;
 constexpr int kTotalFrames = 1000;
 constexpr int kRepeatCount = 5;
 constexpr float kK = 20.0f;
-constexpr int kOctreeLeafCapacity = 8;
+constexpr int kOctreeLeafCapacity = 16;
 constexpr int kOctreeMaxDepth = 8;
-constexpr float kGridCellSize = 2.0f * kRadius;
+constexpr float kGridCellSizeRatio = 1.5f; 
+constexpr float kGridCellSize = kGridCellSizeRatio * 2.0f * kRadius;
 constexpr float kHotspotSpread = kBoxSize * 0.03f;
-constexpr int kHotspotCount = 5;
+constexpr int kHotspotCount = 1;
 
 const std::vector<float> kClusterFactors = {0.0f, 0.3f, 0.6f, 0.9f};
 
@@ -72,7 +73,7 @@ int main() {
         for (const auto& mode : modes) {
             ++comboIndex;
             SimulationConfig cfg(
-                kDt, kK, /*hasSkin=*/true, mode == "uniform_grid_skin" ? Method::UniformGrid : Method::Octree,
+                kDt, kK, true, mode == "uniform_grid_skin" ? Method::UniformGrid : Method::Octree,
                 kGridCellSize, kOctreeMaxDepth, kOctreeLeafCapacity, kBoxSize
             );
 
@@ -89,6 +90,52 @@ int main() {
 
             std::cerr << "[" << comboIndex << "/" << totalCombos << "] clusterFactor=" << fmt(cf, 2)
                       << " structure_mode=" << mode << " total_time_s=" << fmt(perf.totalTimeS, 6)
+                      << " correctness_ok=" << (check.allMatch ? 1 : 0) << "\n";
+        }
+    }
+    // --- uniform cloud baseline：跟上面 spatialCluster 的 clusterFactor=0 案例概念上
+    // 類似，但改用 scenario::uniformCloud 直接生成，作為「完全均勻分布」的獨立對照組，
+    // 不佔用 sweepA 的 cacheKey / seed 命名空間，寫進獨立的 CSV。
+    {
+        const std::vector<CsvColumn> uniformCols = {
+            {"structure_mode", 20, true},
+            {"total_time_s", 14, false},
+            {"broad_phase_time_s", 18, false},
+            {"narrow_phase_time_s", 19, false},
+            {"rebuild_count", 14, false},
+            {"avg_candidates_per_frame", 24, false},
+            {"correctness_ok", 14, false},
+        };
+
+        std::ofstream uniformCsv("phase3_uniform_cloud_summary.csv");
+        writeCsvHeader(uniformCsv, uniformCols);
+
+        const unsigned uniformSeed = 200u;
+        const std::string uniformCacheKey = "uniformCloud";
+        const std::vector<Particle> uniformParticles =
+            scenario::uniformCloud(kParticleNum, kBoxSize, kRadius, kSpeed, kAcc, uniformSeed);
+
+        size_t uniformComboIndex = 0;
+        for (const auto& mode : modes) {
+            ++uniformComboIndex;
+            SimulationConfig cfg(
+                kDt, kK, /*hasSkin=*/true, mode == "uniform_grid_skin" ? Method::UniformGrid : Method::Octree,
+                kGridCellSize, kOctreeMaxDepth, kOctreeLeafCapacity, kBoxSize
+            );
+
+            RunResult perf = runAndAverage(uniformParticles, cfg, kTotalFrames, kRepeatCount);
+            // 計時區塊到這裡結束，正確性驗證獨立於計時之外進行。
+            CorrectnessCheck check =
+                verifyAgainstBruteForce(uniformParticles, cfg, kTotalFrames, bfCache, uniformCacheKey, uniformSeed);
+
+            writeCsvRow(
+                uniformCsv, uniformCols,
+                {mode, fmt(perf.totalTimeS, 6), fmt(perf.broadPhaseTimeS, 6), fmt(perf.narrowPhaseTimeS, 6),
+                 std::to_string(perf.rebuildCount), fmt(perf.avgCandidatesPerFrame, 2), check.allMatch ? "1" : "0"}
+            );
+
+            std::cerr << "[uniform_cloud " << uniformComboIndex << "/" << modes.size()
+                      << "] structure_mode=" << mode << " total_time_s=" << fmt(perf.totalTimeS, 6)
                       << " correctness_ok=" << (check.allMatch ? 1 : 0) << "\n";
         }
     }

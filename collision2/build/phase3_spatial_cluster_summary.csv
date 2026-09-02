@@ -1,0 +1,9 @@
+cluster_factor,structure_mode      ,  total_time_s,broad_phase_time_s,narrow_phase_time_s, rebuild_count,avg_candidates_per_frame,correctness_ok
+          0.00,uniform_grid_skin   ,      0.164274,          0.140954,           0.012599,           225,                 6021.10,             1
+          0.00,octree_skin         ,      0.464364,          0.187810,           0.246801,           141,               151767.50,             1
+          0.30,uniform_grid_skin   ,      0.265443,          0.210085,           0.028517,           331,                13289.16,             1
+          0.30,octree_skin         ,      0.827459,          0.395609,           0.364655,           253,               222552.46,             1
+          0.60,uniform_grid_skin   ,      0.372100,          0.253045,           0.059931,           404,                27709.53,             1
+          0.60,octree_skin         ,      1.307211,          0.618322,           0.574829,           328,               345954.76,             1
+          0.90,uniform_grid_skin   ,      0.525948,          0.287336,           0.122116,           467,                55374.82,             1
+          0.90,octree_skin         ,      2.138400,          1.118469,           0.818486,           409,               469745.37,             1

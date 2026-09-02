@@ -33,7 +33,7 @@ constexpr float kAcc = 0.0f;
 constexpr int kTotalFrames = 1000;  // 必須明顯大於最大的 K 值（1000），才能真的看到多次 rebuild
 constexpr int kRepeatCount = 5;
 
-const std::vector<float> kKValues = {0.0f, 1.0f, 2.0f, 5.0f, 10.0f, 20.0f, 50.0f, 100.0f, 200.0f, 500.0f, 1000.0f};
+const std::vector<float> kKValues = {   20.0f, 25.0f, 30.0f, 35.0f, 40.0f, 45.0f, 50.0f};
 
 struct ScenarioSpec {
     std::string name;

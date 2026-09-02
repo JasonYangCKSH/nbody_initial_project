@@ -1,0 +1,3 @@
+structure_mode      ,  total_time_s,broad_phase_time_s,narrow_phase_time_s, rebuild_count,avg_candidates_per_frame,correctness_ok
+uniform_grid_skin   ,      0.175332,          0.151645,           0.013069,           217,                 6050.10,             1
+octree_skin         ,      0.495097,          0.203495,           0.257899,           143,               149521.02,             1
