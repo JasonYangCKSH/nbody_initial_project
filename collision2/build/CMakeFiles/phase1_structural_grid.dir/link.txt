@@ -1,1 +1,1 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.o -o phase1_structural_grid 
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/phase1_structural_grid.dir/link.d CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.o -o phase1_structural_grid

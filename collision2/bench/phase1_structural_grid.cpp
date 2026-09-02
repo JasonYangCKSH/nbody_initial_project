@@ -18,7 +18,7 @@ constexpr float kRadius = 1.0f;
 constexpr float kSpeed = 1.5f;
 constexpr float kAcc = 0.0f;
 constexpr int kTotalFrames = 300;
-constexpr int kRepeatCount = 5;
+constexpr int kRepeatCount = 1;
 
 // cellSizeRatio 是相對於粒子直徑（2*radius）的倍數，不是絕對的 cellSize 數值，
 // 這樣掃描結果才能在不同粒子大小的 scenario 之間比較。
