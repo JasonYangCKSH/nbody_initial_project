@@ -45,6 +45,7 @@ struct FrameStats {
 
     double broadPhaseTimeMs = 0.0;
     double narrowPhaseTimeMs = 0.0;
+    double otherTimeMs = 0.0;
     bool didRebuild = false;
 
     // 只有 Simulation 建構時 collectPairs=true 才會填入完整內容；collectPairs=false
@@ -62,10 +63,7 @@ struct FrameStats {
 
 class Simulation {
 public:
-    // collectPairs 控制 step() 要不要把候選/碰撞的完整 PairList 複製進 FrameStats
-    // （見 FrameStats 上方註解）；純效能量測（例如 bench_runner::runAndAverage()
-    // 內部真正計時用的那幾次 repeat）應該關閉，避免複製整份 pair list 干擾計時。
-    // 預設 true 是為了讓既有呼叫端（不傳這個參數的）行為維持不變。
+
     Simulation(std::vector<Particle> particles, SimulationConfig config, int totalFrames, bool collectPairs = true)
         : particles_(std::move(particles)),
           config_(config),
@@ -77,26 +75,21 @@ public:
         }
     }
 
-    // 跑一幀：先做 collision 判定，再處理 collision response，最後才 integration
     const FrameStats& step() {
         FrameStats stats;
         stats.frameIndex = currentFrame_;
 
-        // 本幀真正的碰撞清單：不管 collectPairs_ 開關與否都要完整算出來，因為
-        // resolveCollisions() 一定要用這份資料驅動物理；collectPairs_ 只決定
-        // 要不要「另外」複製一份存進 stats 給外部查閱（見 FrameStats 上方註解）。
+
         PairList collisions;
 
         if (config_.method == Method::BruteForce) {
-            // 直接用 brute force 基準法，不走 broad-phase / narrow-phase 流程
+
             auto t0 = std::chrono::steady_clock::now();
-            PairList brutePairs = BruteForce(particles_);
+            PairList brutePairs = bruteforce::BruteForce(particles_);
             auto t1 = std::chrono::steady_clock::now();
 
             stats.broadPhaseTimeMs = 0.0;
-            stats.narrowPhaseTimeMs =
-                std::chrono::duration<double, std::milli>(t1 - t0).count();
-
+            stats.narrowPhaseTimeMs = std::chrono::duration<double, std::milli>(t1 - t0).count();
             stats.didRebuild = false;
             stats.candidateCountCache = brutePairs.size();
             if (collectPairs_) stats.candidatePairs = brutePairs;
@@ -136,29 +129,22 @@ public:
             if (collectPairs_) stats.candidatePairs = cachedCandidates_;
         }
 
-        // resolveCollisions() 是逐對依序處理的衝量解法，同一幀內若有粒子同時涉及
-        // 兩個以上碰撞（collision cluster），處理順序會影響結果。candidatePairs
-        // 的順序取決於各 broad-phase 容器的走訪順序（unordered_map / leaf 走訪／…），
-        // 跨方法本來就不同，所以先排成跟 BruteForce() 一致的 (i,j) 升冪順序，
-        // 確保只要 broad-phase 沒漏抓碰撞，不同方法看到的處理順序也一致，
-        // 軌跡才不會單純因為容器走訪順序不同而分岔。
         std::sort(collisions.begin(), collisions.end());
 
         stats.collisionCountCache = collisions.size();
         if (collectPairs_) stats.collisionPairs = collisions;
 
-        // 先根據 collisionPairs 進行速度 / 加速度更新
+        auto t4 = std::chrono::steady_clock::now();
         resolveCollisions(collisions);
-
-        // 最後才做 integration（verlet 位置/速度/加速度更新）
         integrate();
-
+        auto t5 = std::chrono::steady_clock::now();
+        stats.otherTimeMs = std::chrono::duration<double, std::milli>(t5 - t4).count();
         lastStats_ = std::move(stats);
         ++currentFrame_;
         return lastStats_;
     }
 
-    // 跑滿 totalFrames，回傳每一幀的統計
+
     std::vector<FrameStats> run() {
         std::vector<FrameStats> history;
         history.reserve(totalFrames_);
@@ -191,23 +177,7 @@ private:
         return std::visit([this](const auto& bp) { return bp.Build(particles_, config_.hasSkin); }, broadPhase_);
     }
 
-    // brute-force 基準法：完全不參與 broad-phase / narrow-phase 設定
-    PairList computeBruteForcePairs() const {
-        PairList pairs;
-        pairs.reserve(particles_.size() * (particles_.size() - 1) / 2);
 
-        for (size_t i = 0; i < particles_.size(); ++i) {
-            for (size_t j = i + 1; j < particles_.size(); ++j) {
-                if (narrow::colliding(particles_[i], particles_[j])) {
-                    pairs.emplace_back(static_cast<int>(i), static_cast<int>(j));
-                }
-            }
-        }
-
-        return pairs;
-    }
-
-    // 依據 collisionPairs 進行碰撞回應：一般質量彈性碰撞（見 collision_response.h）
     void resolveCollisions(const PairList& collisions) {
         response::resolveCollisions(particles_, collisions);
     }

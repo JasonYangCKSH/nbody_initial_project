@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "narrow_phase.h"
+namespace bruteforce{
 inline PairList BruteForce(const std::vector<Particle>& particles) {
     PairList pairs;
     const size_t n = particles.size();
@@ -13,4 +14,5 @@ inline PairList BruteForce(const std::vector<Particle>& particles) {
         }
     }
     return pairs;
+}
 }
