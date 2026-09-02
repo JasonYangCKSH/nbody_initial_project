@@ -48,11 +48,8 @@ struct FrameStats {
     double otherTimeMs = 0.0;
     bool didRebuild = false;
 
-    // 只有 Simulation 建構時 collectPairs=true 才會填入完整內容；collectPairs=false
-    // 時維持空的 PairList（省掉逐幀複製整份候選/碰撞清單的成本），數量請一律透過
-    // candidateCount()/collisionCount() 讀取，不要直接看這兩個 vector 的 size()。
-    PairList candidatePairs;  // 本幀有效的 broad-phase 候選清單
-    PairList collisionPairs;  // narrow-phase 篩選後的實際碰撞清單
+    PairList candidatePairs; // broad-phase
+    PairList collisionPairs; // narrow-phase
 
     size_t candidateCountCache = 0;
     size_t collisionCountCache = 0;
@@ -189,6 +186,6 @@ private:
     bool collectPairs_ = true;
 
     std::variant<broad::UniformGrid, broad::Octree> broadPhase_;
-    PairList cachedCandidates_;  // 上次 rebuild 後沿用的候選清單
+    PairList cachedCandidates_; 
     FrameStats lastStats_;
 };
