@@ -1,11 +1,3 @@
-// test_correctness.cpp
-//
-// 動態（多幀）正確性測試：直接用 Simulation 本身分別跑 BruteForce（ground truth）
-// 與 UniformGrid / UniformGrid+Skin / Octree / Octree+Skin 這四種設定，逐幀比對
-// 排序過的 collisionPairs 是否完全一致（Simulation::step() 已經把 collisionPairs
-// 排序過，見 simulation.h，可以直接逐幀比較，不需要另外重排）。場景固定用
-// scenario::spatialCluster() 產生，跑滿多幀才能驗證 skin 版本在粒子持續移動、
-// 反覆碰撞反彈的動態過程中仍然不漏抓真實碰撞。
 
 #include "simulation.h"
 #include "scenario.h"
