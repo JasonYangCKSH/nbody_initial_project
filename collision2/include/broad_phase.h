@@ -16,11 +16,7 @@
 
 namespace broad {
 
-// Linked-cell 版本的 uniform grid：假設 cellSize 已經大到能容納最大的
-// extended bounding sphere（radius + skin，見 verlet::capSkinToCellSize），
-// 因此只需要走訪同格 + 13 個「前向」鄰居格（half-shell stencil）就能
-// 涵蓋每一對可能相互作用的粒子，不用像過去 Morton 排序那樣依賴可變的
-// cellRadius。
+
 class UniformGrid {
 private:
     float cellSize_;
@@ -48,7 +44,6 @@ public:
     explicit UniformGrid(float cellSize) : cellSize_(cellSize) {}
 
     PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        //(void)withSkin;  // 半徑固定為 1 格，withSkin 只保留給呼叫端介面一致
     #ifndef NDEBUG
         float maxRadius = 0.0f;
         for (const auto& p : particles) {
@@ -65,8 +60,7 @@ public:
             cells[key(posToCell(particles[i].pos))].push_back(static_cast<int>(i));
         }
 
-        // 13 個「前向」鄰居 offset，加上同一格自己，恰好走訪每一對格子一次，
-        // 等同過去用 cellA 座標 < cellB 座標去重的規則。
+
         static const glm::ivec3 kForwardOffsets[13] = {
             {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {-1, 1, 0},
             {1, 0, -1}, {1, 1, -1}, {0, 1, -1}, {-1, 1, -1},
@@ -103,9 +97,7 @@ public:
     }
 };
 
-// Pointer-based octree：實際建出樹狀節點結構（而非用 Morton code 排序後
-// 在扁平陣列上二分搜尋子節點範圍），每次 Build 都在區域變數上從根重建，
-// 不保留跨呼叫的狀態，維持與舊版一致的「stateless per call」外部行為。
+
 class Octree {
 private:
     int maxDepth_;
@@ -115,8 +107,8 @@ private:
     struct Node {
         glm::vec3 center{0.0f};
         float halfExtent = 0.0f;
-        std::vector<int> indices;                     // 只有 leaf 會存
-        std::array<std::unique_ptr<Node>, 8> children; // 未分裂前為 null
+        std::vector<int> indices; 
+        std::array<std::unique_ptr<Node>, 8> children; 
         bool isLeaf() const { return children[0] == nullptr; }
     };
 
@@ -155,7 +147,7 @@ private:
             node->children[c]->center = childCenter(node->center, node->halfExtent, c);
             node->children[c]->halfExtent = node->halfExtent * 0.5f;
         }
-        // 內部節點不存粒子，重新把既有 indices 分派到新生成的子節點。
+
         std::vector<int> existing;
         existing.swap(node->indices);
         for (int idx : existing) {
@@ -182,9 +174,7 @@ private:
         return d.x <= reach && d.y <= reach && d.z <= reach;
     }
 
-    // Correctness-first 的配對收集：先蒐集所有 leaf，再對每一對（skin 擴張後）
-    // bounding box 可能重疊的 leaf 做全配對，跟 /collision 版一致，換取實作
-    // 簡單、易驗證；之後若成為瓶頸再優化走訪方式。
+
     void collectPairs(const std::vector<Node*>& leaves, const std::vector<Particle>& particles,
                        bool withSkin, PairList& pairs) const {
         float maxReach = 0.0f;
@@ -242,11 +232,7 @@ public:
         return pairs;
     }
 
-    // 依目前的樹狀結構，回傳每個粒子所在 leaf 的 halfExtent（index 對應
-    // particles 的下標），供 verlet::capSkinToLeafExtent() 依粒子實際所在
-    // leaf 的大小夾住 skin 上限（Octree 各 leaf 大小不一，不像 UniformGrid
-    // 只有單一 cellSize，所以不能用同一個全域上限）。Node 型別維持 private，
-    // 對外只回傳這個扁平陣列。
+
     std::vector<float> LeafHalfExtents(const std::vector<Particle>& particles) const {
         Node root;
         root.center = glm::vec3(0.0f);

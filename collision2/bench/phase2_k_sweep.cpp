@@ -33,7 +33,7 @@ constexpr float kAcc = 0.0f;
 constexpr int kTotalFrames = 1000;  // 必須明顯大於最大的 K 值（1000），才能真的看到多次 rebuild
 constexpr int kRepeatCount = 5;
 
-const std::vector<float> kKValues = {   20.0f, 25.0f, 30.0f, 35.0f, 40.0f, 45.0f, 50.0f};
+const std::vector<float> kKValues = {0.0f, 1.0f, 2.0f, 5.0f, 10.0f, 20.0f, 50.0f, 100.0f};
 
 struct ScenarioSpec {
     std::string name;
@@ -41,16 +41,18 @@ struct ScenarioSpec {
 };
 
 const std::vector<ScenarioSpec> kScenarios = {
-    {"uniform_cloud", 100},
+    {"spatial_cluster", 100},
     //{"explosion", 100},
 };
 
 std::vector<Particle> buildScenario(const ScenarioSpec& spec) {
     if (spec.name == "uniform_cloud") {
         return scenario::uniformCloud(kParticleNum, kBoxSize, kRadius, kSpeed, kAcc, spec.seed);
+    } else if (spec.name == "explosion") {
+        return scenario::explosion(kParticleNum, kBoxSize, kRadius, kSpeed, spec.seed);
     }
-    // explosion() 沒有 acc 參數（見 scenario.h），kAcc 固定為 0 對這個 scenario 不影響。
-    return scenario::explosion(kParticleNum, kBoxSize, kRadius, kSpeed, spec.seed);
+    return scenario::spatialCluster(kParticleNum, kBoxSize, kRadius, kSpeed, kAcc,
+                                     /*cluster factor*/ 0.0, /*hotspotSpread*/0.03 * kBoxSize, /*hotspotCount*/ 1, spec.seed);
 }
 
 std::string formatFixed(double value, int precision) {

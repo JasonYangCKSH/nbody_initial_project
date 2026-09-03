@@ -21,7 +21,7 @@ inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) 
 
     
     for (auto& p : particles) {
-        const float maxSkin = cellSize / 2.0f - p.radius;
+        const float maxSkin = cellSize - p.radius;
         p.skin = std::clamp(p.skin, 0.0f, maxSkin);
     }
 }
