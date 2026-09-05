@@ -10,7 +10,7 @@ inline float overlap(const Particle& a, const Particle& b) {
 }
 
 inline bool colliding(const Particle& a, const Particle& b) {
-    return overlap(a, b) > 0.0f;
+    return overlap(a, b) >= 0.0f;
 }
 
 } // namespace narrow

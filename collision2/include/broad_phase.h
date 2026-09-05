@@ -79,7 +79,7 @@ public:
                     float skinB = (withSkin)? particles[ib].skin: 0.0f;
                     float r_nl_a = particles[ia].radius + skinA;
                     float r_nl_b = particles[ib].radius + skinB;
-                    if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) > glm::distance2(particles[ia].pos, particles[ib].pos)) {
+                    if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) >= glm::distance2(particles[ia].pos, particles[ib].pos)) {
                         int x = ia, y = ib;
                         if (x > y) std::swap(x, y);
                         pairs.emplace_back(x, y);
@@ -96,7 +96,7 @@ public:
                         float skinB = (withSkin) ? particles[b].skin: 0.0f;
                         float r_nl_a = particles[a].radius + skinA;
                         float r_nl_b = particles[b].radius + skinB;
-                        if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) > glm::distance2(particles[a].pos, particles[b].pos)) {
+                        if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) >= glm::distance2(particles[a].pos, particles[b].pos)) {
                             int x = a, y = b;
                             if (x > y) std::swap(x, y);
                             pairs.emplace_back(x, y);
@@ -205,7 +205,7 @@ private:
                     float skinB = (withSkin) ? particles[ib].skin : 0.0f;
                     float r_nl_a = particles[ia].radius + skinA;
                     float r_nl_b = particles[ib].radius + skinB;
-                    if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) > glm::distance2(particles[ia].pos, particles[ib].pos)) {
+                    if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) >= glm::distance2(particles[ia].pos, particles[ib].pos)) {
                         addPair(ia, ib, pairs);
                     }
                 }
@@ -218,7 +218,7 @@ private:
                         float skinB = (withSkin) ? particles[b].skin : 0.0f;
                         float r_nl_a = particles[a].radius + skinA;
                         float r_nl_b = particles[b].radius + skinB;
-                        if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) > glm::distance2(particles[a].pos, particles[b].pos)) {
+                        if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) >= glm::distance2(particles[a].pos, particles[b].pos)) {
                             addPair(a, b, pairs);
                         }
                     }

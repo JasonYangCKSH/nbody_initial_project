@@ -10,7 +10,7 @@ inline PairList BruteForce(const std::vector<Particle>& particles) {
         for (size_t j = i + 1; j < n; ++j) {
             const Particle& a = particles[i];
             const Particle& b = particles[j];
-            if ((a.radius + b.radius)*(a.radius + b.radius) > glm::distance2(a.pos, b.pos)) {
+            if ((a.radius + b.radius)*(a.radius + b.radius) >= glm::distance2(a.pos, b.pos)) {
                 pairs.emplace_back(static_cast<int>(i), static_cast<int>(j));
             }
         }
