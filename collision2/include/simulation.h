@@ -30,13 +30,19 @@ struct SimulationConfig {
     //=======
     float cellSizeRatio;
     //=======
+    // 只有需要驗證 broad-phase candidate 集合本身（例如確認 candidatePairs 有沒有
+    // 涵蓋所有 brute force ground truth 碰撞、不是只比對最終 collisionPairs）時才打開。
+    // 預設關閉：candidatePairs 沒有任何地方在讀，開著只是白白讓 FrameInfo 每幀複製
+    // 一份完整 candidate list，K 越大 candidate 越多，複製成本會蓋過真正的演算法時間。
+    bool recordCandidatePairs = false;
     SimulationConfig(
         float particleRadius = 1.0,
         float dt = 1.0f / 60.0f, float K = 2.0f, bool hasSkin = false,
         Method method = Method::UniformGrid, float cellSize = 2.0f,
-        int maxDepth = 8, int leafCapacity = 8, float worldSize = 100.0f
+        int maxDepth = 8, int leafCapacity = 8, float worldSize = 100.0f,
+        bool recordCandidatePairs = false
     ): particleRadius_(particleRadius),dt(dt),K(K),hasSkin(hasSkin),method(method),cellSize(cellSize),
-       maxDepth(maxDepth),leafCapacity(leafCapacity),worldSize(worldSize){
+       maxDepth(maxDepth),leafCapacity(leafCapacity),worldSize(worldSize),recordCandidatePairs(recordCandidatePairs){
         cellSizeRatio = cellSize / (2 * particleRadius);
     }
 

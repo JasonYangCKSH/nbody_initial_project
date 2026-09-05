@@ -73,7 +73,7 @@ FrameInfo Simulation::step() {
         info.broadPhaseTime = 0.0;
         info.narrowPhaseTime = std::chrono::duration<double, std::milli>(t1 - t0).count();
         info.candidateCountCache = brutePairs.size();
-        info.candidatePairs = brutePairs;
+        if (cfg_.recordCandidatePairs) info.candidatePairs = brutePairs;
 
         collisions = std::move(brutePairs);
     } else {
@@ -101,7 +101,7 @@ FrameInfo Simulation::step() {
         info.narrowPhaseTime = std::chrono::duration<double, std::milli>(t3 - t2).count();
 
         info.candidateCountCache = cachedCandidates_.size();
-        info.candidatePairs = cachedCandidates_;
+        if (cfg_.recordCandidatePairs) info.candidatePairs = cachedCandidates_;
     }
 
     auto t4 = std::chrono::steady_clock::now();

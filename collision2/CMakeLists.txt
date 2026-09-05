@@ -13,7 +13,7 @@ add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-#add_executable(bench bench/bench.cpp)
+add_executable(bench bench/bench.cpp include/simulation.cpp)
 
 #add_executable(phase1_structural_octree bench/phase1_structural_octree.cpp)
 #add_executable(phase1_structural_grid bench/phase1_structural_grid.cpp)

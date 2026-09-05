@@ -117,6 +117,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named bench
+
+# Build rule for target.
+bench: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bench
+.PHONY : bench
+
+# fast build rule for target.
+bench/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/build
+.PHONY : bench/fast
+
+#=============================================================================
 # Target rules for targets named test_correctness
 
 # Build rule for target.
@@ -129,11 +142,36 @@ test_correctness/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/build
 .PHONY : test_correctness/fast
 
+bench/bench.o: bench/bench.cpp.o
+.PHONY : bench/bench.o
+
+# target to build an object file
+bench/bench.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.o
+.PHONY : bench/bench.cpp.o
+
+bench/bench.i: bench/bench.cpp.i
+.PHONY : bench/bench.i
+
+# target to preprocess a source file
+bench/bench.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.i
+.PHONY : bench/bench.cpp.i
+
+bench/bench.s: bench/bench.cpp.s
+.PHONY : bench/bench.s
+
+# target to generate assembly for a file
+bench/bench.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.s
+.PHONY : bench/bench.cpp.s
+
 include/simulation.o: include/simulation.cpp.o
 .PHONY : include/simulation.o
 
 # target to build an object file
 include/simulation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/include/simulation.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/include/simulation.cpp.o
 .PHONY : include/simulation.cpp.o
 
@@ -142,6 +180,7 @@ include/simulation.i: include/simulation.cpp.i
 
 # target to preprocess a source file
 include/simulation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/include/simulation.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/include/simulation.cpp.i
 .PHONY : include/simulation.cpp.i
 
@@ -150,6 +189,7 @@ include/simulation.s: include/simulation.cpp.s
 
 # target to generate assembly for a file
 include/simulation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/include/simulation.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/include/simulation.cpp.s
 .PHONY : include/simulation.cpp.s
 
@@ -185,7 +225,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... bench"
 	@echo "... test_correctness"
+	@echo "... bench/bench.o"
+	@echo "... bench/bench.i"
+	@echo "... bench/bench.s"
 	@echo "... include/simulation.o"
 	@echo "... include/simulation.i"
 	@echo "... include/simulation.s"
