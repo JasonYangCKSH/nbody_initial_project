@@ -36,7 +36,7 @@ struct BenchmarkConfig {
     int totalFrames = 1000;
 
     unsigned scenarioSeed = 100;
-    float clusterFactor = 0.0f;
+    float clusterFactor = 1.0f;
     float hotspotSpreadRatio = 0.03f;  // 實際 hotspotSpread = hotspotSpreadRatio * worldSize
     int hotspotCount = 1;
 
