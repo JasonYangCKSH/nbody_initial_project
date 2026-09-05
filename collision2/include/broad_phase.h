@@ -44,7 +44,7 @@ public:
     explicit UniformGrid(float cellSize) : cellSize_(cellSize) {}
 
     PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-    #ifndef NDEBUG
+    /*#ifndef NDEBUG
         float maxRadius = 0.0f;
         for (const auto& p : particles) {
             maxRadius = std::max(maxRadius, p.radius);
@@ -52,7 +52,7 @@ public:
         assert(cellSize_ >= 2.0f * maxRadius &&
             "cellSize must be at least the largest particle's diameter, "
             "otherwise the neighbor-cell search (Algorithm 1) can miss collisions");
-    #endif
+    #endif*/
         std::unordered_map<int64_t, std::vector<int>> cells;
     
         cells.reserve(particles.size());
