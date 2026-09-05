@@ -7,17 +7,17 @@
 #include <vector>
 
 const float particleRadius = 1.0;
-const float cellSize = 2;
+const float cellSize = 2.0;
 const int maxDepth = 10;
 const int leafCapacity = 50;
 const float worldSize = 100.0f;
 const bool hasSkin = false;
-const float K = 1000.0f;
+const float K = 100.0f;
 const float dt = 1.0f/60.0f;
 
 const Method Method1 = Method::BruteForce;
-const Method Method2 = Method::UniformGrid;
-const int totalFrame = 2;
+const Method Method2 = Method::Octree;
+const int totalFrame = 20;
 
 
 int main() {
@@ -29,7 +29,7 @@ int main() {
     SimulationConfig cfg2(particleRadius, dt, K, hasSkin, Method2, cellSize, maxDepth, leafCapacity, worldSize);
     Simulation sim2(cfg2);
 
-    auto particles = scenario::spatialCluster(8000, worldSize, particleRadius, 1.0f, 0.0f,
+    auto particles = scenario::spatialCluster(2000, worldSize, particleRadius, 10.0f, 0.0f,
                                             0.0,
                                             0.03,
                                             1);
@@ -45,8 +45,11 @@ int main() {
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2).count() << "\n";
     // compare method2 result to method 1, check if the result is correct
     bool ok = true;
-    for (int i = 0; i < sim1.totalFrames() && ok; ++i)
+    
+    for (int i = 0; i < sim1.totalFrames() && ok; ++i) {
         ok = sim1.frameHistory()[i].collisionPairs == sim2.frameHistory()[i].collisionPairs;
-
+        
+    }
+    
     std::cout << (ok ? "PASS" : "FAIL") << std::endl;
 }
