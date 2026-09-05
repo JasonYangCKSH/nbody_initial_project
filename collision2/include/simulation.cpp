@@ -104,15 +104,15 @@ FrameInfo Simulation::step() {
         info.candidatePairs = cachedCandidates_;
     }
 
-    std::sort(collisions.begin(), collisions.end());
-    info.collisionCountCache = collisions.size();
-    info.collisionPairs = collisions;
-
     auto t4 = std::chrono::steady_clock::now();
+    std::sort(collisions.begin(), collisions.end());
     applyCollisionResponse(collisions);
     integrate();
     auto t5 = std::chrono::steady_clock::now();
     info.responsePhaseTime = std::chrono::duration<double, std::milli>(t5 - t4).count();
+
+    info.collisionCountCache = collisions.size();
+    info.collisionPairs = collisions;
 
     ++currentFrame_;
     return info;
