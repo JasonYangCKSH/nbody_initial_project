@@ -80,15 +80,13 @@ FrameInfo Simulation::step() {
         info.didRebuild = needsRebuild();
 
         if (info.didRebuild) {
-            
-            updateSkin();
             auto t0 = std::chrono::steady_clock::now();
+            updateSkin();
             cachedCandidates_ = buildBroadPhase();
-            auto t1 = std::chrono::steady_clock::now();
-            info.broadPhaseTime = std::chrono::duration<double, std::milli>(t1 - t0).count();
-
             ++rebuildCount_;
             verlet::recordBroadPhaseSnapshot(particles_);
+            auto t1 = std::chrono::steady_clock::now();
+            info.broadPhaseTime = std::chrono::duration<double, std::milli>(t1 - t0).count();
         } else {
             info.broadPhaseTime = 0.0;
         }
