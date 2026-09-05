@@ -47,11 +47,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/bench.dir/DependInfo.cmake"
-  "CMakeFiles/phase1_structural_octree.dir/DependInfo.cmake"
-  "CMakeFiles/phase1_structural_grid.dir/DependInfo.cmake"
-  "CMakeFiles/phase2_k_sweep.dir/DependInfo.cmake"
-  "CMakeFiles/phase3_spatial_cluster.dir/DependInfo.cmake"
-  "CMakeFiles/test.dir/DependInfo.cmake"
   "CMakeFiles/test_correctness.dir/DependInfo.cmake"
   )

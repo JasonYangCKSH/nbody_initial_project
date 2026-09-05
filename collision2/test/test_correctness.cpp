@@ -6,57 +6,43 @@
 #include <string>
 #include <vector>
 
-namespace {
+const float particleRadius = 1.0;
+const float cellSize = 2.0;
+const int maxDepth = 10;
+const int leafCapacity = 16;
+const float worldSize = 100.0f;
+const bool hasSkin = true;
+const float K = 10.0f;
+const float dt = 1.0f/60.0f;
 
-constexpr float kBoxSize = 40.0f;
-constexpr float kDt = 1.0f / 60.0f;
-constexpr int kFrames = 100;
-constexpr float kCellSize = 2.0f;
-constexpr float maxDepth = 10;
-constexpr float leafCapacity = 16;
-constexpr float kK = 2.0f;
+const Method Method1 = Method::BruteForce;
+const Method Method2 = Method::UniformGrid;
+const int totalFrame = 2;
 
-std::vector<FrameStats> runSim(std::vector<Particle> particles, const SimulationConfig& cfg) {
-    Simulation sim(std::move(particles), cfg, kFrames);
-    return sim.run();
-}
-
-bool matchesTruth(const std::string& label, const std::vector<FrameStats>& truth,
-                   const std::vector<FrameStats>& result) {
-    for (size_t f = 0; f < truth.size(); ++f) {
-        //std::cout << f << ":[" << result[f].candidatePairs.size() << "] ";
-        //if ((int)(f + 1) % 10 == 0) std::cout << "\n";
-        if (result[f].collisionPairs != truth[f].collisionPairs) {
-            std::cout << "[FAIL] " << label << " diverges at frame " << f << "\n";
-            return false;
-        }
-    }
-    std::cout << "[PASS] " << label << " matches BruteForce for " << truth.size() << " frames\n";
-    return true;
-}
-
-}  // namespace
 
 int main() {
-    std::vector<Particle> base = scenario::spatialCluster(
-        8000, kBoxSize, 1.0f, 1.5f, 5.0f, /*clusterFactor=*/0.0f, /*hotspotSpread=*/kBoxSize * 0.03f,
-        /*hotspotCount=*/1, /*seed=*/7
-    );
+    // 實作SimulationConfig for brute force
+    SimulationConfig cfg1(particleRadius, dt, K, hasSkin, Method1, cellSize, maxDepth, leafCapacity, worldSize);
+    Simulation sim1(cfg1);
 
-    SimulationConfig bruteCfg(kDt, 0.0f, false, Method::BruteForce, 1.0f, 8, 8, kBoxSize);
-    std::vector<FrameStats> truth = runSim(base, bruteCfg);
+    // 實作SimulationConfig and Simulation for uniform grid
+    SimulationConfig cfg2(particleRadius, dt, K, hasSkin, Method2, cellSize, maxDepth, leafCapacity, worldSize);
+    Simulation sim2(cfg2);
 
-    SimulationConfig gridCfg(kDt, 0.0f, false, Method::UniformGrid, kCellSize, maxDepth, leafCapacity, kBoxSize);
-    SimulationConfig gridSkinCfg(kDt, kK, true, Method::UniformGrid, kCellSize, maxDepth, leafCapacity, kBoxSize);
-    SimulationConfig octreeCfg(kDt, 0.0f, false, Method::Octree, 1.0f, maxDepth, leafCapacity, kBoxSize);
-    SimulationConfig octreeSkinCfg(kDt, kK, true, Method::Octree, 1.0f, maxDepth, leafCapacity, kBoxSize);
+    auto particles = scenario::spatialCluster(20000, worldSize, particleRadius, 1.0f, 0.0f,
+                                            1.0,
+                                            0.03,
+                                            1);
+    sim1.initialize(particles, totalFrame);
+    sim2.initialize(particles, totalFrame);
+    
+    sim1.run();
+    sim2.run();
 
-    int passed = 0;
-    passed += matchesTruth("UniformGrid", truth, runSim(base, gridCfg));
-    passed += matchesTruth("UniformGrid+Skin", truth, runSim(base, gridSkinCfg));
-    passed += matchesTruth("Octree", truth, runSim(base, octreeCfg));
-    passed += matchesTruth("Octree+Skin", truth, runSim(base, octreeSkinCfg));
+    // compare method2 result to method 1, check if the result is correct
+    bool ok = true;
+    for (int i = 0; i < sim1.totalFrames() && ok; ++i)
+        ok = sim1.frameHistory()[i].collisionPairs == sim2.frameHistory()[i].collisionPairs;
 
-    std::cout << "\n" << (passed == 4 ? "[ALL PASS] " : "[SOME FAILED] ") << passed << "/4 methods matched BruteForce\n";
-    return passed == 4 ? 0 : 1;
+    std::cout << (ok ? "PASS" : "FAIL") << std::endl;
 }

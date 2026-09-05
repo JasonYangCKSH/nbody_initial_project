@@ -1,5 +1,5 @@
-CMakeFiles/test_correctness.dir/test/test_correctness.cpp.o: \
- /home/jason/nbody_initial_project/collision2/test/test_correctness.cpp \
+CMakeFiles/test_correctness.dir/include/simulation.cpp.o: \
+ /home/jason/nbody_initial_project/collision2/include/simulation.cpp \
  /usr/include/stdc-predef.h \
  /home/jason/nbody_initial_project/collision2/include/simulation.h \
  /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algobase.h \

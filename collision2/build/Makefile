@@ -117,84 +117,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named bench
-
-# Build rule for target.
-bench: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bench
-.PHONY : bench
-
-# fast build rule for target.
-bench/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/build
-.PHONY : bench/fast
-
-#=============================================================================
-# Target rules for targets named phase1_structural_octree
-
-# Build rule for target.
-phase1_structural_octree: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase1_structural_octree
-.PHONY : phase1_structural_octree
-
-# fast build rule for target.
-phase1_structural_octree/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_octree.dir/build.make CMakeFiles/phase1_structural_octree.dir/build
-.PHONY : phase1_structural_octree/fast
-
-#=============================================================================
-# Target rules for targets named phase1_structural_grid
-
-# Build rule for target.
-phase1_structural_grid: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase1_structural_grid
-.PHONY : phase1_structural_grid
-
-# fast build rule for target.
-phase1_structural_grid/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_grid.dir/build.make CMakeFiles/phase1_structural_grid.dir/build
-.PHONY : phase1_structural_grid/fast
-
-#=============================================================================
-# Target rules for targets named phase2_k_sweep
-
-# Build rule for target.
-phase2_k_sweep: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase2_k_sweep
-.PHONY : phase2_k_sweep
-
-# fast build rule for target.
-phase2_k_sweep/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/build
-.PHONY : phase2_k_sweep/fast
-
-#=============================================================================
-# Target rules for targets named phase3_spatial_cluster
-
-# Build rule for target.
-phase3_spatial_cluster: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phase3_spatial_cluster
-.PHONY : phase3_spatial_cluster
-
-# fast build rule for target.
-phase3_spatial_cluster/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/build
-.PHONY : phase3_spatial_cluster/fast
-
-#=============================================================================
-# Target rules for targets named test
-
-# Build rule for target.
-test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test
-.PHONY : test
-
-# fast build rule for target.
-test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
-.PHONY : test/fast
-
-#=============================================================================
 # Target rules for targets named test_correctness
 
 # Build rule for target.
@@ -207,149 +129,29 @@ test_correctness/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/build
 .PHONY : test_correctness/fast
 
-bench/bench.o: bench/bench.cpp.o
-.PHONY : bench/bench.o
+include/simulation.o: include/simulation.cpp.o
+.PHONY : include/simulation.o
 
 # target to build an object file
-bench/bench.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.o
-.PHONY : bench/bench.cpp.o
+include/simulation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/include/simulation.cpp.o
+.PHONY : include/simulation.cpp.o
 
-bench/bench.i: bench/bench.cpp.i
-.PHONY : bench/bench.i
-
-# target to preprocess a source file
-bench/bench.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.i
-.PHONY : bench/bench.cpp.i
-
-bench/bench.s: bench/bench.cpp.s
-.PHONY : bench/bench.s
-
-# target to generate assembly for a file
-bench/bench.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bench.dir/build.make CMakeFiles/bench.dir/bench/bench.cpp.s
-.PHONY : bench/bench.cpp.s
-
-bench/phase1_structural_grid.o: bench/phase1_structural_grid.cpp.o
-.PHONY : bench/phase1_structural_grid.o
-
-# target to build an object file
-bench/phase1_structural_grid.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_grid.dir/build.make CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.o
-.PHONY : bench/phase1_structural_grid.cpp.o
-
-bench/phase1_structural_grid.i: bench/phase1_structural_grid.cpp.i
-.PHONY : bench/phase1_structural_grid.i
+include/simulation.i: include/simulation.cpp.i
+.PHONY : include/simulation.i
 
 # target to preprocess a source file
-bench/phase1_structural_grid.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_grid.dir/build.make CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.i
-.PHONY : bench/phase1_structural_grid.cpp.i
+include/simulation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/include/simulation.cpp.i
+.PHONY : include/simulation.cpp.i
 
-bench/phase1_structural_grid.s: bench/phase1_structural_grid.cpp.s
-.PHONY : bench/phase1_structural_grid.s
-
-# target to generate assembly for a file
-bench/phase1_structural_grid.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_grid.dir/build.make CMakeFiles/phase1_structural_grid.dir/bench/phase1_structural_grid.cpp.s
-.PHONY : bench/phase1_structural_grid.cpp.s
-
-bench/phase1_structural_octree.o: bench/phase1_structural_octree.cpp.o
-.PHONY : bench/phase1_structural_octree.o
-
-# target to build an object file
-bench/phase1_structural_octree.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_octree.dir/build.make CMakeFiles/phase1_structural_octree.dir/bench/phase1_structural_octree.cpp.o
-.PHONY : bench/phase1_structural_octree.cpp.o
-
-bench/phase1_structural_octree.i: bench/phase1_structural_octree.cpp.i
-.PHONY : bench/phase1_structural_octree.i
-
-# target to preprocess a source file
-bench/phase1_structural_octree.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_octree.dir/build.make CMakeFiles/phase1_structural_octree.dir/bench/phase1_structural_octree.cpp.i
-.PHONY : bench/phase1_structural_octree.cpp.i
-
-bench/phase1_structural_octree.s: bench/phase1_structural_octree.cpp.s
-.PHONY : bench/phase1_structural_octree.s
+include/simulation.s: include/simulation.cpp.s
+.PHONY : include/simulation.s
 
 # target to generate assembly for a file
-bench/phase1_structural_octree.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase1_structural_octree.dir/build.make CMakeFiles/phase1_structural_octree.dir/bench/phase1_structural_octree.cpp.s
-.PHONY : bench/phase1_structural_octree.cpp.s
-
-bench/phase2_k_sweep.o: bench/phase2_k_sweep.cpp.o
-.PHONY : bench/phase2_k_sweep.o
-
-# target to build an object file
-bench/phase2_k_sweep.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/bench/phase2_k_sweep.cpp.o
-.PHONY : bench/phase2_k_sweep.cpp.o
-
-bench/phase2_k_sweep.i: bench/phase2_k_sweep.cpp.i
-.PHONY : bench/phase2_k_sweep.i
-
-# target to preprocess a source file
-bench/phase2_k_sweep.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/bench/phase2_k_sweep.cpp.i
-.PHONY : bench/phase2_k_sweep.cpp.i
-
-bench/phase2_k_sweep.s: bench/phase2_k_sweep.cpp.s
-.PHONY : bench/phase2_k_sweep.s
-
-# target to generate assembly for a file
-bench/phase2_k_sweep.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase2_k_sweep.dir/build.make CMakeFiles/phase2_k_sweep.dir/bench/phase2_k_sweep.cpp.s
-.PHONY : bench/phase2_k_sweep.cpp.s
-
-bench/phase3_spatial_cluster.o: bench/phase3_spatial_cluster.cpp.o
-.PHONY : bench/phase3_spatial_cluster.o
-
-# target to build an object file
-bench/phase3_spatial_cluster.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/bench/phase3_spatial_cluster.cpp.o
-.PHONY : bench/phase3_spatial_cluster.cpp.o
-
-bench/phase3_spatial_cluster.i: bench/phase3_spatial_cluster.cpp.i
-.PHONY : bench/phase3_spatial_cluster.i
-
-# target to preprocess a source file
-bench/phase3_spatial_cluster.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/bench/phase3_spatial_cluster.cpp.i
-.PHONY : bench/phase3_spatial_cluster.cpp.i
-
-bench/phase3_spatial_cluster.s: bench/phase3_spatial_cluster.cpp.s
-.PHONY : bench/phase3_spatial_cluster.s
-
-# target to generate assembly for a file
-bench/phase3_spatial_cluster.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/phase3_spatial_cluster.dir/build.make CMakeFiles/phase3_spatial_cluster.dir/bench/phase3_spatial_cluster.cpp.s
-.PHONY : bench/phase3_spatial_cluster.cpp.s
-
-test/test.o: test/test.cpp.o
-.PHONY : test/test.o
-
-# target to build an object file
-test/test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test/test.cpp.o
-.PHONY : test/test.cpp.o
-
-test/test.i: test/test.cpp.i
-.PHONY : test/test.i
-
-# target to preprocess a source file
-test/test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test/test.cpp.i
-.PHONY : test/test.cpp.i
-
-test/test.s: test/test.cpp.s
-.PHONY : test/test.s
-
-# target to generate assembly for a file
-test/test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/test/test.cpp.s
-.PHONY : test/test.cpp.s
+include/simulation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_correctness.dir/build.make CMakeFiles/test_correctness.dir/include/simulation.cpp.s
+.PHONY : include/simulation.cpp.s
 
 test/test_correctness.o: test/test_correctness.cpp.o
 .PHONY : test/test_correctness.o
@@ -383,31 +185,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... bench"
-	@echo "... phase1_structural_grid"
-	@echo "... phase1_structural_octree"
-	@echo "... phase2_k_sweep"
-	@echo "... phase3_spatial_cluster"
-	@echo "... test"
 	@echo "... test_correctness"
-	@echo "... bench/bench.o"
-	@echo "... bench/bench.i"
-	@echo "... bench/bench.s"
-	@echo "... bench/phase1_structural_grid.o"
-	@echo "... bench/phase1_structural_grid.i"
-	@echo "... bench/phase1_structural_grid.s"
-	@echo "... bench/phase1_structural_octree.o"
-	@echo "... bench/phase1_structural_octree.i"
-	@echo "... bench/phase1_structural_octree.s"
-	@echo "... bench/phase2_k_sweep.o"
-	@echo "... bench/phase2_k_sweep.i"
-	@echo "... bench/phase2_k_sweep.s"
-	@echo "... bench/phase3_spatial_cluster.o"
-	@echo "... bench/phase3_spatial_cluster.i"
-	@echo "... bench/phase3_spatial_cluster.s"
-	@echo "... test/test.o"
-	@echo "... test/test.i"
-	@echo "... test/test.s"
+	@echo "... include/simulation.o"
+	@echo "... include/simulation.i"
+	@echo "... include/simulation.s"
 	@echo "... test/test_correctness.o"
 	@echo "... test/test_correctness.i"
 	@echo "... test/test_correctness.s"
