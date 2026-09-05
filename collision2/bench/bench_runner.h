@@ -27,7 +27,7 @@ namespace benchrunner {
 
 struct BenchmarkConfig {
     // scenario / 物理參數
-    int particleCount = 2000;
+    int particleCount = 1000;
     float worldSize = 60.0f;
     float particleRadius = 1.0f;
     float speed = 1.5f;
@@ -36,13 +36,13 @@ struct BenchmarkConfig {
     int totalFrames = 1000;
 
     unsigned scenarioSeed = 100;
-    float clusterFactor = 1.0f;
-    float hotspotSpreadRatio = 0.03f;  // 實際 hotspotSpread = hotspotSpreadRatio * worldSize
+    float clusterFactor = 0.0f;
+    float hotspotSpreadRatio = 0.03f * worldSize;  // 實際 hotspotSpread = hotspotSpreadRatio * worldSize
     int hotspotCount = 1;
 
     // 固定的結構參數（不掃描）
-    float cellSizeRatio = 1.5f;
-    int leafCapacity = 16;
+    float cellSizeRatio = 2.0f;
+    int leafCapacity = 8;
     int maxDepth = 8;
 
     // 每個 combo 重複跑幾次以取平均/標準差

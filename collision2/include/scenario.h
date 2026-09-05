@@ -64,7 +64,7 @@ inline std::vector<Particle> spatialCluster(int n, float boxSize, float radius, 
                                             float clusterFactor,
                                             float hotspotSpread,
                                             int hotspotCount,      
-                                            unsigned seed = 5) {
+                                            unsigned seed = 124) {
     assert(hotspotCount > 0 && "hotspot number cannot be negative.");
     std::mt19937 rng(seed);
 
