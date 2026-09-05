@@ -10,7 +10,7 @@ namespace verlet {
 
 inline void updateLocalSkin(std::vector<Particle>& particles, float K, float dt) {
     for (auto& p : particles) {
-        p.skin = K * glm::length(p.vel) * dt + 0.5f * K * K  * glm::length(p.acc) * dt * dt;
+        p.skin = K * glm::length(p.vel) * dt;
     }
 }
 
@@ -21,7 +21,7 @@ inline void capSkinToCellSize(std::vector<Particle>& particles, float cellSize) 
 
     
     for (auto& p : particles) {
-        const float maxSkin = cellSize - p.radius;
+        const float maxSkin = cellSize/2.0f - p.radius;
         p.skin = std::clamp(p.skin, 0.0f, maxSkin);
     }
 }

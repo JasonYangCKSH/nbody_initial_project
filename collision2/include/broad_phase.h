@@ -74,9 +74,16 @@ public:
 
             for (size_t a = 0; a < cellA.size(); ++a) {
                 for (size_t b = a + 1; b < cellA.size(); ++b) {
-                    int x = cellA[a], y = cellA[b];
-                    if (x > y) std::swap(x, y);
-                    pairs.emplace_back(x, y);
+                    int ia = cellA[a], ib = cellA[b];
+                    float skinA = (withSkin)? particles[ia].skin: 0.0f;
+                    float skinB = (withSkin)? particles[ib].skin: 0.0f;
+                    float r_nl_a = particles[ia].radius + skinA;
+                    float r_nl_b = particles[ib].radius + skinB;
+                    if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) > glm::distance2(particles[ia].pos, particles[ib].pos)) {
+                        int x = ia, y = ib;
+                        if (x > y) std::swap(x, y);
+                        pairs.emplace_back(x, y);
+                    }
                 }
             }
 
@@ -85,9 +92,15 @@ public:
                 if (it == cells.end()) continue;
                 for (int a : cellA) {
                     for (int b : it->second) {
-                        int x = a, y = b;
-                        if (x > y) std::swap(x, y);
-                        pairs.emplace_back(x, y);
+                        float skinA = (withSkin) ? particles[a].skin: 0.0f;
+                        float skinB = (withSkin) ? particles[b].skin: 0.0f;
+                        float r_nl_a = particles[a].radius + skinA;
+                        float r_nl_b = particles[b].radius + skinB;
+                        if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) > glm::distance2(particles[a].pos, particles[b].pos)) {
+                            int x = a, y = b;
+                            if (x > y) std::swap(x, y);
+                            pairs.emplace_back(x, y);
+                        }
                     }
                 }
             }
@@ -186,14 +199,29 @@ private:
         for (size_t i = 0; i < leaves.size(); ++i) {
             const auto& idxA = leaves[i]->indices;
             for (size_t a = 0; a < idxA.size(); ++a)
-                for (size_t b = a + 1; b < idxA.size(); ++b)
-                    addPair(idxA[a], idxA[b], pairs);
+                for (size_t b = a + 1; b < idxA.size(); ++b) {
+                    int ia = idxA[a], ib = idxA[b];
+                    float skinA = (withSkin) ? particles[ia].skin : 0.0f;
+                    float skinB = (withSkin) ? particles[ib].skin : 0.0f;
+                    float r_nl_a = particles[ia].radius + skinA;
+                    float r_nl_b = particles[ib].radius + skinB;
+                    if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) > glm::distance2(particles[ia].pos, particles[ib].pos)) {
+                        addPair(ia, ib, pairs);
+                    }
+                }
 
             for (size_t j = i + 1; j < leaves.size(); ++j) {
                 if (!boxesOverlap(leaves[i], leaves[j], margin)) continue;
                 for (int a : idxA)
-                    for (int b : leaves[j]->indices)
-                        addPair(a, b, pairs);
+                    for (int b : leaves[j]->indices) {
+                        float skinA = (withSkin) ? particles[a].skin : 0.0f;
+                        float skinB = (withSkin) ? particles[b].skin : 0.0f;
+                        float r_nl_a = particles[a].radius + skinA;
+                        float r_nl_b = particles[b].radius + skinB;
+                        if ((r_nl_a + r_nl_b) * (r_nl_a + r_nl_b) > glm::distance2(particles[a].pos, particles[b].pos)) {
+                            addPair(a, b, pairs);
+                        }
+                    }
             }
         }
     }
