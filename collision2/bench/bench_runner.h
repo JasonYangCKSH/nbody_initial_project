@@ -27,7 +27,7 @@ namespace benchrunner {
 
 struct BenchmarkConfig {
     // scenario / 物理參數
-    int particleCount = 5000;
+    int particleCount = 3000;
     float worldSize = 60.0f;
     float particleRadius = 1.0f;
     float speed = 1.5f;
