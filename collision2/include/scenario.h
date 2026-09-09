@@ -103,7 +103,7 @@ inline std::vector<Particle> spatialCluster(int n, float boxSize, float radius, 
         p.pos = pos;
 
         p.vel = {velDist(rng), velDist(rng), velDist(rng)};
-        p.acc = {accDist(rng), accDist(rng),  accDist(rng)};
+        p.acc = {0.0f, 0.0f, 0.0f};
         p.radius = radius;
         p.posAtLastBroadPhase = p.pos;
     }

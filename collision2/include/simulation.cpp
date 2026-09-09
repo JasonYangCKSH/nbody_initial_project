@@ -48,7 +48,7 @@ void Simulation::updateSkin() {
 
 void Simulation::integrate() {
     for (auto& p : particles_) {
-        p.vel += p.acc * cfg_.dt;
+        //p.vel += p.acc * cfg_.dt;
         p.pos += p.vel * cfg_.dt;
     }
     response::reflectOffWalls(particles_, cfg_.worldSize);
