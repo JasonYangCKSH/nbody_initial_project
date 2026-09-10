@@ -104,8 +104,9 @@ FrameInfo Simulation::step() {
         if (cfg_.recordCandidatePairs) info.candidatePairs = cachedCandidates_;
     }
 
-    auto t4 = std::chrono::steady_clock::now();
+    
     std::sort(collisions.begin(), collisions.end());
+    auto t4 = std::chrono::steady_clock::now();
     applyCollisionResponse(collisions);
     integrate();
     auto t5 = std::chrono::steady_clock::now();

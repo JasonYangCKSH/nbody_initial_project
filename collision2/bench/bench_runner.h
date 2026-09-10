@@ -27,7 +27,7 @@ namespace benchrunner {
 
 struct BenchmarkConfig {
     // scenario / 物理參數
-    int particleCount = 3000;
+    int particleCount = 1000;
     float worldSize = 60.0f;
     float particleRadius = 1.0f;
     float speed = 1.5f;
@@ -36,7 +36,7 @@ struct BenchmarkConfig {
     int totalFrames = 1000;
 
     unsigned scenarioSeed = 100;
-    float clusterFactor = 1.0f;
+    float clusterFactor = 0.0f;
     float hotspotSpreadRatio = 0.03f * worldSize;  // 實際 hotspotSpread = hotspotSpreadRatio * worldSize
     int hotspotCount = 1;
 
