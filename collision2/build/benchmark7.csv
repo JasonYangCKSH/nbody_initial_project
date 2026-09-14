@@ -1,24 +1,24 @@
-scenario,structure_mode,K,total_time_avg_s,total_time_std_s,broad_time_avg_s,narrow_time_avg_s,response_time_avg_s,rebuild_count,avg_candidate_per_rebuild,correctness_ok,first_mismatch_frame,repeat_count
-spatial_cluster,brute_force,NA,53.876226,NA,0.000000,53.819027,0.057199,NA,NA,NA,NA,1
-spatial_cluster,uniform_grid,NA,2.581288,0.075072,2.548531,0.002097,0.030659,1000,282.42,1,NA,10
-spatial_cluster,octree,NA,4.383716,0.127061,4.351062,0.001957,0.030697,1000,282.42,1,NA,10
-spatial_cluster,uniform_grid_skin,1,2.751430,0.046043,2.712236,0.007650,0.031544,1000,1202.77,1,NA,10
-spatial_cluster,octree_skin,1,4.814553,0.141996,4.776375,0.007354,0.030824,1000,1202.77,1,NA,10
-spatial_cluster,uniform_grid_skin,2,2.752598,0.140874,2.710110,0.011642,0.030846,1000,2205.81,1,NA,10
-spatial_cluster,octree_skin,2,4.656080,0.063235,4.617173,0.009731,0.029176,1000,2205.81,1,NA,10
-spatial_cluster,uniform_grid_skin,5,2.580110,0.046565,2.533388,0.016811,0.029911,944,5348.72,1,NA,10
-spatial_cluster,octree_skin,5,4.495425,0.056545,4.448699,0.016938,0.029789,944,5348.72,1,NA,10
-spatial_cluster,uniform_grid_skin,10,1.674555,0.053849,1.610717,0.032646,0.031191,533,11141.22,1,NA,10
-spatial_cluster,octree_skin,10,2.760690,0.031604,2.699820,0.029273,0.031597,533,11141.22,1,NA,10
-spatial_cluster,uniform_grid_skin,20,0.966259,0.034375,0.875213,0.059855,0.031191,268,24797.79,1,NA,10
-spatial_cluster,octree_skin,20,1.484242,0.049522,1.398961,0.053973,0.031308,268,24867.17,1,NA,10
-spatial_cluster,uniform_grid_skin,50,0.453452,0.024693,0.302722,0.118433,0.032297,83,54374.47,1,NA,10
-spatial_cluster,octree_skin,50,1.495783,0.041643,1.263695,0.201250,0.030837,78,116405.31,1,NA,10
-spatial_cluster,uniform_grid_skin,100,0.413536,0.021480,0.259142,0.123206,0.031188,70,56752.34,1,NA,10
-spatial_cluster,octree_skin,100,1.144664,0.026521,0.541694,0.569421,0.033549,28,343151.86,1,NA,10
-spatial_cluster,uniform_grid_skin,200,0.412393,0.023353,0.258924,0.122914,0.030555,70,56763.34,1,NA,10
-spatial_cluster,octree_skin,200,1.108371,0.041124,0.449365,0.624270,0.034736,23,367530.96,1,NA,10
-spatial_cluster,uniform_grid_skin,500,0.399633,0.023148,0.252807,0.117702,0.029125,70,56763.34,1,NA,10
-spatial_cluster,octree_skin,500,1.030691,0.029276,0.423102,0.576365,0.031223,23,367613.87,1,NA,10
-spatial_cluster,uniform_grid_skin,1000,0.387186,0.013562,0.242334,0.115875,0.028977,70,56763.34,1,NA,10
-spatial_cluster,octree_skin,1000,1.035680,0.041785,0.421169,0.581768,0.032742,23,367613.87,1,NA,10
+scenario,           structure_mode,     K,      total_time_avg_s,total_time_std_s,broad_time_avg_s,narrow_time_avg_s,response_time_avg_s,rebuild_count,avg_candidate_per_rebuild,correctness_ok,first_mismatch_frame,repeat_count
+spatial_cluster,    brute_force,        NA,     53.876226,NA,0.000000,53.819027,0.057199,NA,NA,NA,NA,1
+spatial_cluster,    uniform_grid,       NA,     2.581288,0.075072,2.548531,0.002097,0.030659,1000,282.42,1,NA,10
+spatial_cluster,    octree,             NA,     4.383716, 0.127061,4.351062,0.001957,0.030697,1000,282.42,1,NA,10
+spatial_cluster,    uniform_grid_skin,  1,      2.751430,0.046043,2.712236,0.007650,0.031544,1000,1202.77,1,NA,10
+spatial_cluster,    octree_skin,        1,      4.814553,0.141996,4.776375,0.007354,0.030824,1000,1202.77,1,NA,10
+spatial_cluster,    uniform_grid_skin,  2,      2.752598,0.140874,2.710110,0.011642,0.030846,1000,2205.81,1,NA,10
+spatial_cluster,    octree_skin,        2,      4.656080,0.063235,4.617173,0.009731,0.029176,1000,2205.81,1,NA,10
+spatial_cluster,    uniform_grid_skin,  5,      2.580110,0.046565,2.533388,0.016811,0.029911,944,5348.72,1,NA,10
+spatial_cluster,    octree_skin,        5,      4.495425,0.056545,4.448699,0.016938,0.029789,944,5348.72,1,NA,10
+spatial_cluster,    uniform_grid_skin,  10,     1.674555,0.053849,1.610717,0.032646,0.031191,533,11141.22,1,NA,10
+spatial_cluster,    octree_skin,        10,     2.760690,0.031604,2.699820,0.029273,0.031597,533,11141.22,1,NA,10
+spatial_cluster,    uniform_grid_skin,  20,     0.966259,0.034375,0.875213,0.059855,0.031191,268,24797.79,1,NA,10
+spatial_cluster,    octree_skin,        20,     1.484242,0.049522,1.398961,0.053973,0.031308,268,24867.17,1,NA,10
+spatial_cluster,    uniform_grid_skin,  50,     0.453452,0.024693,0.302722,0.118433,0.032297,83,54374.47,1,NA,10
+spatial_cluster,    octree_skin,        50,     1.495783,0.041643,1.263695,0.201250,0.030837,78,116405.31,1,NA,10
+spatial_cluster,    uniform_grid_skin,  100,    0.413536,0.021480,0.259142,0.123206,0.031188,70,56752.34,1,NA,10
+spatial_cluster,    octree_skin,        100,    1.144664,0.026521,0.541694,0.569421,0.033549,28,343151.86,1,NA,10
+spatial_cluster,    uniform_grid_skin,  200,    0.412393,0.023353,0.258924,0.122914,0.030555,70,56763.34,1,NA,10
+spatial_cluster,    octree_skin,        200,    1.108371,0.041124,0.449365,0.624270,0.034736,23,367530.96,1,NA,10
+spatial_cluster,    uniform_grid_skin,  500,    0.399633,0.023148,0.252807,0.117702,0.029125,70,56763.34,1,NA,10
+spatial_cluster,    octree_skin,        500,    1.030691,0.029276,0.423102,0.576365,0.031223,23,367613.87,1,NA,10
+spatial_cluster,    uniform_grid_skin,  1000,   0.387186,0.013562,0.242334,0.115875,0.028977,70,56763.34,1,NA,10
+spatial_cluster,    octree_skin,        1000,   1.035680,0.041785,0.421169,0.581768,0.032742,23,367613.87,1,NA,10
