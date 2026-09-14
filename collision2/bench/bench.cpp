@@ -5,11 +5,11 @@
 #include <fstream>
 #include <vector>
 int main() {
-
+    std::cout << "start\n";
     // 1. 設定 benchmark
     benchrunner::BenchmarkConfig config;
     // 2. 建立 CSV writer
-    benchrunner::BenchmarkCSVWriter writer("benchmark.csv");
+    benchrunner::BenchmarkCSVWriter writer("benchmark9.csv");
     // 3. 建立 benchmark runner
     benchrunner::BenchmarkRunner runner(config, writer);
     // 4. 執行所有實驗

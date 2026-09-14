@@ -63,18 +63,19 @@ inline std::vector<Particle> explosion(int n, float boxSize, float radius, float
 inline std::vector<Particle> spatialCluster(int n, float boxSize, float radius, float  speed, float acc,
                                             float clusterFactor,
                                             float hotspotSpread,
-                                            int hotspotCount,      
+                                            int hotspotCount,
+                                            float fastRatio = 0.0f,
+                                            float fastMult = 10.0,      
                                             unsigned seed = 124) {
-    assert(hotspotCount > 0 && "hotspot number cannot be negative.");
+assert(hotspotCount > 0 && "hotspot number cannot be negative.");
     std::mt19937 rng(seed);
-
 
     const float hotspotRange = boxSize * 0.4f;
     std::uniform_real_distribution<float> hotspotCenterDist(-hotspotRange, hotspotRange);
 
     std::vector<glm::vec3> hotspots(hotspotCount);
     for (auto& h: hotspots) {
-        h = {hotspotCenterDist(rng), hotspotCenterDist(rng),  hotspotCenterDist(rng)};
+        h = {hotspotCenterDist(rng), hotspotCenterDist(rng), hotspotCenterDist(rng)};
     }
 
     std::uniform_real_distribution<float> posDist(-boxSize * 0.5f, boxSize * 0.5f);
@@ -83,6 +84,9 @@ inline std::vector<Particle> spatialCluster(int n, float boxSize, float radius, 
     std::uniform_real_distribution<float> clusterChoiceDist(0.0f, 1.0f);
     std::uniform_int_distribution<int> hotspotPickDist(0, hotspotCount - 1);
     std::normal_distribution<float> hotspotOffsetDist(0.0f, hotspotSpread);
+    
+    // 1. 最低成本新增：機率判斷分布
+    std::uniform_real_distribution<float> fastChoiceDist(0.0f, 1.0f);
 
     const float clampMin = -boxSize * 0.5f + radius;
     const float clampMax = boxSize * 0.5f - radius;
@@ -102,8 +106,12 @@ inline std::vector<Particle> spatialCluster(int n, float boxSize, float radius, 
         pos.z = std::clamp(pos.z, clampMin, clampMax);
         p.pos = pos;
 
-        p.vel = {velDist(rng), velDist(rng), velDist(rng)};
-        p.acc = {0.0f, 0.0f, 0.0f};
+        // 2. 最低成本修改：抽中 fastRatio 的粒子直接套用倍率，且把原本硬編碼為 0 的 p.acc 補上
+        float mult = (fastChoiceDist(rng) < fastRatio) ? fastMult : 1.0f;
+
+        p.vel = glm::vec3(velDist(rng), velDist(rng), velDist(rng)) * mult;
+        p.acc = glm::vec3(accDist(rng), accDist(rng), accDist(rng)) * mult; // 正確賦予加速度
+        
         p.radius = radius;
         p.posAtLastBroadPhase = p.pos;
     }

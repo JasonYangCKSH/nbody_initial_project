@@ -27,11 +27,16 @@ namespace benchrunner {
 
 struct BenchmarkConfig {
     // scenario / 物理參數
-    int particleCount = 1000;
+    int particleCount = 10000;
     float worldSize = 60.0f;
     float particleRadius = 1.0f;
+
     float speed = 1.5f;
-    float acc = 0.0f;
+    float acc = 1.0f;
+    //速度異質性
+    float fastRatio = 0.9f;
+    float fastMult = 25.0f;
+    
     float dt = 1.0f / 60.0f;
     int totalFrames = 1000;
 
@@ -42,13 +47,14 @@ struct BenchmarkConfig {
 
     // 固定的結構參數（不掃描）
     float cellSizeRatio = 2.0f;
-    float leafCapacityRatio = 0.1f;
+    float leafCapacityRatio = 0.01f;
     int leafCapacity = (int)(leafCapacityRatio * particleCount);
     int maxDepth = 20;
 
     // 每個 combo 重複跑幾次以取平均/標準差
     int repeatCount = 10;
 
+    
     // K 掃描點：等比取樣（1-2-5 級數），橫跨 1~1000 三個數量級
     std::vector<float> kValues = {1, 2, 5, 10, 20, 50, 100, 200, 500, 1000};
 
@@ -215,7 +221,7 @@ private:
         return scenario::spatialCluster(
             config_.particleCount, config_.worldSize, config_.particleRadius, config_.speed,
             config_.acc, config_.clusterFactor, config_.hotspotSpreadRatio * config_.worldSize,
-            config_.hotspotCount, config_.scenarioSeed);
+            config_.hotspotCount, config_.fastRatio, config_.fastMult, config_.scenarioSeed);
     }
 
     // brute force 是全域唯一的 ground truth，且是純 O(n^2)、沒有 rebuild 概念，
