@@ -34,7 +34,7 @@ struct BenchmarkConfig {
     float speed = 1.5f;
     float acc = 1.0f;
     //速度異質性
-    float fastRatio = 0.9f;
+    float fastRatio = 0.0f;
     float fastMult = 25.0f;
     
     float dt = 1.0f / 60.0f;
@@ -52,7 +52,7 @@ struct BenchmarkConfig {
     int maxDepth = 20;
 
     // 每個 combo 重複跑幾次以取平均/標準差
-    int repeatCount = 10;
+    int repeatCount = 2;
 
     
     // K 掃描點：等比取樣（1-2-5 級數），橫跨 1~1000 三個數量級
