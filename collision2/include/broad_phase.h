@@ -230,21 +230,49 @@ public:
     Octree(int maxDepth, int leafCapacity, float worldSize)
         : maxDepth_(maxDepth), leafCapacity_(leafCapacity), worldSize_(worldSize) {}
 
-    PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        Node root;
-        root.center = glm::vec3(0.0f);
-        root.halfExtent = worldSize_ * 0.5f;
+    // 只依粒子「位置」切分出來的空間結構。BuildTree() 蓋一次之後，
+    // LeafHalfExtents() 和 CollectPairs() 可以重複讀同一棵樹，不必再各自重蓋一次——
+    // 這樣 rebuild 一輪只會插入/分裂一次，而不是兩次。
+    class Tree {
+    public:
+        Tree() = default;
+        Tree(Tree&&) noexcept = default;
+        Tree& operator=(Tree&&) noexcept = default;
+        Tree(const Tree&) = delete;
+        Tree& operator=(const Tree&) = delete;
+    private:
+        std::unique_ptr<Node> root_;
+        std::vector<Node*> leaves_;
+        friend class Octree;
+    };
+
+    Tree BuildTree(const std::vector<Particle>& particles) const {
+        Tree tree;
+        tree.root_ = std::make_unique<Node>();
+        tree.root_->center = glm::vec3(0.0f);
+        tree.root_->halfExtent = worldSize_ * 0.5f;
 
         for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-            insert(&root, particles, i, 0);
+            insert(tree.root_.get(), particles, i, 0);
         }
 
-        std::vector<Node*> leaves;
-        collectLeaves(&root, leaves);
+        collectLeaves(tree.root_.get(), tree.leaves_);
+        return tree;
+    }
 
+    std::vector<float> LeafHalfExtents(const Tree& tree, const std::vector<Particle>& particles) const {
+        std::vector<float> halfExtents(particles.size(), 0.0f);
+        for (Node* leaf : tree.leaves_) {
+            for (int idx : leaf->indices) {
+                halfExtents[idx] = leaf->halfExtent;
+            }
+        }
+        return halfExtents;
+    }
 
+    PairList CollectPairs(const Tree& tree, const std::vector<Particle>& particles, bool withSkin) const {
     #ifndef NDEBUG
-        for (const Node* leaf : leaves) {
+        for (const Node* leaf : tree.leaves_) {
             for (int idx : leaf->indices) {
                 assert(leaf->halfExtent >= particles[idx].radius &&
                     "leaf halfExtent smaller than particle radius: "
@@ -254,32 +282,15 @@ public:
         }
     #endif
 
-
         PairList pairs;
-        collectPairs(leaves, particles, withSkin, pairs);
+        collectPairs(tree.leaves_, particles, withSkin, pairs);
         return pairs;
     }
 
-
-    std::vector<float> LeafHalfExtents(const std::vector<Particle>& particles) const {
-        Node root;
-        root.center = glm::vec3(0.0f);
-        root.halfExtent = worldSize_ * 0.5f;
-
-        for (int i = 0; i < static_cast<int>(particles.size()); ++i) {
-            insert(&root, particles, i, 0);
-        }
-
-        std::vector<Node*> leaves;
-        collectLeaves(&root, leaves);
-
-        std::vector<float> halfExtents(particles.size(), 0.0f);
-        for (Node* leaf : leaves) {
-            for (int idx : leaf->indices) {
-                halfExtents[idx] = leaf->halfExtent;
-            }
-        }
-        return halfExtents;
+    // 單次呼叫版本：等同 BuildTree() 接著 CollectPairs()，給不需要中途讀
+    // leaf extent（例如沒有開 skin）的呼叫端用，跟 UniformGrid::Build() 介面對稱。
+    PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
+        return CollectPairs(BuildTree(particles), particles, withSkin);
     }
 };
 

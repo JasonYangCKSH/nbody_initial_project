@@ -28,21 +28,26 @@ bool Simulation::needsRebuild() const {
     return currentFrame_ == 0 || !verlet::listStillValid(particles_);
 }
 
-PairList Simulation::buildBroadPhase() const {
-    return std::visit([this](const auto& bp) { return bp.Build(particles_, cfg_.hasSkin); }, broadPhase_);
-}
-
-void Simulation::updateSkin() {
-    if (!cfg_.hasSkin) return;
-
-    verlet::updateLocalSkin(particles_, cfg_.K, cfg_.dt);
-
-    if (cfg_.method == Method::UniformGrid) {
-        verlet::capSkinToCellSize(particles_, cfg_.cellSize);
-    } else if (cfg_.method == Method::Octree) {
-        if (const auto* octree = std::get_if<broad::Octree>(&broadPhase_)) {
-            verlet::capSkinToLeafExtent(particles_, octree->LeafHalfExtents(particles_));
+// 每次 rebuild 只蓋一次空間結構：Octree 分支下，skin 要先夾在「這一輪剛蓋好的
+// 那棵樹」的 leaf extent 之內，才能拿去建候選表，所以 BuildTree() 必須在
+// capSkinToLeafExtent() 之前跑一次；但 CollectPairs() 直接複用同一棵樹，
+// 不會像先前那樣為了量 leaf extent 而多蓋一次樹。
+// UniformGrid 沒有這個先後問題（cap 用的是固定的 cellSize_，不需要任何已建結構），
+// 但 skin 仍要在 Build() 之前定案，候選表才會跟之後 listStillValid() 用的門檻一致。
+void Simulation::rebuildBroadPhase() {
+    if (auto* grid = std::get_if<broad::UniformGrid>(&broadPhase_)) {
+        cachedCandidates_ = grid->Build(particles_, cfg_.hasSkin);
+        if (cfg_.hasSkin) {
+            verlet::updateLocalSkin(particles_, cfg_.K, cfg_.dt);
+            verlet::capSkinToCellSize(particles_, cfg_.cellSize);
         }
+    } else if (auto* octree = std::get_if<broad::Octree>(&broadPhase_)) {
+        auto tree = octree->BuildTree(particles_);
+        if (cfg_.hasSkin) {
+            verlet::updateLocalSkin(particles_, cfg_.K, cfg_.dt);
+            verlet::capSkinToLeafExtent(particles_, octree->LeafHalfExtents(tree, particles_));
+        }
+        cachedCandidates_ = octree->CollectPairs(tree, particles_, cfg_.hasSkin);
     }
 }
 
@@ -81,10 +86,9 @@ FrameInfo Simulation::step() {
 
         if (info.didRebuild) {
             auto t0 = std::chrono::steady_clock::now();
-            
-            cachedCandidates_ = buildBroadPhase();
+            rebuildBroadPhase();
             ++rebuildCount_;
-            updateSkin();
+
             verlet::recordBroadPhaseSnapshot(particles_);
             auto t1 = std::chrono::steady_clock::now();
             info.broadPhaseTime = std::chrono::duration<double, std::milli>(t1 - t0).count();

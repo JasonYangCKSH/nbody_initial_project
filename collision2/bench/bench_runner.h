@@ -41,7 +41,7 @@ struct BenchmarkConfig {
     int totalFrames = 1000;
 
     unsigned scenarioSeed = 100;
-    float clusterFactor = 1.0f;
+    float clusterFactor = 0.0f;
     float hotspotSpreadRatio = 0.03f * worldSize;  // 實際 hotspotSpread = hotspotSpreadRatio * worldSize
     int hotspotCount = 1;
 
@@ -52,7 +52,7 @@ struct BenchmarkConfig {
     int maxDepth = 20;
 
     // 每個 combo 重複跑幾次以取平均/標準差
-    int repeatCount = 2;
+    int repeatCount = 10;
 
     
     // K 掃描點：等比取樣（1-2-5 級數），橫跨 1~1000 三個數量級

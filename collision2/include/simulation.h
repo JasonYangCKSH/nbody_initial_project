@@ -74,8 +74,7 @@ private:
     std::variant<broad::UniformGrid, broad::Octree> broadPhase_;
     PairList cachedCandidates_;
     bool needsRebuild() const;
-    PairList buildBroadPhase() const;
-    void updateSkin();
+    void rebuildBroadPhase();
     void integrate();
     void applyCollisionResponse(const PairList& collisions);
     FrameInfo step();
