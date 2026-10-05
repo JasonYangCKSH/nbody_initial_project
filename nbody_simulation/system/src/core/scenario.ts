@@ -47,6 +47,6 @@ export function spatialCluster({ count, bounds, radius, speed, acc, clusterFacto
     const mult = random() < fastRatio ? fastMult : 1;
     const velocity = { x: uniform(-speed, speed) * mult, y: uniform(-speed, speed) * mult, z: uniform(-speed, speed) * mult };
     const acceleration = { x: uniform(-acc, acc) * mult, y: uniform(-acc, acc) * mult, z: uniform(-acc, acc) * mult };
-    return { id, position, velocity, acceleration, radius, positionAtLastBroadPhase: { ...position }, skin: 0 };
+    return { id, position, velocity, acceleration, radius, mass: 1, positionAtLastBroadPhase: { ...position }, skin: 0 };
   });
 }

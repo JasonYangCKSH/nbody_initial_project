@@ -4,8 +4,11 @@ export interface ParticleData {
   id: number;
   position: Vec3;
   velocity: Vec3;
-  acceleration?: Vec3; 
+  // 對應 C++ Particle::acc，一律存在（預設可為零向量）
+  acceleration: Vec3;
   radius: number;
+  // 對應 C++ Particle::mass（預設 1）
+  mass: number;
   positionAtLastBroadPhase: Vec3;
   skin: number;
 }

@@ -7,13 +7,15 @@ import { BruteForceStructure } from './core/spatial/BruteForceStructure';
 import { OctreeStructure } from './core/spatial/OctreeStructure';
 import { UniformGridStructure } from './core/spatial/UniformGridStructure';
 import { Instrumentation } from './core/metrics/Instrumentation';
-import { PARTICLE_RADIUS, ParticleSystem } from './core/ParticleSystem';
+import { DEFAULT_ACCELERATION, ParticleSystem } from './core/ParticleSystem';
 import { VerletBufferController } from './core/VerletBufferController';
 import type { ParticleData, StepMetrics, Vec3 } from './core/types';
 
 type Algorithm = 'Brute Force' | 'Uniform Grid' | 'Octree';
 const bounds = { x:25, y: 25, z: 25 };
 const dt = 1 / 60;
+// 與 C++ bench 一致：cellSize = cellSizeRatio(2) × 2 × PARTICLE_RADIUS(0.075)
+const CELL_SIZE = 0.3;
 
 // Wireframe lattice matching UniformGridStructure's cellOf() partition
 // (cell boundaries at multiples of cellSize, clipped to the bounding box),
@@ -75,53 +77,58 @@ function PhaseChart({ history, metricKey, color, label, markRebuilds }: { histor
   return <div className="phase-chart">
     <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
       <path d={path} fill="none" stroke={color} strokeWidth="1.5" />
-      {markRebuilds && points.map((item, index) => item.rebuilt && <circle key={item.step} cx={xAt(index)} cy={yAt(item)} r={2.2} fill="#D85A30" />)}
     </svg>
     <div className="phase-chart-axis"><span>step {points[0].step}</span><span>step {points.at(-1)!.step}</span></div>
     <div className="phase-chart-legend"><span style={{ color }}>● {label} {latest[metricKey].toFixed(2)}ms</span>{markRebuilds && <span className={latest.rebuilt ? 'rebuild-flag on' : 'rebuild-flag'}>● rebuilt this step: {latest.rebuilt ? 'yes' : 'no'}</span>}</div>
   </div>;
 }
 
+// 第 0 幀必定重建（見 C++ Simulation::needsRebuild），計數從 0 開始，由第一次 step 計入
+const initialMetrics = (algorithm: string): StepMetrics => ({ step: 0, algorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: false, rebuildCount: 0, skippedSteps: 0 });
+
 function App() {
   const [count, setCount] = useState(1200);
   const [clusterFactor, setClusterFactor] = useState(0);
+  const [acceleration, setAcceleration] = useState(DEFAULT_ACCELERATION);
   const [algorithm, setAlgorithm] = useState<Algorithm>('Brute Force');
   const [bufferEnabled, setBufferEnabled] = useState(false);
   const [K, setK] = useState(12);
-  const [cellSize, setCellSize] = useState(0.8);
   const [showGrid, setShowGrid] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [version, setVersion] = useState(0);
-  const [metrics, setMetrics] = useState<StepMetrics>({ step: 0, algorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: true, rebuildCount: 1, skippedSteps: 0 });
+  const [metrics, setMetrics] = useState<StepMetrics>(() => initialMetrics(algorithm));
+  // step() 以 ref 為準累加，避免同一次 render 內多次呼叫（interval + STEP 按鈕）讀到舊的 metrics 而少算
+  const metricsRef = useRef(metrics);
   const [history, setHistory] = useState<StepMetrics[]>([]);
   const [events, setEvents] = useState<string[]>([]);
-  const system = useRef(new ParticleSystem(count, bounds, clusterFactor));
+  const system = useRef(new ParticleSystem(count, bounds, clusterFactor, acceleration));
   const instrumentation = useRef(new Instrumentation());
   const controller = useRef(new VerletBufferController(0.15, K, dt));
-  const structure = useRef(algorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, cellSize) : algorithm === 'Octree' ? new OctreeStructure(bounds, 6, 8) : new BruteForceStructure());
+  const structure = useRef(algorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : algorithm === 'Octree' ? new OctreeStructure(bounds, 20, 100) : new BruteForceStructure());
   const highlighted = useRef(new Set<number>());
   const collisionIds = useRef(new Set<number>());
   const cachedPairs = useRef<[number, number][]>([]);
 
-  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds, clusterFactor); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, cellSize) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, 6, 8) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; setMetrics({ step: 0, algorithm: nextAlgorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: true, rebuildCount: 1, skippedSteps: 0 }); setHistory([]); setEvents([]); setVersion((value) => value + 1); };
+  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds, clusterFactor, acceleration); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, 6, 8) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; instrumentation.current = new Instrumentation(); metricsRef.current = initialMetrics(nextAlgorithm); setMetrics(metricsRef.current); setHistory([]); setEvents([]); setVersion((value) => value + 1); };
   const step = () => {
     const started = performance.now();
+    const prev = metricsRef.current;
     const current = system.current;
     const particles = current.particles;
-    current.step(dt);
     controller.current.K = K;
-    const needsRebuild = !bufferEnabled || !controller.current.isListValid(particles);
+    // 與 C++ Simulation::needsRebuild 相同：第 0 幀必定重建
+    const needsRebuild = prev.step === 0 || !bufferEnabled || !controller.current.isListValid(particles);
     let rebuilt = false;
     let broadPhaseMs = 0;
     if (needsRebuild) {
       // broad-phase
       const broadPhaseStarted = performance.now();
-      const event = controller.current.rebuild(structure.current, particles, metrics.step + 1);
+      const event = controller.current.rebuild(structure.current, particles, prev.step + 1);
       rebuilt = true;
       cachedPairs.current = structure.current.queryCandidatePairs(bufferEnabled);
       broadPhaseMs = performance.now() - broadPhaseStarted;
       // end broad-phase
-      if (metrics.step > 0)
+      if (prev.step > 0)
         setEvents((old) => [`Step ${event.step}: Rebuild triggered - Particle #${event.triggeredByParticleId} exceeded skin (dx=${event.displacement.toFixed(2)} > skin=${event.skinAtTrigger.toFixed(2)})`, ...old].slice(0, 12));
     }
     
@@ -129,14 +136,20 @@ function App() {
     const pairs = cachedPairs.current;
     const narrowPhaseStarted = performance.now();
     highlighted.current = new Set(pairs.flat());
-    const collisionPairs = pairs.filter(([a, b]) => { const p = particles[a]; const q = particles[b]; return Math.hypot(p.position.x - q.position.x, p.position.y - q.position.y, p.position.z - q.position.z) <= p.radius + q.radius; });
-    current.resolveCollisions(collisionPairs);
+    // 與 C++ narrow::colliding 相同：(r_a + r_b)² ≥ |pos_a − pos_b|²
+    const collisionPairs = pairs.filter(([a, b]) => { const p = particles[a]; const q = particles[b]; const r = p.radius + q.radius; return r * r - ((p.position.x - q.position.x) ** 2 + (p.position.y - q.position.y) ** 2 + (p.position.z - q.position.z) ** 2) >= 0; });
     collisionIds.current = new Set(collisionPairs.flat());
     const narrowPhaseMs = performance.now() - narrowPhaseStarted;
     // end narrow-phase
 
+    // 與 C++ Simulation::step 相同：排序碰撞配對 → 碰撞回應 → 積分（含牆面反彈）
+    collisionPairs.sort(([a1, b1], [a2, b2]) => a1 - a2 || b1 - b2);
+    current.resolveCollisions(collisionPairs);
+    current.step(dt);
+
     const structureMetrics = structure.current.getMetrics();
-    const next: StepMetrics = { step: metrics.step + 1, algorithm, elapsedMs: performance.now() - started, broadPhaseMs, narrowPhaseMs, distanceChecks: structureMetrics.distanceChecks, candidatePairs: pairs.length, collisions: collisionPairs.length, rebuilt, rebuildCount: metrics.rebuildCount + (rebuilt ? 1 : 0), skippedSteps: metrics.skippedSteps + (rebuilt ? 0 : 1) };
+    const next: StepMetrics = { step: prev.step + 1, algorithm, elapsedMs: performance.now() - started, broadPhaseMs, narrowPhaseMs, distanceChecks: structureMetrics.distanceChecks, candidatePairs: pairs.length, collisions: collisionPairs.length, rebuilt, rebuildCount: prev.rebuildCount + (rebuilt ? 1 : 0), skippedSteps: prev.skippedSteps + (rebuilt ? 0 : 1) };
+    metricsRef.current = next;
     instrumentation.current.recordStep(next); 
     setMetrics(next); 
     setHistory(instrumentation.current.getHistory()); 
@@ -157,7 +170,7 @@ function App() {
           <ambientLight intensity={1.5} />
           <pointLight position={[4, 8, 6]} intensity={30} color="#D9A441" />
           <SimulationView particles={system.current.particles} highlighted={highlighted.current} collisionIds={collisionIds.current} />
-          {algorithm === 'Uniform Grid' && showGrid && <BoundingGridLines bounds={bounds} cellSize={cellSize} color="#8FD9FF" />}
+          {algorithm === 'Uniform Grid' && showGrid && <BoundingGridLines bounds={bounds} cellSize={CELL_SIZE} color="#8FD9FF" />}
         </Canvas>
         <div className="viewport-label">
           <span className="live-dot" /> LIVE SIMULATION <b>{clusterFactor > 0 ? `spatial_cluster (${clusterFactor.toFixed(2)})` : 'uniform_cloud'}</b>
@@ -191,6 +204,12 @@ function App() {
           <input type="range" min="0" max="1" step="0.01" value={clusterFactor} onChange={(event) => { setClusterFactor(Number(event.target.value)); }} onMouseUp={reset} />
           <div className="range-endpoints"><span>0.00</span><span>1.00</span></div>
 
+          <label>
+            ACCELERATION <strong>±{acceleration.toFixed(2)}</strong>
+          </label>
+          <input type="range" min="0" max="2" step="0.05" value={acceleration} onChange={(event) => { setAcceleration(Number(event.target.value)); }} onMouseUp={reset} />
+          <div className="range-endpoints"><span>0.00</span><span>2.00</span></div>
+
           <label>SPATIAL STRUCTURE</label>
           <div className="segmented">
             {(['Brute Force', 'Uniform Grid', 'Octree'] as Algorithm[]).map((item) => (
@@ -202,11 +221,6 @@ function App() {
 
           {algorithm === 'Uniform Grid' && (
             <>
-              <label>
-                GRID CELL SIZE <strong>{cellSize.toFixed(2)}</strong>
-              </label>
-              <input type="range" min={2 * PARTICLE_RADIUS} max="3" step="0.05" value={cellSize} onChange={(event) => setCellSize(Number(event.target.value))} onMouseUp={reset} />
-              <div className="range-endpoints"><span>{(2 * PARTICLE_RADIUS).toFixed(2)}</span><span>3.00</span></div>
               <div className="toggle-row">
                 <span>SHOW GRID</span>
                 <button className={`switch ${showGrid ? 'on' : ''}`} onClick={() => setShowGrid(!showGrid)}>

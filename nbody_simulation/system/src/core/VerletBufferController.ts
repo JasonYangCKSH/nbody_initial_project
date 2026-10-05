@@ -10,8 +10,7 @@ export class VerletBufferController {
   // 與 C++ verlet::updateLocalSkin 一致：skin = K·|v|·Δt + ½·|a|·(K·Δt)²（論文式(1)）
   computeSkin(particle: ParticleData): number {
     const v = Math.hypot(particle.velocity.x, particle.velocity.y, particle.velocity.z);
-    const acc = particle.acceleration ?? { x: 0, y: 0, z: 0 };
-    const a = Math.hypot(acc.x, acc.y, acc.z);
+    const a = Math.hypot(particle.acceleration.x, particle.acceleration.y, particle.acceleration.z);
     const horizon = this.K * this.dt;
     return v * horizon + 0.5 * a * horizon * horizon;
   }
