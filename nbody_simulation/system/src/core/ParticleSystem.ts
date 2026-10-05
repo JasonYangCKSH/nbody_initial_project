@@ -1,16 +1,14 @@
 import { add, scale, type ParticleData, type Vec3 } from './types';
+import { spatialCluster } from './scenario';
 
 export const PARTICLE_RADIUS = 0.075;
 
 export class ParticleSystem {
   readonly particles: ParticleData[];
-  constructor(count: number, readonly bounds: Vec3, seed = 17) {
-    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-    this.particles = Array.from({ length: count }, (_, id) => {
-      const position = { x: random() * bounds.x, y: random() * bounds.y, z: random() * bounds.z };
-      const velocity = { x: (random() - 0.5) * 1.5, y: (random() - 0.5) * 1.5, z: (random() - 0.5) * 1.5 };
-      const acceleration = { x: (random() - 0.5) * 0.5, y: (random() - 0.5) * 0.5, z: (random() - 0.5) * 0.5 };
-      return { id, position, velocity, acceleration, radius: PARTICLE_RADIUS, positionAtLastBroadPhase: { ...position }, skin: 0 };
+  constructor(count: number, readonly bounds: Vec3, clusterFactor = 0, seed = 17) {
+    this.particles = spatialCluster({
+      count, bounds, radius: PARTICLE_RADIUS, speed: 0.75, acc: 0.25, clusterFactor,
+      hotspotSpread: 0.03 * bounds.x, hotspotCount: 1, seed,
     });
   }
   step(dt: number): void {

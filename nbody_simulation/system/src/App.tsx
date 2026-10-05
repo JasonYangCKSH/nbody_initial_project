@@ -84,6 +84,7 @@ function PhaseChart({ history, metricKey, color, label, markRebuilds }: { histor
 
 function App() {
   const [count, setCount] = useState(1200);
+  const [clusterFactor, setClusterFactor] = useState(0);
   const [algorithm, setAlgorithm] = useState<Algorithm>('Brute Force');
   const [bufferEnabled, setBufferEnabled] = useState(false);
   const [K, setK] = useState(12);
@@ -94,7 +95,7 @@ function App() {
   const [metrics, setMetrics] = useState<StepMetrics>({ step: 0, algorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: true, rebuildCount: 1, skippedSteps: 0 });
   const [history, setHistory] = useState<StepMetrics[]>([]);
   const [events, setEvents] = useState<string[]>([]);
-  const system = useRef(new ParticleSystem(count, bounds));
+  const system = useRef(new ParticleSystem(count, bounds, clusterFactor));
   const instrumentation = useRef(new Instrumentation());
   const controller = useRef(new VerletBufferController(0.15, K, dt));
   const structure = useRef(algorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, cellSize) : algorithm === 'Octree' ? new OctreeStructure(bounds, 6, 8) : new BruteForceStructure());
@@ -102,7 +103,7 @@ function App() {
   const collisionIds = useRef(new Set<number>());
   const cachedPairs = useRef<[number, number][]>([]);
 
-  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, cellSize) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, 6, 8) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; setMetrics({ step: 0, algorithm: nextAlgorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: true, rebuildCount: 1, skippedSteps: 0 }); setHistory([]); setEvents([]); setVersion((value) => value + 1); };
+  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds, clusterFactor); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, cellSize) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, 6, 8) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; setMetrics({ step: 0, algorithm: nextAlgorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: true, rebuildCount: 1, skippedSteps: 0 }); setHistory([]); setEvents([]); setVersion((value) => value + 1); };
   const step = () => {
     const started = performance.now();
     const current = system.current;
@@ -159,7 +160,7 @@ function App() {
           {algorithm === 'Uniform Grid' && showGrid && <BoundingGridLines bounds={bounds} cellSize={cellSize} color="#8FD9FF" />}
         </Canvas>
         <div className="viewport-label">
-          <span className="live-dot" /> LIVE SIMULATION <b>uniform_cloud</b>
+          <span className="live-dot" /> LIVE SIMULATION <b>{clusterFactor > 0 ? `spatial_cluster (${clusterFactor.toFixed(2)})` : 'uniform_cloud'}</b>
         </div>
       </section>
 
@@ -183,6 +184,12 @@ function App() {
           </label>
           <input type="range" min="1000" max="50000" step="100" value={count} onChange={(event) => { setCount(Number(event.target.value)); }} onMouseUp={reset} />
           <div className="range-endpoints"><span>100</span><span>10,000</span></div>
+
+          <label>
+            CLUSTER FACTOR <strong>{clusterFactor.toFixed(2)}</strong>
+          </label>
+          <input type="range" min="0" max="1" step="0.01" value={clusterFactor} onChange={(event) => { setClusterFactor(Number(event.target.value)); }} onMouseUp={reset} />
+          <div className="range-endpoints"><span>0.00</span><span>1.00</span></div>
 
           <label>SPATIAL STRUCTURE</label>
           <div className="segmented">
