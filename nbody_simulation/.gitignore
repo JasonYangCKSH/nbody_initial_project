@@ -1,0 +1,24 @@
+# ===== Node / 前端（nbody_simulation/system） =====
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+ 
+# ===== C++ / CMake 編譯產物（nbody_simulation/collision 等） =====
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.o
+*.obj
+*.exe
+*.out
+a.out
+ 
+# ===== 編輯器與系統檔 =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
