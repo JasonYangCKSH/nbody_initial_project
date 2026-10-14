@@ -16,3 +16,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_executable(bench bench/bench.cpp include/simulation.cpp)
 add_executable(test_correctness test/test_correctness.cpp include/simulation.cpp)
 
+find_package(OpenMP REQUIRED)
+target_link_libraries(bench            PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(test_correctness PRIVATE OpenMP::OpenMP_CXX)
+
+

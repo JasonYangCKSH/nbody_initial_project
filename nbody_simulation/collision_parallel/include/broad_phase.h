@@ -11,7 +11,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "particle.h"
-
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace broad {
 
@@ -75,7 +77,7 @@ public:
         PairList pairs;
         for (const auto& [k, cellA] : cells) {
             glm::ivec3 base = decode(k);
-
+            
             for (size_t a = 0; a < cellA.size(); ++a) {
                 for (size_t b = a + 1; b < cellA.size(); ++b) {
                     int ia = cellA[a], ib = cellA[b];
