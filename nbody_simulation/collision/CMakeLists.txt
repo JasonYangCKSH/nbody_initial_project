@@ -14,5 +14,5 @@ add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(bench bench/bench.cpp include/simulation.cpp)
-
 add_executable(test_correctness test/test_correctness.cpp include/simulation.cpp)
+
