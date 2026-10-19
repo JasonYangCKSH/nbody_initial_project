@@ -16,10 +16,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 # (CSV 檔名, 子圖標題)
 PANELS = [
-    ("benchmark.csv", "(a) 均勻 – 低速差"),
-    ("benchmark3.csv", "(b) 均勻 – 高速差"),
-    ("benchmark2.csv", "(c) 群聚 – 低速差"),
-    ("benchmark4.csv", "(d) 群聚 – 高速差"),
+    ("benchmark.csv", "場景一"),
+    ("benchmark2.csv", "場景二"),
+    ("benchmark3.csv", "場景三"),
+    ("benchmark4.csv", "場景四"),
 ]
 
 # (structure_mode, 圖例, 顏色, 線型)
@@ -83,7 +83,7 @@ def main():
         ax.set_xlabel("K")
 
     fig.tight_layout()
-    fig.savefig(args.output, dpi=200)
+    fig.savefig(args.output, dpi=1000)
     print(f"saved: {args.output}")
 
 

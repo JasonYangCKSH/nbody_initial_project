@@ -22,7 +22,7 @@ struct BenchmarkConfig {
     float worldSize = 60.0f;
     float particleRadius = 1.0f;
 
-    float speed = 1.5f;
+    float speed = 1.0f;
     float acc = 1.0f;
     //速度異質性
     float fastRatio = 0.0f;
