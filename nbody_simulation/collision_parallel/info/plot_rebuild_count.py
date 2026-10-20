@@ -16,10 +16,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 # (CSV 檔名, 子圖標題)
 PANELS = [
-    ("benchmark.csv", "場景一"),
-    ("benchmark2.csv", "場景二"),
-    ("benchmark3.csv", "場景三"),
-    ("benchmark4.csv", "場景四"),
+    ("benchmark.csv", "場景一(均勻/低速差)"),
+    ("benchmark2.csv", "場景二(群聚/低速差)"),
+    ("benchmark3.csv", "場景三(均勻/高速差)"),
+    ("benchmark4.csv", "場景四(群聚/高速差)"),
 ]
 
 # (structure_mode, 圖例, 顏色, 線型)
