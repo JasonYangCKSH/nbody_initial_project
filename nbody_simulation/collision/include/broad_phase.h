@@ -113,9 +113,7 @@ public:
         return pairs;
     }
 
-    PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        return CollectPairs(BuildGrid(particles), particles, withSkin);
-    }
+
 };
 
 
@@ -282,9 +280,7 @@ public:
         return pairs;
     }
 
-    PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        return CollectPairs(BuildTree(particles), particles, withSkin);
-    }
+
 };
 
 } // namespace broad
