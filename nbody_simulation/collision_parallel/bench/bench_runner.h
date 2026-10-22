@@ -20,7 +20,7 @@ struct BenchmarkConfig {
     // scenario / 物理參數
     int particleCount = 10000;
     float worldSize = 60.0f;
-    float particleRadius = 1.0f;
+    float particleRadius = 0.1f;
 
     float speed = 1.5f;
     float acc = 1.0f;

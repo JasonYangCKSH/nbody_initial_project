@@ -72,8 +72,8 @@ describe('collision core', () => {
   it('resolves collisions with mass-weighted elastic impulse (same as C++ resolveCollisions)', () => {
     const system = new ParticleSystem(2, { x: 10, y: 10, z: 10 }, 0, 0);
     const [a, b] = system.particles;
-    Object.assign(a, { position: { x: 5, y: 5, z: 5 }, velocity: { x: 1, y: 0, z: 0 }, mass: 1 });
-    Object.assign(b, { position: { x: 5.1, y: 5, z: 5 }, velocity: { x: -1, y: 0, z: 0 }, mass: 3 });
+    Object.assign(a, { position: { x: 5, y: 5, z: 5 }, velocity: { x: 1, y: 0, z: 0 }, mass: 1, radius: 0.075 });
+    Object.assign(b, { position: { x: 5.1, y: 5, z: 5 }, velocity: { x: -1, y: 0, z: 0 }, mass: 3, radius: 0.075 });
     system.resolveCollisions([[0, 1]]);
     // J = -2·2 / (1 + 1/3) = -3 → a.v = 1 - 3 = -2，b.v = -1 + 3/3 = 0（動量守恆：1·1 + 3·(-1) = 1·(-2) + 3·0）
     expect(a.velocity.x).toBeCloseTo(-2); expect(b.velocity.x).toBeCloseTo(0);

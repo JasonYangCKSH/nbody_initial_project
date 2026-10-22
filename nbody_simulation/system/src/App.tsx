@@ -7,15 +7,19 @@ import { BruteForceStructure } from './core/spatial/BruteForceStructure';
 import { OctreeStructure } from './core/spatial/OctreeStructure';
 import { UniformGridStructure } from './core/spatial/UniformGridStructure';
 import { Instrumentation } from './core/metrics/Instrumentation';
-import { DEFAULT_ACCELERATION, ParticleSystem } from './core/ParticleSystem';
+import { DEFAULT_ACCELERATION, PARTICLE_RADIUS, ParticleSystem } from './core/ParticleSystem';
 import { VerletBufferController } from './core/VerletBufferController';
 import type { ParticleData, StepMetrics, Vec3 } from './core/types';
 
 type Algorithm = 'Brute Force' | 'Uniform Grid' | 'Octree';
-const bounds = { x:25, y: 25, z: 25 };
+// 以下參數與 C++ collision/bench/bench_runner.h 的 BenchmarkConfig 一致
+const bounds = { x: 60, y: 60, z: 60 };
 const dt = 1 / 60;
-// 與 C++ bench 一致：cellSize = cellSizeRatio(2) × 2 × PARTICLE_RADIUS(0.075)
-const CELL_SIZE = 0.3;
+// cellSize = cellSizeRatio(2) × 2 × PARTICLE_RADIUS
+const CELL_SIZE = 2 * 2 * PARTICLE_RADIUS;
+const OCTREE_MAX_DEPTH = 20;
+// leafCapacity = (int)(leafCapacityRatio(0.01) × particleCount)
+const octreeLeafCapacity = (count: number) => Math.trunc(0.01 * count);
 
 // Wireframe lattice matching UniformGridStructure's cellOf() partition
 // (cell boundaries at multiples of cellSize, clipped to the bounding box),
@@ -58,7 +62,7 @@ function SimulationView({ particles, highlighted, collisionIds }: { particles: P
   });
   return <>
     <instancedMesh ref={mesh} args={[undefined, undefined, particles.length]}>
-      <sphereGeometry args={[0.075, 8, 6]} />
+      <sphereGeometry args={[PARTICLE_RADIUS, 8, 6]} />
       <meshStandardMaterial roughness={0.72} />
     </instancedMesh>
   </>;
@@ -87,7 +91,7 @@ function PhaseChart({ history, metricKey, color, label, markRebuilds }: { histor
 const initialMetrics = (algorithm: string): StepMetrics => ({ step: 0, algorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: false, rebuildCount: 0, skippedSteps: 0 });
 
 function App() {
-  const [count, setCount] = useState(1200);
+  const [count, setCount] = useState(10000);
   const [clusterFactor, setClusterFactor] = useState(0);
   const [acceleration, setAcceleration] = useState(DEFAULT_ACCELERATION);
   const [algorithm, setAlgorithm] = useState<Algorithm>('Brute Force');
@@ -104,43 +108,56 @@ function App() {
   const system = useRef(new ParticleSystem(count, bounds, clusterFactor, acceleration));
   const instrumentation = useRef(new Instrumentation());
   const controller = useRef(new VerletBufferController(0.15, K, dt));
-  const structure = useRef(algorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : algorithm === 'Octree' ? new OctreeStructure(bounds, 20, 100) : new BruteForceStructure());
+  const structure = useRef(algorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : algorithm === 'Octree' ? new OctreeStructure(bounds, OCTREE_MAX_DEPTH, octreeLeafCapacity(count)) : new BruteForceStructure());
   const highlighted = useRef(new Set<number>());
   const collisionIds = useRef(new Set<number>());
   const cachedPairs = useRef<[number, number][]>([]);
 
-  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds, clusterFactor, acceleration); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, 6, 8) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; instrumentation.current = new Instrumentation(); metricsRef.current = initialMetrics(nextAlgorithm); setMetrics(metricsRef.current); setHistory([]); setEvents([]); setVersion((value) => value + 1); };
+  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds, clusterFactor, acceleration); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, OCTREE_MAX_DEPTH, octreeLeafCapacity(count)) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; instrumentation.current = new Instrumentation(); metricsRef.current = initialMetrics(nextAlgorithm); setMetrics(metricsRef.current); setHistory([]); setEvents([]); setVersion((value) => value + 1); };
   const step = () => {
     const started = performance.now();
     const prev = metricsRef.current;
     const current = system.current;
     const particles = current.particles;
     controller.current.K = K;
-    // 與 C++ Simulation::needsRebuild 相同：第 0 幀必定重建
-    const needsRebuild = prev.step === 0 || !bufferEnabled || !controller.current.isListValid(particles);
+    const isBruteForce = structure.current instanceof BruteForceStructure;
     let rebuilt = false;
     let broadPhaseMs = 0;
-    if (needsRebuild) {
-      // broad-phase
-      const broadPhaseStarted = performance.now();
-      const event = controller.current.rebuild(structure.current, particles, prev.step + 1);
-      rebuilt = true;
-      cachedPairs.current = structure.current.queryCandidatePairs(bufferEnabled);
-      broadPhaseMs = performance.now() - broadPhaseStarted;
-      // end broad-phase
-      if (prev.step > 0)
-        setEvents((old) => [`Step ${event.step}: Rebuild triggered - Particle #${event.triggeredByParticleId} exceeded skin (dx=${event.displacement.toFixed(2)} > skin=${event.skinAtTrigger.toFixed(2)})`, ...old].slice(0, 12));
+    let narrowPhaseMs = 0;
+    let pairs: [number, number][];
+    let collisionPairs: [number, number][];
+    if (isBruteForce) {
+      // 與 C++ Method::BruteForce 相同：每幀直接全配對求碰撞，不用 skin、不快取、不計 rebuild，耗時計入 narrow-phase
+      const narrowPhaseStarted = performance.now();
+      structure.current.build(particles);
+      collisionPairs = structure.current.queryCandidatePairs(false);
+      pairs = collisionPairs;
+      narrowPhaseMs = performance.now() - narrowPhaseStarted;
+    } else {
+      // 與 C++ Simulation::needsRebuild 相同：第 0 幀必定重建
+      const needsRebuild = prev.step === 0 || !bufferEnabled || !controller.current.isListValid(particles);
+      if (needsRebuild) {
+        // broad-phase
+        const broadPhaseStarted = performance.now();
+        const event = controller.current.rebuild(structure.current, particles, prev.step + 1);
+        rebuilt = true;
+        cachedPairs.current = structure.current.queryCandidatePairs(bufferEnabled);
+        broadPhaseMs = performance.now() - broadPhaseStarted;
+        // end broad-phase
+        if (prev.step > 0)
+          setEvents((old) => [`Step ${event.step}: Rebuild triggered - Particle #${event.triggeredByParticleId} exceeded skin (dx=${event.displacement.toFixed(2)} > skin=${event.skinAtTrigger.toFixed(2)})`, ...old].slice(0, 12));
+      }
+
+      // narrow-phase
+      pairs = cachedPairs.current;
+      const narrowPhaseStarted = performance.now();
+      // 與 C++ narrow::colliding 相同：(r_a + r_b)² ≥ |pos_a − pos_b|²
+      collisionPairs = pairs.filter(([a, b]) => { const p = particles[a]; const q = particles[b]; const r = p.radius + q.radius; return r * r - ((p.position.x - q.position.x) ** 2 + (p.position.y - q.position.y) ** 2 + (p.position.z - q.position.z) ** 2) >= 0; });
+      narrowPhaseMs = performance.now() - narrowPhaseStarted;
+      // end narrow-phase
     }
-    
-    // narrow-phase
-    const pairs = cachedPairs.current;
-    const narrowPhaseStarted = performance.now();
     highlighted.current = new Set(pairs.flat());
-    // 與 C++ narrow::colliding 相同：(r_a + r_b)² ≥ |pos_a − pos_b|²
-    const collisionPairs = pairs.filter(([a, b]) => { const p = particles[a]; const q = particles[b]; const r = p.radius + q.radius; return r * r - ((p.position.x - q.position.x) ** 2 + (p.position.y - q.position.y) ** 2 + (p.position.z - q.position.z) ** 2) >= 0; });
     collisionIds.current = new Set(collisionPairs.flat());
-    const narrowPhaseMs = performance.now() - narrowPhaseStarted;
-    // end narrow-phase
 
     // 與 C++ Simulation::step 相同：排序碰撞配對 → 碰撞回應 → 積分（含牆面反彈）
     collisionPairs.sort(([a1, b1], [a2, b2]) => a1 - a2 || b1 - b2);
@@ -148,7 +165,7 @@ function App() {
     current.step(dt);
 
     const structureMetrics = structure.current.getMetrics();
-    const next: StepMetrics = { step: prev.step + 1, algorithm, elapsedMs: performance.now() - started, broadPhaseMs, narrowPhaseMs, distanceChecks: structureMetrics.distanceChecks, candidatePairs: pairs.length, collisions: collisionPairs.length, rebuilt, rebuildCount: prev.rebuildCount + (rebuilt ? 1 : 0), skippedSteps: prev.skippedSteps + (rebuilt ? 0 : 1) };
+    const next: StepMetrics = { step: prev.step + 1, algorithm, elapsedMs: performance.now() - started, broadPhaseMs, narrowPhaseMs, distanceChecks: structureMetrics.distanceChecks, candidatePairs: pairs.length, collisions: collisionPairs.length, rebuilt, rebuildCount: prev.rebuildCount + (rebuilt ? 1 : 0), skippedSteps: prev.skippedSteps + (rebuilt || isBruteForce ? 0 : 1) };
     metricsRef.current = next;
     instrumentation.current.recordStep(next); 
     setMetrics(next); 
@@ -164,11 +181,11 @@ function App() {
     <main className="app-shell">
       <section className="viewport">
         <Canvas dpr={[1, 1.5]}>
-          <PerspectiveCamera makeDefault position={[8, 6, 11]} fov={42} />
-          <OrbitControls enableDamping dampingFactor={0.1} minDistance={3} maxDistance={60} makeDefault />
+          <PerspectiveCamera makeDefault position={[48, 36, 66]} fov={42} />
+          <OrbitControls enableDamping dampingFactor={0.1} minDistance={10} maxDistance={240} makeDefault />
           <color attach="background" args={['#0D1420']} />
           <ambientLight intensity={1.5} />
-          <pointLight position={[4, 8, 6]} intensity={30} color="#D9A441" />
+          <pointLight position={[24, 48, 36]} intensity={1000} color="#D9A441" />
           <SimulationView particles={system.current.particles} highlighted={highlighted.current} collisionIds={collisionIds.current} />
           {algorithm === 'Uniform Grid' && showGrid && <BoundingGridLines bounds={bounds} cellSize={CELL_SIZE} color="#8FD9FF" />}
         </Canvas>
@@ -240,7 +257,7 @@ function App() {
           <label className={bufferEnabled ? '' : 'muted'}>
             K SKIN COEFFICIENT <strong>{K}</strong>
           </label>
-          <input disabled={!bufferEnabled} type="range" min="0" max="200" value={K} onChange={(event) => setK(Number(event.target.value))} />
+          <input disabled={!bufferEnabled} type="range" min="0" max="1000" value={K} onChange={(event) => setK(Number(event.target.value))} />
 
           <div className="action-row">
             <button onClick={() => setPlaying(!playing)} title={playing ? 'Pause' : 'Play'}>

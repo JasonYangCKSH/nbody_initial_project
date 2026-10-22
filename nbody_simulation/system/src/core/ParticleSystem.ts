@@ -1,16 +1,18 @@
 import { add, scale, type ParticleData, type Vec3 } from './types';
 import { spatialCluster } from './scenario';
 
-export const PARTICLE_RADIUS = 0.075;
+// 以下預設值與 C++ collision/bench/bench_runner.h 的 BenchmarkConfig 一致
+export const PARTICLE_RADIUS = 0.1;
+export const DEFAULT_SPEED = 1.0;
 // 每軸加速度分量取自 [-acc, acc]，對應 C++ scenario::spatialCluster 的 acc 參數
-export const DEFAULT_ACCELERATION = 0.25;
+export const DEFAULT_ACCELERATION = 1.0;
 
 export class ParticleSystem {
   readonly particles: ParticleData[];
-  constructor(count: number, readonly bounds: Vec3, clusterFactor = 0, acc = DEFAULT_ACCELERATION, seed = 17) {
+  constructor(count: number, readonly bounds: Vec3, clusterFactor = 0, acc = DEFAULT_ACCELERATION, seed = 100) {
     this.particles = spatialCluster({
-      count, bounds, radius: PARTICLE_RADIUS, speed: 0.75, acc, clusterFactor,
-      hotspotSpread: 0.03 * bounds.x, hotspotCount: 1, seed,
+      count, bounds, radius: PARTICLE_RADIUS, speed: DEFAULT_SPEED, acc, clusterFactor,
+      hotspotSpread: 0.03 * bounds.x, hotspotCount: 1, fastRatio: 0, fastMult: 25, seed,
     });
   }
   // 與 C++ Simulation::integrate 相同：先更新速度、再更新位置，最後做牆面反彈

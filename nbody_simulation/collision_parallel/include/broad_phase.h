@@ -72,12 +72,13 @@ public:
     }
 
     PairList CollectPairs(const Grid& grid, const std::vector<Particle>& particles, bool withSkin) const {
+ 
         const auto& cells = grid.cells_;
 
         PairList pairs;
         for (const auto& [k, cellA] : cells) {
             glm::ivec3 base = decode(k);
-            
+
             for (size_t a = 0; a < cellA.size(); ++a) {
                 for (size_t b = a + 1; b < cellA.size(); ++b) {
                     int ia = cellA[a], ib = cellA[b];
@@ -115,9 +116,7 @@ public:
         return pairs;
     }
 
-    PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        return CollectPairs(BuildGrid(particles), particles, withSkin);
-    }
+
 };
 
 
@@ -284,9 +283,7 @@ public:
         return pairs;
     }
 
-    PairList Build(const std::vector<Particle>& particles, bool withSkin) const {
-        return CollectPairs(BuildTree(particles), particles, withSkin);
-    }
+
 };
 
 } // namespace broad

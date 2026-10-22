@@ -111,21 +111,9 @@ export class OctreeStructure implements SpatialStructure {
       return;
     }
 
+    // split() 一定建好 8 個子節點，內部節點的 child 不會是 null（同 C++ Octree::insert）
     const child = childIndex(node.center, this.particles[index].position);
-    const next = node.children[child];
-    if (!next) {
-      const childNode: Node = {
-        center: childCenter(node.center, node.halfExtent, child),
-        halfExtent: node.halfExtent * 0.5,
-        indices: [],
-        children: Array.from({ length: 8 }, () => null),
-      };
-      node.children[child] = childNode;
-      childNode.indices.push(index);
-      return;
-    }
-
-    this.insert(next, index, depth + 1);
+    this.insert(node.children[child]!, index, depth + 1);
   }
 
   private split(node: Node, depth: number): void {
@@ -143,8 +131,9 @@ export class OctreeStructure implements SpatialStructure {
       node.children[childIndexValue] = childNode;
     }
 
+    // node 此時已是內部節點，insert 會自己往下走一層並 +1，這裡傳原本的 depth（同 C++ Octree::split）
     for (const idx of existing) {
-      this.insert(node, idx, depth + 1);
+      this.insert(node, idx, depth);
     }
   }
 
