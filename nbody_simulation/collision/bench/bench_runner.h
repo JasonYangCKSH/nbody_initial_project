@@ -25,7 +25,7 @@ struct BenchmarkConfig {
     float speed = 1.0f;
     float acc = 1.0f;
     //速度異質性
-    float fastRatio = 0.0f;
+    float fastRatio = 0.5f;
     float fastMult = 25.0f;
     
     float dt = 1.0f / 60.0f;
