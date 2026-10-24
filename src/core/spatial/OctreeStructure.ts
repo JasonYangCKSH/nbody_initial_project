@@ -1,14 +1,30 @@
+// =============================================================================
+// 八元樹（Octree）：會依粒子密度自動調整格子大小的空間結構
+// -----------------------------------------------------------------------------
+// 均勻網格的問題：格子大小固定。粒子擠在一起的地方，一格裡塞了上百顆，又變回暴力法。
+// 八元樹的做法：
+//   - 從一個包住整個空間的大方塊（根節點，第 0 層）開始
+//   - 某個方塊裡的粒子超過容量 leafCapacity，就把它切成 8 個一半大小的小方塊
+//     （3D 每個軸各切一刀：2 × 2 × 2 = 8，所以叫「八」元樹）
+//   - 小方塊還是太擠就繼續切，直到粒子夠少，或到達最大深度 maxDepth
+// 結果：粒子密集處切得很細（深層、小方塊），稀疏處保持大方塊（淺層）。
+// 最後沒有再切的方塊叫「葉節點」，粒子都放在葉節點裡。
+// =============================================================================
 import { distance, type DebugGeometry, type ParticleData, type SpatialStructure } from '../types';
 
 type Vec3 = { x: number; y: number; z: number };
 
+// 樹上的一個節點（一個方塊）
 type Node = {
-  center: Vec3;
-  halfExtent: number;
-  indices: number[];
-  children: Array<Node | null>;
+  center: Vec3;                 // 方塊中心
+  halfExtent: number;           // 半邊長（中心到邊的距離）；每往下一層減半
+  indices: number[];            // 方塊裡的粒子編號（只有葉節點會有）
+  children: Array<Node | null>; // 8 個子方塊；全部是 null 代表這是葉節點
 };
 
+// 判斷一個位置落在 8 個子方塊中的哪一個（0～7）。
+// 用 3 個位元表示：x 在中心右邊 → 第 1 位元為 1，y 在上面 → 第 2 位元，z 在前面 → 第 3 位元。
+// 例如 x 右、y 下、z 前 → 1 + 0 + 4 = 5。「|=」是位元 OR，把那一位設成 1。
 const childIndex = (center: Vec3, pos: Vec3): number => {
   let idx = 0;
   if (pos.x >= center.x) idx |= 1;
@@ -17,6 +33,7 @@ const childIndex = (center: Vec3, pos: Vec3): number => {
   return idx;
 };
 
+// 算第 childIdx 個子方塊的中心：從父方塊中心往各軸正或負方向移動「四分之一邊長」（= 父半邊長的一半）
 const childCenter = (parentCenter: Vec3, parentHalfExtent: number, childIdx: number): Vec3 => {
   const quarter = parentHalfExtent * 0.5;
   return {
@@ -32,12 +49,14 @@ export class OctreeStructure implements SpatialStructure {
   private distanceChecks = 0;
   private candidatePairs = 0;
 
+  // maxDepth：最多切幾層；leafCapacity：一個葉節點最多放幾顆粒子，超過就切開
   constructor(
     private readonly bounds: Vec3,
     private readonly maxDepth = 6,
     private readonly leafCapacity = 8,
   ) {}
 
+  // 建樹：先做一個包住整個模擬空間的根方塊，再把粒子一顆一顆插進去
   build(particles: ParticleData[]): void {
     this.particles = particles;
     const extent = Math.max(this.bounds.x, this.bounds.y, this.bounds.z);
@@ -58,6 +77,10 @@ export class OctreeStructure implements SpatialStructure {
     this.distanceChecks = 0;
     if (!this.root) return pairs;
 
+    // 找候選配對的方式：
+    //   (1) 同一個葉節點內的粒子兩兩比較
+    //   (2) 兩個葉節點「靠得夠近」（方塊外擴 margin 後有重疊），就把兩邊的粒子互相比較
+    // margin = 2 × 粒子最遠能碰到的距離（半徑 + skin），保證相鄰方塊裡可能碰撞的粒子不會漏掉
     const leaves = this.collectLeaves(this.root);
     const maxReach = this.particles.reduce((max, particle) => {
       const skin = withSkin ? particle.skin : 0;
@@ -124,7 +147,9 @@ export class OctreeStructure implements SpatialStructure {
   // 每往下一層半邊長減半，所以層級 = log2(根半邊長 / 葉半邊長)
   private depthOf(root: Node, leaf: Node): number { return Math.round(Math.log2(root.halfExtent / leaf.halfExtent)); }
 
-  // Must be called after build(): each particle's cap comes from the half-extent of the leaf it landed in.
+  // skin 上限（論文式(4)）：skin_max = max(0, l − r)，l 是粒子所在葉節點的半邊長。
+  // 密集處葉節點小 → skin 上限小；稀疏處葉節點大 → 上限也放寬。必須在 build() 之後呼叫。
+  // 注意：葉節點的半邊長若小於粒子半徑，上限就是 0，這顆粒子只要一動就會觸發重建。
   getSkinCaps(particles: ParticleData[]): number[] {
     const caps = new Array(particles.length).fill(0);
     if (!this.root) return caps;
@@ -134,7 +159,9 @@ export class OctreeStructure implements SpatialStructure {
     return caps;
   }
 
+  // 把第 index 顆粒子插進 node 這個方塊（遞迴：函式會呼叫自己往下一層找）
   private insert(node: Node, index: number, depth: number): void {
+    // 情況 A：node 是葉節點 → 直接放進來；放完如果超過容量、又還沒到最大深度，就切開
     if (node.children.every((child) => child === null)) {
       node.indices.push(index);
       if (node.indices.length > this.leafCapacity && depth < this.maxDepth) {
@@ -143,6 +170,7 @@ export class OctreeStructure implements SpatialStructure {
       return;
     }
 
+    // 情況 B：node 已經被切開過 → 找出粒子屬於哪個子方塊，交給那個子方塊處理
     const child = childIndex(node.center, this.particles[index].position);
     const next = node.children[child];
     if (!next) {
@@ -157,9 +185,10 @@ export class OctreeStructure implements SpatialStructure {
       return;
     }
 
-    this.insert(next, index, depth + 1);
+    this.insert(next, index, depth + 1); // 往下一層繼續插
   }
 
+  // 把一個太擠的葉節點切成 8 個子方塊，再把原本的粒子重新插進去（它們會各自落到某個子方塊）
   private split(node: Node, depth: number): void {
     const existing = [...node.indices];
     node.indices = [];
@@ -180,6 +209,7 @@ export class OctreeStructure implements SpatialStructure {
     }
   }
 
+  // 走訪整棵樹，收集所有「有粒子的葉節點」
   private collectLeaves(node: Node): Node[] {
     if (node.children.every((child) => child === null)) {
       return node.indices.length > 0 ? [node] : [];
@@ -200,6 +230,7 @@ export class OctreeStructure implements SpatialStructure {
     }
   }
 
+  // 兩個方塊各自往外擴 margin 之後，在 x、y、z 三個軸上是否都有重疊（AABB 重疊判斷）
   private boxesOverlap(a: Node, b: Node, margin: number): boolean {
     const dx = Math.abs(a.center.x - b.center.x);
     const dy = Math.abs(a.center.y - b.center.y);
@@ -208,6 +239,7 @@ export class OctreeStructure implements SpatialStructure {
     return dx <= reach && dy <= reach && dz <= reach;
   }
 
+  // 比一對粒子的距離，夠近就加入候選名單（判斷方式和暴力法相同）
   private tryAdd(first: number, second: number, withSkin: boolean, pairs: [number, number][]): void {
     if (first === second) return;
     const a = this.particles[first];

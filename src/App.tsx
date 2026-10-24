@@ -518,6 +518,15 @@ function App() {
     if (scene === 'explosion') setShellCount(next); else setHotspotCount(next);
     reset(algorithm, { clusters: next });
   };
+  // ===========================================================================
+  // step()：跑「一步」模擬，對應論文 3.5 節與圖 2 的流程
+  //   1. 判斷候選列表是否還有效（Verlet 判定）
+  //   2. 無效 → 重建：建空間結構、更新 skin、拍快照、找候選配對（broad-phase）
+  //      有效 → 跳過 broad-phase，沿用上次的候選配對
+  //   3. narrow-phase：逐一確認候選配對是不是真的碰撞
+  //   4. 碰撞回應（彈開）→ 更新速度與位置（積分）
+  //   5. 記錄這一步的數據給畫面
+  // ===========================================================================
   const step = () => {
     const started = performance.now();
     stepTimes.current = [...stepTimes.current.filter((time) => started - time < 2000), started];
@@ -525,12 +534,13 @@ function App() {
     const current = system.current;
     const particles = current.particles;
     controller.current.K = K;
-    // 與 C++ Simulation::needsRebuild 相同：第 0 幀必定重建
+    // 1. 要不要重建？三種情況要重建：第一步（還沒有任何列表）、沒開 Verlet 緩衝（每步都重建）、
+    //    或有粒子的累積位移超過自己的 skin。與 C++ Simulation::needsRebuild 相同：第 0 幀必定重建
     const needsRebuild = prev.step === 0 || !bufferEnabled || !controller.current.isListValid(particles);
     let rebuilt = false;
     let broadPhaseMs = 0;
     if (needsRebuild) {
-      // broad-phase
+      // 2. broad-phase：重建空間結構與 skin，再找出候選配對，存在 cachedPairs 裡給之後的步數沿用
       const broadPhaseStarted = performance.now();
       const event = controller.current.rebuild(structure.current, particles, prev.step + 1);
       rebuilt = true;
@@ -544,21 +554,24 @@ function App() {
       }
     }
     
-    // narrow-phase
+    // 3. narrow-phase：候選配對只是「可能」碰撞，這裡用真正的半徑和確認是否碰撞
     const pairs = cachedPairs.current;
     const narrowPhaseStarted = performance.now();
     highlighted.current = new Set(pairs.flat());
     // 與 C++ narrow::colliding 相同：(r_a + r_b)² ≥ |pos_a − pos_b|²
+    // 比較「平方」而不開根號，結果一樣但比較快
     const collisionPairs = pairs.filter(([a, b]) => { const p = particles[a]; const q = particles[b]; const r = p.radius + q.radius; return r * r - ((p.position.x - q.position.x) ** 2 + (p.position.y - q.position.y) ** 2 + (p.position.z - q.position.z) ** 2) >= 0; });
     collisionIds.current = new Set(collisionPairs.flat());
     const narrowPhaseMs = performance.now() - narrowPhaseStarted;
     // end narrow-phase
 
-    // 與 C++ Simulation::step 相同：排序碰撞配對 → 碰撞回應 → 積分（含牆面反彈）
+    // 4. 與 C++ Simulation::step 相同：排序碰撞配對 → 碰撞回應 → 積分（含牆面反彈）
+    //    排序是為了讓每次處理順序固定，結果才能和 C++ 版本一致
     collisionPairs.sort(([a1, b1], [a2, b2]) => a1 - a2 || b1 - b2);
     current.resolveCollisions(collisionPairs);
     current.step(dt);
 
+    // 5. 記錄數據；setMetrics 等 set 開頭的函式會讓 React 重新畫面板
     const structureMetrics = structure.current.getMetrics();
     const next: StepMetrics = { step: prev.step + 1, algorithm, elapsedMs: performance.now() - started, broadPhaseMs, narrowPhaseMs, distanceChecks: structureMetrics.distanceChecks, candidatePairs: pairs.length, collisions: collisionPairs.length, rebuilt, rebuildCount: prev.rebuildCount + (rebuilt ? 1 : 0), skippedSteps: prev.skippedSteps + (rebuilt ? 0 : 1) };
     metricsRef.current = next;
