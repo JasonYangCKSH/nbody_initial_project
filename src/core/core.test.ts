@@ -5,6 +5,7 @@ import { UniformGridStructure } from './spatial/UniformGridStructure';
 import { VerletBufferController } from './VerletBufferController';
 import { ParticleSystem } from './ParticleSystem';
 import { shellCenter, shellCoreRadius, shellOf } from './scenario';
+import { BLOCKER_RADIUS, REACH, blockSpot, blocksLine, guardPosts, inReach, stepToward, viewClarity, type Blocker } from './blockers';
 import type { ParticleData } from './types';
 
 const particle = (id: number, x: number): ParticleData => ({ id, position: { x, y: 0, z: 0 }, velocity: { x: 1, y: 0, z: 0 }, acceleration: { x: 0, y: 0, z: 0 }, radius: 0.1, mass: 1, positionAtLastBroadPhase: { x, y: 0, z: 0 }, skin: 0.2 });
@@ -156,6 +157,47 @@ describe('collision core', () => {
     // 前 3 發的位置不受總發數影響
     expect(shellCenter(0, bounds, 6)).toEqual(shellCenter(0, bounds, 3));
     expect(new ParticleSystem(10, bounds, 1, 0.25, 17, 'cloud', 4).clusters).toBe(4);
+  });
+  it('blocker game: a tall blocker on the line of sight blocks it, a fallen or distant one does not', () => {
+    const groundY = -12.5;
+    const eye = { x: 0, y: groundY + 1.7, z: 17 };
+    const firework = { x: 0, y: 5, z: 0 };
+    const near: Blocker = { id: 0, x: 0, z: 14, state: 'standing', timer: 0, slot: 0 };
+    expect(blocksLine(eye, firework, near, groundY)).toBe(true);
+    // 往旁邊移開超過半徑就不擋
+    expect(blocksLine(eye, firework, { x: BLOCKER_RADIUS + 0.2, z: 14 }, groundY)).toBe(false);
+    // 太靠近煙火時視線已經比阻擋者高
+    expect(blocksLine(eye, firework, { x: 0, z: 1 }, groundY)).toBe(false);
+    // 站在玩家背後不擋
+    expect(blocksLine(eye, firework, { x: 0, z: 20 }, groundY)).toBe(false);
+    const targets = [firework, { x: 6, y: 6, z: 0 }];
+    expect(viewClarity(eye, targets, [near], groundY)).toBe(0.5);
+    expect(viewClarity(eye, targets, [{ ...near, state: 'down' }], groundY)).toBe(1);
+  });
+  it('blocker game: blockSpot puts slot 0 on the line of sight and stepToward never overshoots', () => {
+    const groundY = -12.5;
+    const player = { x: 0, z: 17 };
+    const spot = blockSpot(player, { x: 0, z: 0 }, 0);
+    expect(spot.x).toBeCloseTo(0);
+    expect(spot.z).toBeLessThan(player.z);
+    expect(blocksLine({ x: 0, y: groundY + 1.7, z: 17 }, { x: 0, y: 5, z: 0 }, spot, groundY)).toBe(true);
+    expect(stepToward({ x: 0, z: 0 }, { x: 3, z: 4 }, 1)).toEqual({ x: 0.6, z: 0.8 });
+    expect(stepToward({ x: 0, z: 0 }, { x: 0.3, z: 0.4 }, 1)).toEqual({ x: 0.3, z: 0.4 });
+  });
+  it('blocker game: guards posted in front of the best spot block every firework until knocked down', () => {
+    const groundY = -12.5;
+    const spot = { x: -3, z: 13.5 };
+    const eye = { x: spot.x, y: groundY + 1.7, z: spot.z };
+    for (const shells of [1, 3, 8]) {
+      const targets = Array.from({ length: shells }, (_, i) => ({ x: -8 + i * 2.5, y: 3 + (i % 3) * 2, z: -2 + (i % 2) * 3 }));
+      const count = Math.min(8, Math.max(6, shells));
+      const guards: Blocker[] = guardPosts(spot, targets, count).map((p, id) => ({ id, ...p, state: 'standing', timer: 0, slot: id }));
+      expect(viewClarity(eye, targets, guards, groundY)).toBe(0);
+      // 每個守衛都在最佳位置的攻擊範圍內
+      guards.forEach((g) => expect(inReach(spot, g)).toBe(true));
+      expect(viewClarity(eye, targets, guards.map((g) => ({ ...g, state: 'down' as const })), groundY)).toBe(1);
+    }
+    expect(inReach({ x: 0, z: 0 }, { x: REACH + 0.1, z: 0 })).toBe(false);
   });
   it('octree getLeafDepths matches getLeafOf for every particle', () => {
     const particles = [particle(0, 0.2), particle(1, 0.35), particle(2, 3), particle(3, 1.5), particle(4, 1.55)];

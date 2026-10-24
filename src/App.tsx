@@ -12,6 +12,7 @@ import { MAX_SHELLS, shellFractions } from './core/scenario';
 import { VerletBufferController } from './core/VerletBufferController';
 import type { ParticleData, RebuildEvent, StepMetrics, Vec3 } from './core/types';
 import { loadLang, saveLang, strings, type Algorithm, type Lang, type Strings } from './i18n';
+import { BlockerGame, pointerNdc, type GameStats } from './BlockerGame';
 const bounds = { x:25, y: 25, z: 25 };
 const dt = 1 / 60;
 // 與 C++ bench 一致：cellSize = cellSizeRatio(2) × 2 × PARTICLE_RADIUS(0.075)
@@ -112,8 +113,7 @@ function SimulationView({ particles, highlighted, collisionIds, triggerId, selec
     const up = (event: PointerEvent) => {
       const from = start; start = null;
       if (!from || !mesh.current || Math.hypot(event.clientX - from.x, event.clientY - from.y) > 5) return;
-      const rect = canvas.getBoundingClientRect();
-      raycaster.setFromCamera(new THREE.Vector2(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1), camera);
+      raycaster.setFromCamera(pointerNdc(event, canvas), camera);
       const hit = raycaster.intersectObject(mesh.current)[0];
       if (hit?.instanceId !== undefined) onSelectRef.current(hit.instanceId);
     };
@@ -288,7 +288,7 @@ function KeyboardMove({ speed = 6, enabled = true }: { speed?: number; enabled?:
   return null;
 }
 
-// ---------- 地上的觀眾：WASD 走路、Q/E 轉向；觀眾視角下按住滑鼠拖曳看四周 ----------
+// ---------- 地上的觀眾：WASD 走路、Q/E 轉向；觀眾視角下像 Minecraft 一樣鎖定滑鼠、移動滑鼠就轉視角 ----------
 type Spectator = { x: number; z: number; yaw: number; pitch: number };
 // 站在模擬空間前方的草地上，面向煙火、稍微抬頭
 const SPECTATOR_START: Spectator = { x: 0, z: 17, yaw: 0, pitch: 0.42 };
@@ -316,7 +316,7 @@ function SpectatorModel({ spectator, visible }: { spectator: Spectator; visible:
   </group>;
 }
 
-function SpectatorController({ spectator, active, firstPerson, speed = 4 }: { spectator: Spectator; active: boolean; firstPerson: boolean; speed?: number }) {
+function SpectatorController({ spectator, active, firstPerson, onLockChange, speed = 4 }: { spectator: Spectator; active: boolean; firstPerson: boolean; onLockChange: (locked: boolean) => void; speed?: number }) {
   const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
   const canvas = useThree((state) => state.gl.domElement);
   const controls = useThree((state) => state.controls) as unknown as { enabled: boolean } | null;
@@ -327,26 +327,36 @@ function SpectatorController({ spectator, active, firstPerson, speed = 4 }: { sp
     camera.fov = firstPerson ? 62 : 42;
     camera.updateProjectionMatrix();
   }, [firstPerson, controls, camera]);
-  // 按住滑鼠拖曳看四周（移動超過幾像素才算拖曳，所以點一下仍能選取粒子）
+  // Minecraft 式視角：觀眾視角下點一下畫面就鎖定滑鼠（游標隱藏），之後移動滑鼠直接轉動視角；按 Esc 放開
+  const onLockChangeRef = useRef(onLockChange);
+  onLockChangeRef.current = onLockChange;
   useEffect(() => {
-    if (!firstPerson) return;
-    let dragging = false;
-    const down = (event: PointerEvent) => { dragging = event.button === 0; };
-    const move = (event: PointerEvent) => {
-      if (!dragging) return;
-      spectator.yaw -= event.movementX * 0.004;
-      spectator.pitch = Math.min(1.45, Math.max(-1.2, spectator.pitch - event.movementY * 0.004));
+    const locked = () => document.pointerLockElement === canvas;
+    const lockChange = () => onLockChangeRef.current(locked());
+    document.addEventListener('pointerlockchange', lockChange);
+    if (!firstPerson) {
+      if (locked()) document.exitPointerLock();
+      return () => document.removeEventListener('pointerlockchange', lockChange);
+    }
+    const click = () => { if (!locked()) canvas.requestPointerLock()?.catch?.(() => {}); };
+    const move = (event: MouseEvent) => {
+      if (!locked()) return;
+      spectator.yaw -= event.movementX * 0.0025;
+      spectator.pitch = Math.min(1.45, Math.max(-1.45, spectator.pitch - event.movementY * 0.0025));
     };
-    const up = () => { dragging = false; };
-    canvas.addEventListener('pointerdown', down);
-    window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', up);
-    return () => { canvas.removeEventListener('pointerdown', down); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+    canvas.addEventListener('click', click);
+    document.addEventListener('mousemove', move);
+    return () => {
+      canvas.removeEventListener('click', click);
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('pointerlockchange', lockChange);
+    };
   }, [firstPerson, canvas, spectator]);
   useFrame((_, delta) => {
     if (!active) return;
     const keys = pressed.current;
-    const dt = Math.min(delta, 0.1);
+    // 每幀最多算 0.25 秒：切回分頁時不會一下跳很遠，畫面較慢時走路速度也接近正常
+    const dt = Math.min(delta, 0.25);
     const fast = keys.has('ShiftLeft') || keys.has('ShiftRight') ? 2.5 : 1;
     if (keys.has('KeyQ')) spectator.yaw += 1.6 * dt;
     if (keys.has('KeyE')) spectator.yaw -= 1.6 * dt;
@@ -450,6 +460,14 @@ function App() {
   const spectator = useRef<Spectator>({ ...SPECTATOR_START });
   const [viewMode, setViewMode] = useState<'orbit' | 'person'>('orbit');
   const switchView = (mode: 'orbit' | 'person') => { setViewMode(mode); if (mode === 'orbit') setResetViewToken((value) => value + 1); };
+  // 阻擋者小遊戲：開啟時觀眾回到起點並切到觀眾視角
+  const [blockerGame, setBlockerGame] = useState(false);
+  const [gameStats, setGameStats] = useState<GameStats>({ knocked: 0, remaining: 0, clarity: 1, atBestSpot: false, bestSeconds: 0, tooFar: false });
+  const [gameRestartToken, setGameRestartToken] = useState(0);
+  // 觀眾視角下滑鼠是否已鎖定（Minecraft 式視角）
+  const [pointerLocked, setPointerLocked] = useState(false);
+  const toggleBlockerGame = () => { const next = !blockerGame; setBlockerGame(next); if (next) { Object.assign(spectator.current, SPECTATOR_START); setViewMode('person'); } };
+  const fireworkTargets = useMemo(() => shellFractions(shellCount).map((f) => ({ x: (f.x - 0.5) * bounds.x, y: (f.y - 0.5) * bounds.y, z: (f.z - 0.5) * bounds.z })), [shellCount]);
   const [acceleration, setAcceleration] = useState(DEFAULT_ACCELERATION);
   const [algorithm, setAlgorithm] = useState<Algorithm>('Brute Force');
   const [bufferEnabled, setBufferEnabled] = useState(false);
@@ -597,13 +615,29 @@ function App() {
           {scene === 'explosion' && system.current.colors && <SparkTrails particles={system.current.particles} baseColors={system.current.colors} />}
           <KeyboardMove enabled={scene !== 'explosion'} />
           {scene === 'explosion' && <SpectatorModel spectator={spectator.current} visible={viewMode === 'orbit'} />}
-          <SpectatorController spectator={spectator.current} active={scene === 'explosion'} firstPerson={scene === 'explosion' && viewMode === 'person'} />
+          {scene === 'explosion' && blockerGame && <BlockerGame spectator={spectator.current} groundY={GROUND_Y} eyeHeight={EYE_HEIGHT} targets={fireworkTargets} restartToken={gameRestartToken} onStats={setGameStats} />}
+          <SpectatorController spectator={spectator.current} active={scene === 'explosion'} firstPerson={scene === 'explosion' && viewMode === 'person'} onLockChange={setPointerLocked} />
         </Canvas>
         <div className="viewport-label">
           <span className="live-dot" /> {t.liveSimulation}
           <span className="viewport-field">{t.labelStructure} <b>{t.algorithms[algorithm]}</b></span>
           <span className="viewport-field">{t.labelDistribution} <b>{scene === 'explosion' ? t.sceneExplosion(shellCount) : clusterFactor > 0 ? t.spatialCluster(clusterFactor.toFixed(2), hotspotCount) : t.uniformCloud}</b></span>
         </div>
+        {scene === 'explosion' && blockerGame && (
+          <div className={`game-hud ${gameStats.atBestSpot && gameStats.clarity === 1 ? 'best' : ''}`}>
+            <span>{t.gameRemaining} <b>{gameStats.remaining}</b></span>
+            <span>{t.gameKnocked} <b>{gameStats.knocked}</b></span>
+            <span>{t.gameClarity} <b className={gameStats.clarity === 1 ? 'ok' : 'bad'}>{Math.round(gameStats.clarity * 100)}%</b></span>
+            <span>{t.gameBestTime} <b>{gameStats.bestSeconds.toFixed(1)}s</b></span>
+            <em className={gameStats.tooFar ? 'warn' : ''}>{gameStats.tooFar ? t.gameTooFar : gameStats.atBestSpot ? (gameStats.clarity === 1 ? t.gameStatusWatching : t.gameStatusBlocked) : gameStats.remaining > 0 ? t.gameStatusGo : t.gameStatusAllDown}</em>
+          </div>
+        )}
+        {scene === 'explosion' && viewMode === 'person' && (
+          <>
+            <div className="crosshair" />
+            {!pointerLocked && <div className="lock-hint">{t.lockHint}</div>}
+          </>
+        )}
         <div className="viewport-legend">
           <span><i style={{ background: COLLISION_COLOR }} />{t.legendCollision}</span>
           <span><i style={{ background: TRIGGER_COLOR }} />{t.legendTrigger}</span>
@@ -642,7 +676,7 @@ function App() {
           <label>{t.scene}</label>
           <div className="segmented">
             {(['cloud', 'explosion'] as Scene[]).map((item) => (
-              <button className={scene === item ? 'active' : ''} onClick={() => { setScene(item); setViewMode('orbit'); reset(algorithm, { scene: item }); setResetViewToken((value) => value + 1); }} key={item}>
+              <button className={scene === item ? 'active' : ''} onClick={() => { setScene(item); setViewMode('orbit'); if (item !== 'explosion') setBlockerGame(false); reset(algorithm, { scene: item }); setResetViewToken((value) => value + 1); }} key={item}>
                 {t.scenes[item]}
               </button>
             ))}
@@ -657,6 +691,11 @@ function App() {
                 ))}
               </div>
               <button className="spectator-reset" onClick={() => { Object.assign(spectator.current, SPECTATOR_START); }}>{t.spectatorReset}</button>
+              <div className="toggle-row">
+                <span>{t.blockerGame} <small>{t.blockerGameHint}</small></span>
+                <button className={`switch amber ${blockerGame ? 'on' : ''}`} onClick={toggleBlockerGame}><span /></button>
+              </div>
+              {blockerGame && <button className="spectator-reset" onClick={() => { Object.assign(spectator.current, SPECTATOR_START); setGameRestartToken((value) => value + 1); }}>{t.gameRestart}</button>}
             </>
           )}
 
