@@ -12,7 +12,6 @@ import { MAX_SHELLS, shellFractions } from './core/scenario';
 import { VerletBufferController } from './core/VerletBufferController';
 import type { ParticleData, RebuildEvent, StepMetrics, Vec3 } from './core/types';
 import { loadLang, saveLang, strings, type Algorithm, type Lang, type Strings } from './i18n';
-import { BlockerGame, pointerNdc, type GameStats } from './BlockerGame';
 const bounds = { x:25, y: 25, z: 25 };
 const dt = 1 / 60;
 // 與 C++ bench 一致：cellSize = cellSizeRatio(2) × 2 × PARTICLE_RADIUS(0.075)
@@ -93,6 +92,12 @@ function OctreeLines({ boxes, bounds, color, dashed = false }: { boxes: OctreeBo
 const COLLISION_COLOR = '#D85A30';
 const TRIGGER_COLOR = '#B98CFF';
 const SELECTED_COLOR = '#5DCAA5';
+// 滑鼠鎖定（觀眾視角）時游標固定在畫面中央，射線一律從準心發出；否則用游標位置
+function pointerNdc(event: PointerEvent, canvas: HTMLCanvasElement): THREE.Vector2 {
+  if (document.pointerLockElement === canvas) return new THREE.Vector2(0, 0);
+  const rect = canvas.getBoundingClientRect();
+  return new THREE.Vector2(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
+}
 const toScene = (p: Vec3) => new THREE.Vector3(p.x - bounds.x / 2, p.y - bounds.y / 2, p.z - bounds.z / 2);
 
 // visibleDepths 不為 null 時，只顯示葉節點在這些層的粒子（依 leafDepths）；選取與觸發粒子一律保留
@@ -463,14 +468,8 @@ function App() {
   const spectator = useRef<Spectator>({ ...SPECTATOR_START });
   const [viewMode, setViewMode] = useState<'orbit' | 'person'>('orbit');
   const switchView = (mode: 'orbit' | 'person') => { setViewMode(mode); if (mode === 'orbit') setResetViewToken((value) => value + 1); };
-  // 阻擋者小遊戲：開啟時觀眾回到起點並切到觀眾視角
-  const [blockerGame, setBlockerGame] = useState(false);
-  const [gameStats, setGameStats] = useState<GameStats>({ knocked: 0, remaining: 0, clarity: 1, atBestSpot: false, bestSeconds: 0, tooFar: false });
-  const [gameRestartToken, setGameRestartToken] = useState(0);
   // 觀眾視角下滑鼠是否已鎖定（Minecraft 式視角）
   const [pointerLocked, setPointerLocked] = useState(false);
-  const toggleBlockerGame = () => { const next = !blockerGame; setBlockerGame(next); if (next) { Object.assign(spectator.current, SPECTATOR_START); setViewMode('person'); } };
-  const fireworkTargets = useMemo(() => shellFractions(shellCount).map((f) => ({ x: (f.x - 0.5) * bounds.x, y: (f.y - 0.5) * bounds.y, z: (f.z - 0.5) * bounds.z })), [shellCount]);
   const [acceleration, setAcceleration] = useState(DEFAULT_ACCELERATION);
   const [algorithm, setAlgorithm] = useState<Algorithm>('Brute Force');
   const [bufferEnabled, setBufferEnabled] = useState(false);
@@ -635,7 +634,6 @@ function App() {
           {scene === 'explosion' && system.current.colors && <SparkTrails particles={system.current.particles} baseColors={system.current.colors} />}
           <KeyboardMove enabled={scene !== 'explosion'} />
           {scene === 'explosion' && <SpectatorModel spectator={spectator.current} visible={viewMode === 'orbit'} />}
-          {scene === 'explosion' && blockerGame && <BlockerGame spectator={spectator.current} groundY={GROUND_Y} eyeHeight={EYE_HEIGHT} targets={fireworkTargets} restartToken={gameRestartToken} onStats={setGameStats} />}
           <SpectatorController spectator={spectator.current} active={scene === 'explosion'} firstPerson={scene === 'explosion' && viewMode === 'person'} onLockChange={setPointerLocked} />
         </Canvas>
         <div className="viewport-label">
@@ -643,15 +641,6 @@ function App() {
           <span className="viewport-field">{t.labelStructure} <b>{t.algorithms[algorithm]}</b></span>
           <span className="viewport-field">{t.labelDistribution} <b>{scene === 'explosion' ? t.sceneExplosion(shellCount) : clusterFactor > 0 ? t.spatialCluster(clusterFactor.toFixed(2), hotspotCount) : t.uniformCloud}</b></span>
         </div>
-        {scene === 'explosion' && blockerGame && (
-          <div className={`game-hud ${gameStats.atBestSpot && gameStats.clarity === 1 ? 'best' : ''}`}>
-            <span>{t.gameRemaining} <b>{gameStats.remaining}</b></span>
-            <span>{t.gameKnocked} <b>{gameStats.knocked}</b></span>
-            <span>{t.gameClarity} <b className={gameStats.clarity === 1 ? 'ok' : 'bad'}>{Math.round(gameStats.clarity * 100)}%</b></span>
-            <span>{t.gameBestTime} <b>{gameStats.bestSeconds.toFixed(1)}s</b></span>
-            <em className={gameStats.tooFar ? 'warn' : ''}>{gameStats.tooFar ? t.gameTooFar : gameStats.atBestSpot ? (gameStats.clarity === 1 ? t.gameStatusWatching : t.gameStatusBlocked) : gameStats.remaining > 0 ? t.gameStatusGo : t.gameStatusAllDown}</em>
-          </div>
-        )}
         {scene === 'explosion' && viewMode === 'person' && (
           <>
             <div className="crosshair" />
@@ -696,7 +685,7 @@ function App() {
           <label>{t.scene}</label>
           <div className="segmented">
             {(['cloud', 'explosion'] as Scene[]).map((item) => (
-              <button className={scene === item ? 'active' : ''} onClick={() => { setScene(item); setViewMode('orbit'); if (item !== 'explosion') setBlockerGame(false); reset(algorithm, { scene: item }); setResetViewToken((value) => value + 1); }} key={item}>
+              <button className={scene === item ? 'active' : ''} onClick={() => { setScene(item); setViewMode('orbit'); reset(algorithm, { scene: item }); setResetViewToken((value) => value + 1); }} key={item}>
                 {t.scenes[item]}
               </button>
             ))}
@@ -711,11 +700,6 @@ function App() {
                 ))}
               </div>
               <button className="spectator-reset" onClick={() => { Object.assign(spectator.current, SPECTATOR_START); }}>{t.spectatorReset}</button>
-              <div className="toggle-row">
-                <span>{t.blockerGame} <small>{t.blockerGameHint}</small></span>
-                <button className={`switch amber ${blockerGame ? 'on' : ''}`} onClick={toggleBlockerGame}><span /></button>
-              </div>
-              {blockerGame && <button className="spectator-reset" onClick={() => { Object.assign(spectator.current, SPECTATOR_START); setGameRestartToken((value) => value + 1); }}>{t.gameRestart}</button>}
             </>
           )}
 
