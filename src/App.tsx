@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Billboard, OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
-import { Activity, Crosshair, Download, Languages, LocateFixed, Pause, Play, RotateCcw, SkipForward, Sparkles, X } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Activity, ChevronDown, Crosshair, Download, Languages, LocateFixed, Pause, Play, RotateCcw, SkipForward, Sparkles, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { BruteForceStructure } from './core/spatial/BruteForceStructure';
 import { OctreeStructure } from './core/spatial/OctreeStructure';
@@ -453,6 +453,27 @@ function PhaseChart({ history, metricKey, color, label, markRebuilds, t }: { his
   </div>;
 }
 
+// 側邊欄的一個區塊：標題、一行說明；collapsible 時點標題可收合（badge 在收合時也看得到，例如事件筆數）
+function PanelSection({ index, title, hint, className = '', collapsible = false, open = true, onToggle, badge, t, children }: { index: string; title: string; hint?: string; className?: string; collapsible?: boolean; open?: boolean; onToggle?: () => void; badge?: string; t?: Strings; children: ReactNode }) {
+  return <div className={`control-block ${className} ${collapsible && !open ? 'collapsed' : ''}`}>
+    {collapsible ? (
+      <button className="block-heading block-toggle" onClick={onToggle} aria-expanded={open} title={open ? t?.collapse : t?.expand}>
+        <ChevronDown size={12} className="chevron" />{title}
+        {badge && <b className="block-badge">{badge}</b>}
+        <span>{index}</span>
+      </button>
+    ) : <div className="block-heading">{title} <span>{index}</span></div>}
+    {hint && <p className="block-hint">{hint}</p>}
+    {open && children}
+  </div>;
+}
+
+// 可收合區塊的開關狀態存在瀏覽器；無痕視窗等讀寫失敗時就用預設值
+const PANEL_OPEN_KEY = 'collision-lab-panel-open';
+const loadPanelOpen = (): Record<string, boolean> => {
+  try { const value = JSON.parse(localStorage.getItem(PANEL_OPEN_KEY) ?? '{}'); return value && typeof value === 'object' ? value : {}; } catch { return {}; }
+};
+
 // 第 0 幀必定重建（見 C++ Simulation::needsRebuild），計數從 0 開始，由第一次 step 計入
 const initialMetrics = (algorithm: string): StepMetrics => ({ step: 0, algorithm, elapsedMs: 0, broadPhaseMs: 0, narrowPhaseMs: 0, distanceChecks: 0, candidatePairs: 0, collisions: 0, rebuilt: false, rebuildCount: 0, skippedSteps: 0 });
 
@@ -498,6 +519,14 @@ function App() {
   // 每顆粒子觸發重建的累計次數（事件記錄只保留最近 12 筆，這裡保留全部）
   const triggerCounts = useRef(new Map<number, number>());
   const [lang, setLang] = useState<Lang>(loadLang);
+  // 側邊欄可收合區塊的開關；沒有紀錄時用各區塊的預設值
+  const [panelOpen, setPanelOpen] = useState<Record<string, boolean>>(loadPanelOpen);
+  const isOpen = (id: string, fallback = true) => panelOpen[id] ?? fallback;
+  const toggleSection = (id: string, fallback = true) => setPanelOpen((old) => {
+    const next = { ...old, [id]: !(old[id] ?? fallback) };
+    try { localStorage.setItem(PANEL_OPEN_KEY, JSON.stringify(next)); } catch { /* 無痕視窗等情況下不保存，但照常切換 */ }
+    return next;
+  });
   const t = strings[lang];
   useEffect(() => { document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en'; saveLang(lang); }, [lang]);
   const system = useRef(new ParticleSystem(count, bounds, clusterFactor, acceleration, 17, scene, clusters));
@@ -673,16 +702,31 @@ function App() {
           </div>
         </header>
 
-        <div className="control-block">
-          <div className="block-heading">{t.controlDeck} <span>01</span></div>
+        {/* 播放列：固定在側邊欄頂端，捲動時也按得到 */}
+        <div className="playbar">
+          <div className="action-row">
+            <button onClick={() => setPlaying(!playing)} title={playing ? t.pause : t.play}>
+              {playing ? <Pause size={16} /> : <Play size={16} />}
+              {playing ? t.pause : t.play}
+            </button>
+            <button onClick={step} title={t.step}>
+              <SkipForward size={16} /> {t.step}
+            </button>
+            <button onClick={reset} title={t.reset} aria-label={t.reset}>
+              <RotateCcw size={16} />
+            </button>
+          </div>
+          <div className="speed-row">
+            <span>{t.speed} <small>{t.speedHint(Math.round(1000 / (BASE_STEP_MS / speed)), playing ? stepTimes.current.filter((time) => performance.now() - time < 2000).length / 2 : 0)}</small></span>
+            <div className="speed-buttons">
+              {SPEEDS.map((value) => (
+                <button key={value} className={speed === value ? 'active' : ''} onClick={() => setSpeed(value)}>{value}×</button>
+              ))}
+            </div>
+          </div>
+        </div>
 
-          <label>
-            {t.particleCount} <strong>{count.toLocaleString()}</strong>
-          </label>
-          <input type="range" min="1000" max="50000" step="100" value={count} onChange={(event) => { setCount(Number(event.target.value)); }} onMouseUp={reset} />
-          <div className="range-endpoints"><span>1,000</span><span>50,000</span></div>
-
-          <label>{t.scene}</label>
+        <PanelSection index="01" title={t.sectionScene} hint={t.sectionSceneHint}>
           <div className="segmented">
             {(['cloud', 'explosion'] as Scene[]).map((item) => (
               <button className={scene === item ? 'active' : ''} onClick={() => { setScene(item); setViewMode('orbit'); reset(algorithm, { scene: item }); setResetViewToken((value) => value + 1); }} key={item}>
@@ -690,41 +734,43 @@ function App() {
               </button>
             ))}
           </div>
-          {scene === 'explosion' && (
+          {scene === 'explosion' && <button className="relaunch" onClick={() => reset()}><Sparkles size={14} /> {t.relaunch}</button>}
+
+          <label>
+            {t.particleCount} <strong>{count.toLocaleString()}</strong>
+          </label>
+          <input type="range" min="1000" max="50000" step="100" value={count} onChange={(event) => { setCount(Number(event.target.value)); }} onMouseUp={reset} />
+          <div className="range-endpoints"><span>1,000</span><span>50,000</span></div>
+
+          {/* 群聚係數只對粒子雲有意義；聚集數量只在群聚係數大於 0 時才看得出差別 */}
+          {scene === 'cloud' && (
             <>
-              <button className="relaunch" onClick={() => reset()}><Sparkles size={14} /> {t.relaunch}</button>
-              <label>{t.viewMode}</label>
-              <div className="segmented">
-                {(['orbit', 'person'] as const).map((mode) => (
-                  <button key={mode} className={viewMode === mode ? 'active' : ''} onClick={() => switchView(mode)}>{mode === 'orbit' ? t.viewOrbit : t.viewPerson}</button>
-                ))}
-              </div>
-              <button className="spectator-reset" onClick={() => { Object.assign(spectator.current, SPECTATOR_START); }}>{t.spectatorReset}</button>
+              <label>
+                {t.clusterFactor} <strong>{clusterFactor.toFixed(2)}</strong>
+              </label>
+              <input type="range" min="0" max="1" step="0.01" value={clusterFactor} onChange={(event) => { setClusterFactor(Number(event.target.value)); }} onMouseUp={reset} />
+              <div className="range-endpoints"><span>0.00</span><span>1.00</span></div>
             </>
           )}
-
-          <div className="count-row">
-            <span>{scene === 'explosion' ? t.shellCount : t.clusterCount}<small>{scene === 'explosion' ? t.shellCountHint : t.clusterCountHint}</small></span>
-            <div className="stepper">
-              <button onClick={() => applyClusters(clusters - 1)} disabled={clusters <= 1} aria-label="-1">−</button>
-              <input type="number" min={1} max={MAX_SHELLS} value={clusters} onChange={(event) => applyClusters(Number(event.target.value))} />
-              <button onClick={() => applyClusters(clusters + 1)} disabled={clusters >= MAX_SHELLS} aria-label="+1">+</button>
+          {(scene === 'explosion' || clusterFactor > 0) && (
+            <div className="count-row">
+              <span>{scene === 'explosion' ? t.shellCount : t.clusterCount}<small>{scene === 'explosion' ? t.shellCountHint : t.clusterCountHint}</small></span>
+              <div className="stepper">
+                <button onClick={() => applyClusters(clusters - 1)} disabled={clusters <= 1} aria-label="-1">−</button>
+                <input type="number" min={1} max={MAX_SHELLS} value={clusters} onChange={(event) => applyClusters(Number(event.target.value))} />
+                <button onClick={() => applyClusters(clusters + 1)} disabled={clusters >= MAX_SHELLS} aria-label="+1">+</button>
+              </div>
             </div>
-          </div>
-
-          <label className={scene === 'explosion' ? 'muted' : ''}>
-            {t.clusterFactor} <strong>{clusterFactor.toFixed(2)}</strong>
-          </label>
-          <input disabled={scene === 'explosion'} type="range" min="0" max="1" step="0.01" value={clusterFactor} onChange={(event) => { setClusterFactor(Number(event.target.value)); }} onMouseUp={reset} />
-          <div className="range-endpoints"><span>0.00</span><span>1.00</span></div>
+          )}
 
           <label>
             {scene === 'explosion' ? t.gravity : t.acceleration} <strong>{scene === 'explosion' ? '' : '±'}{acceleration.toFixed(2)}</strong>
           </label>
           <input type="range" min="0" max="2" step="0.05" value={acceleration} onChange={(event) => { setAcceleration(Number(event.target.value)); }} onMouseUp={reset} />
           <div className="range-endpoints"><span>0.00</span><span>2.00</span></div>
+        </PanelSection>
 
-          <label>{t.spatialStructure}</label>
+        <PanelSection index="02" title={t.sectionStructure} hint={t.sectionStructureHint}>
           <div className="segmented">
             {(['Brute Force', 'Uniform Grid', 'Octree'] as Algorithm[]).map((item) => (
               <button className={algorithm === item ? 'active' : ''} onClick={() => { setAlgorithm(item); reset(item); }} key={item}>
@@ -733,9 +779,26 @@ function App() {
             ))}
           </div>
 
-          {(algorithm === 'Uniform Grid' || algorithm === 'Octree') && (
+          <div className="toggle-row">
+            <span>{t.verletBuffer} <small>{t.condition5}</small></span>
+            <button className={`switch ${bufferEnabled ? 'on' : ''}`} onClick={() => { setBufferEnabled(!bufferEnabled); reset(); }}>
+              <span />
+            </button>
+          </div>
+          {bufferEnabled ? (
             <>
-              <div className="toggle-row">
+              <label>
+                {t.kSkin} <strong>{K}</strong>
+              </label>
+              <input type="range" min="0" max="200" value={K} onChange={(event) => setK(Number(event.target.value))} />
+            </>
+          ) : <p className="block-note">{t.kSkinOffHint}</p>}
+        </PanelSection>
+
+        <PanelSection index="03" title={t.sectionDisplay} hint={t.sectionDisplayHint}>
+          {(algorithm === 'Uniform Grid' || algorithm === 'Octree') ? (
+            <>
+              <div className="toggle-row first">
                 <span>{algorithm === 'Octree' ? t.showOctree : t.showGrid}</span>
                 <button className={`switch ${showGrid ? 'on' : ''}`} onClick={() => setShowGrid(!showGrid)}>
                   <span />
@@ -764,44 +827,21 @@ function App() {
                 </div>
               )}
             </>
+          ) : <p className="block-note">{t.displayNoGrid}</p>}
+          {scene === 'explosion' && (
+            <>
+              <label>{t.viewMode}</label>
+              <div className="segmented">
+                {(['orbit', 'person'] as const).map((mode) => (
+                  <button key={mode} className={viewMode === mode ? 'active' : ''} onClick={() => switchView(mode)}>{mode === 'orbit' ? t.viewOrbit : t.viewPerson}</button>
+                ))}
+              </div>
+              <button className="spectator-reset" onClick={() => { Object.assign(spectator.current, SPECTATOR_START); }}>{t.spectatorReset}</button>
+            </>
           )}
+        </PanelSection>
 
-          <div className="toggle-row">
-            <span>{t.verletBuffer} <small>{t.condition5}</small></span>
-            <button className={`switch ${bufferEnabled ? 'on' : ''}`} onClick={() => { setBufferEnabled(!bufferEnabled); reset(); }}>
-              <span />
-            </button>
-          </div>
-
-          <label className={bufferEnabled ? '' : 'muted'}>
-            {t.kSkin} <strong>{K}</strong>
-          </label>
-          <input disabled={!bufferEnabled} type="range" min="0" max="200" value={K} onChange={(event) => setK(Number(event.target.value))} />
-
-          <div className="action-row">
-            <button onClick={() => setPlaying(!playing)} title={playing ? t.pause : t.play}>
-              {playing ? <Pause size={16} /> : <Play size={16} />}
-              {playing ? t.pause : t.play}
-            </button>
-            <button onClick={step} title={t.step}>
-              <SkipForward size={16} /> {t.step}
-            </button>
-            <button onClick={reset} title={t.reset}>
-              <RotateCcw size={16} />
-            </button>
-          </div>
-          <div className="speed-row">
-            <span>{t.speed} <small>{t.speedHint(Math.round(1000 / (BASE_STEP_MS / speed)), playing ? stepTimes.current.filter((time) => performance.now() - time < 2000).length / 2 : 0)}</small></span>
-            <div className="speed-buttons">
-              {SPEEDS.map((value) => (
-                <button key={value} className={speed === value ? 'active' : ''} onClick={() => setSpeed(value)}>{value}×</button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="control-block stats">
-          <div className="block-heading">{t.runTelemetry} <span>02</span></div>
+        <PanelSection index="04" title={t.runTelemetry} className="stats" collapsible open={isOpen('telemetry')} onToggle={() => toggleSection('telemetry')} t={t}>
           <div className="stat-grid">
             <div><small>{t.stepCount}</small><strong>{metrics.step.toString().padStart(5, '0')}</strong></div>
             <div><small>{t.lastDt}</small><strong>{metrics.elapsedMs.toFixed(2)}<i> ms</i></strong></div>
@@ -825,28 +865,27 @@ function App() {
             <span>{t.rebuilds} <b>{metrics.rebuildCount}</b></span>
             <span>{t.skipped} <b className="mint">{skippedRatio}%</b></span>
           </div>
-        </div>
+        </PanelSection>
 
-        <div className="control-block phase-block">
-          <div className="block-heading">{t.phaseTiming} <span>03</span></div>
+        <PanelSection index="05" title={t.phaseTiming} className="phase-block" collapsible open={isOpen('phase', false)} onToggle={() => toggleSection('phase', false)} t={t}>
           <div className="phase-chart-title mint">{t.broadPhaseTitle}</div>
           <PhaseChart history={history} metricKey="broadPhaseMs" color="#5DCAA5" label={t.broadPhase} markRebuilds={bufferEnabled} t={t} />
           <div className="phase-chart-title gold">{t.narrowPhaseTitle}</div>
           <PhaseChart history={history} metricKey="narrowPhaseMs" color="#D9A441" label={t.narrowPhase} t={t} />
-        </div>
+        </PanelSection>
 
-        <div className="control-block event-log">
-          <div className="block-heading">{t.eventLog} <span>04</span></div>
-          {events.length ? events.map((event, index) => (
-            <button className={`event-item ${event.triggeredByParticleId === selectedId ? 'selected' : ''}`} key={`${event.step}-${index}`} title={t.eventClickHint}
-              onClick={() => selectParticle(event.triggeredByParticleId, true)}>
-              {t.rebuildEvent(event)}
-            </button>
-          )) : <p className="quiet">{bufferEnabled ? t.awaitingRebuild : t.bufferOffNoEvents}</p>}
-        </div>
+        <PanelSection index="06" title={t.eventLog} className="event-log" collapsible open={isOpen('events')} onToggle={() => toggleSection('events')} badge={events.length ? String(events.length) : undefined} t={t}>
+          <div className="event-list">
+            {events.length ? events.map((event, index) => (
+              <button className={`event-item ${event.triggeredByParticleId === selectedId ? 'selected' : ''}`} key={`${event.step}-${index}`} title={t.eventClickHint}
+                onClick={() => selectParticle(event.triggeredByParticleId, true)}>
+                {t.rebuildEvent(event)}
+              </button>
+            )) : <p className="quiet">{bufferEnabled ? t.awaitingRebuild : t.bufferOffNoEvents}</p>}
+          </div>
+        </PanelSection>
 
-        <div className="control-block inspector">
-          <div className="block-heading">{t.inspector} <span>05</span></div>
+        <PanelSection index="07" title={t.inspector} className="inspector" collapsible open={isOpen('inspector')} onToggle={() => toggleSection('inspector')} badge={selected ? `#${selected.id}` : undefined} t={t}>
           <div className="inspector-actions">
             <button disabled={triggerId === null} onClick={() => triggerId !== null && selectParticle(triggerId, true)}><LocateFixed size={13} /> {t.selectLastTrigger}</button>
             <button disabled={!selected} onClick={() => setFocusToken((value) => value + 1)}><Crosshair size={13} /> {t.focus}</button>
@@ -876,7 +915,7 @@ function App() {
             ];
             return <dl className="inspector-grid">{rows.map(([label, value, tone]) => <div key={label}><dt>{label}</dt><dd className={tone ?? ''}>{value}</dd></div>)}</dl>;
           })() : <p className="quiet">{t.inspectorEmpty}</p>}
-        </div>
+        </PanelSection>
 
         <button className="export" onClick={() => { const blob = new Blob([instrumentation.current.exportJSON()], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'collision-lab-run.json'; link.click(); }}>
           <Download size={14} /> {t.exportRunData}

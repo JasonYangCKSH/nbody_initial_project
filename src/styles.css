@@ -13,3 +13,15 @@
 .spectator-reset{width:100%;margin-top:8px;background:transparent;border:1px solid #35535a;color:#9daeb0;padding:7px 10px;font:9px 'IBM Plex Mono',monospace;letter-spacing:.8px;cursor:pointer}.spectator-reset:hover{border-color:#5dcaa5;color:#5dcaa5}
 .crosshair{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);pointer-events:none}.crosshair::before,.crosshair::after{content:"";position:absolute;background:rgba(255,255,255,.85);box-shadow:0 0 2px #000}.crosshair::before{left:8px;top:0;width:2px;height:18px}.crosshair::after{top:8px;left:0;width:18px;height:2px}.lock-hint{position:absolute;left:50%;top:calc(50% + 28px);transform:translateX(-50%);padding:6px 12px;background:rgba(10,14,28,.75);border:1px solid #35535a;font:10px 'IBM Plex Mono',monospace;letter-spacing:.8px;color:#d8e0dc;pointer-events:none;white-space:nowrap}
 .speed-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;font:11px 'IBM Plex Mono',monospace;color:#edeae2}.speed-row small{display:block;color:#657a7d;font-size:9px;margin-top:4px;letter-spacing:.3px}.speed-buttons{display:flex;border:1px solid #35535a}.speed-buttons button{background:transparent;border:0;border-left:1px solid #35535a;color:#8fa0a3;padding:6px 7px;font:10px 'IBM Plex Mono',monospace;cursor:pointer}.speed-buttons button:first-child{border-left:0}.speed-buttons button:hover{color:#edeae2}.speed-buttons button.active{background:#24434a;color:#5dcaa5}
+.playbar{position:sticky;top:-28px;z-index:5;margin:22px -26px 0;padding:14px 26px 14px;background:#101b27;border-top:1px solid #2a3f4a;border-bottom:1px solid #2a3f4a;box-shadow:0 8px 14px -10px rgba(0,0,0,.6)}
+.playbar .action-row{margin-top:0}.playbar .speed-row{margin-top:10px}
+.block-hint{margin:-14px 0 16px;font:10px/1.5 'IBM Plex Mono',monospace;letter-spacing:.3px;color:#71858a}
+.block-note{margin:12px 0 0;font:10px/1.55 'IBM Plex Mono',monospace;color:#596d73}
+.block-toggle{display:flex;align-items:center;gap:6px;width:100%;background:transparent;border:0;padding:0;text-align:left;cursor:pointer}
+.block-toggle span{margin-left:auto}.block-toggle:hover{color:#ffc857}
+.block-toggle .chevron{transition:transform .2s;flex:none}.control-block.collapsed .block-toggle .chevron{transform:rotate(-90deg)}
+.control-block.collapsed{padding:16px 0}.control-block.collapsed .block-heading{margin-bottom:0}
+.block-badge{font-weight:500;color:#9daeb0;background:#1e343d;border:1px solid #35535a;padding:0 6px;font-size:9px;letter-spacing:.5px}
+.toggle-row.first{margin-top:0}
+.event-list{max-height:230px;overflow:auto;padding-right:4px}
+.event-log{min-height:0}
