@@ -1,5 +1,9 @@
 import { add, scale, type ParticleData, type Vec3 } from './types';
-import { explosion, spatialCluster } from './scenario';
+import { explosion, shellOf, spatialCluster } from './scenario';
+
+// 每發煙火的顏色（避開碰撞的橘紅、觸發的紫色與選取的薄荷綠），快速火花用偏白的金色
+export const SHELL_COLORS = ['#FF4D9D', '#FFD166', '#4CC9F0', '#FF8A3D', '#9BFF6A', '#7AE7FF', '#FF6B6B', '#F9F871'];
+const SPARK_COLOR = '#FFF4D6';
 
 export const PARTICLE_RADIUS = 0.075;
 // 每軸加速度分量取自 [-acc, acc]，對應 C++ scenario::spatialCluster 的 acc 參數
@@ -12,13 +16,20 @@ export type Scene = 'cloud' | 'explosion';
 
 export class ParticleSystem {
   readonly particles: ParticleData[];
-  constructor(count: number, readonly bounds: Vec3, clusterFactor = 0, acc = DEFAULT_ACCELERATION, seed = 17, scene: Scene = 'cloud') {
+  // 每顆粒子的顯示顏色；只有煙火場景有，粒子雲為 null（用預設顏色）
+  readonly colors: string[] | null;
+  // clusters：粒子雲的群聚中心數，或煙火場景的煙火發數
+  constructor(count: number, readonly bounds: Vec3, clusterFactor = 0, acc = DEFAULT_ACCELERATION, seed = 17, readonly scene: Scene = 'cloud', readonly clusters = scene === 'explosion' ? 3 : 1) {
     this.particles = scene === 'explosion'
-      ? explosion({ count, bounds, radius: PARTICLE_RADIUS, burstSpeed: EXPLOSION_BURST_SPEED, gravity: acc, seed })
+      ? explosion({ count, bounds, radius: PARTICLE_RADIUS, burstSpeed: EXPLOSION_BURST_SPEED, gravity: acc, shellCount: clusters, seed })
       : spatialCluster({
         count, bounds, radius: PARTICLE_RADIUS, speed: 0.75, acc, clusterFactor,
-        hotspotSpread: 0.03 * bounds.x, hotspotCount: 1, seed,
+        hotspotSpread: 0.03 * bounds.x, hotspotCount: clusters, seed,
       });
+    // 依初始速度判斷是否為快速火花（慢速粒子最多 1 倍、火花至少 2 倍 burstSpeed）
+    this.colors = scene === 'explosion'
+      ? this.particles.map(({ id, velocity: v }) => (Math.hypot(v.x, v.y, v.z) > EXPLOSION_BURST_SPEED * 1.5 ? SPARK_COLOR : SHELL_COLORS[shellOf(id, clusters) % SHELL_COLORS.length]))
+      : null;
   }
   // 與 C++ Simulation::integrate 相同：先更新速度、再更新位置，最後做牆面反彈
   step(dt: number): void {

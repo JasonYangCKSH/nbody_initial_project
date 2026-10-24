@@ -4,6 +4,7 @@ import { OctreeStructure } from './spatial/OctreeStructure';
 import { UniformGridStructure } from './spatial/UniformGridStructure';
 import { VerletBufferController } from './VerletBufferController';
 import { ParticleSystem } from './ParticleSystem';
+import { shellCenter, shellCoreRadius, shellOf } from './scenario';
 import type { ParticleData } from './types';
 
 const particle = (id: number, x: number): ParticleData => ({ id, position: { x, y: 0, z: 0 }, velocity: { x: 1, y: 0, z: 0 }, acceleration: { x: 0, y: 0, z: 0 }, radius: 0.1, mass: 1, positionAtLastBroadPhase: { x, y: 0, z: 0 }, skin: 0.2 });
@@ -121,13 +122,13 @@ describe('collision core', () => {
     expect(tree.getLimits()).toEqual({ leafCapacity: 2, maxDepth: 2 });
     expect(new OctreeStructure({ x: 4, y: 4, z: 4 }).getLeafOf(0)).toBeNull();
   });
-  it('explosion scene starts packed at the centre and flies outward with mixed speeds under gravity', () => {
+  it('explosion scene starts packed at each shell centre and flies outward with mixed speeds under gravity', () => {
     const bounds = { x: 25, y: 25, z: 25 };
     const { particles } = new ParticleSystem(2000, bounds, 0, 0.4, 17, 'explosion');
-    const center = { x: 12.5, y: 12.5, z: 12.5 };
-    const coreRadius = Math.max(0.8, 0.12 * Math.cbrt(2000));
+    const coreRadius = shellCoreRadius(2000, 3);
     const speeds = particles.map(({ velocity: v }) => Math.hypot(v.x, v.y, v.z));
-    particles.forEach(({ position: p, velocity: v, acceleration: a }) => {
+    particles.forEach(({ id, position: p, velocity: v, acceleration: a }) => {
+      const center = shellCenter(shellOf(id, 3), bounds, 3);
       const offset = { x: p.x - center.x, y: p.y - center.y, z: p.z - center.z };
       expect(Math.hypot(offset.x, offset.y, offset.z)).toBeLessThanOrEqual(coreRadius + 1e-9);
       expect(offset.x * v.x + offset.y * v.y + offset.z * v.z).toBeGreaterThanOrEqual(0); // 往外飛
@@ -138,6 +139,23 @@ describe('collision core', () => {
     const sparks = speeds.filter((s) => s > 2.5 * 1.5).length / speeds.length;
     expect(sparks).toBeGreaterThan(0.18);
     expect(sparks).toBeLessThan(0.32);
+  });
+  it('cluster count controls the number of firework shells and cloud hotspots', () => {
+    const bounds = { x: 25, y: 25, z: 25 };
+    const fireworks = new ParticleSystem(1000, bounds, 0, 0.25, 17, 'explosion', 6);
+    const coreRadius = shellCoreRadius(1000, 6);
+    // 每顆粒子都在自己那一發的核心球內，且 6 發都有粒子
+    const used = new Set<number>();
+    fireworks.particles.forEach(({ id, position: p }) => {
+      const shell = shellOf(id, 6); used.add(shell);
+      const c = shellCenter(shell, bounds, 6);
+      expect(Math.hypot(p.x - c.x, p.y - c.y, p.z - c.z)).toBeLessThanOrEqual(coreRadius + 1e-9);
+    });
+    expect(used.size).toBe(6);
+    expect(new Set(fireworks.colors).size).toBeGreaterThanOrEqual(6);
+    // 前 3 發的位置不受總發數影響
+    expect(shellCenter(0, bounds, 6)).toEqual(shellCenter(0, bounds, 3));
+    expect(new ParticleSystem(10, bounds, 1, 0.25, 17, 'cloud', 4).clusters).toBe(4);
   });
   it('octree getLeafDepths matches getLeafOf for every particle', () => {
     const particles = [particle(0, 0.2), particle(1, 0.35), particle(2, 3), particle(3, 1.5), particle(4, 1.55)];

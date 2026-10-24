@@ -24,19 +24,42 @@ export interface ExplosionOptions {
   gravity: number;
   // 快速火花所佔比例
   sparkRatio?: number;
+  // 煙火發數（同時炸開幾發）
+  shellCount?: number;
   seed?: number;
 }
 
-// 煙火爆炸：粒子一開始擠在模擬空間正中央的小球內，沿「從中心往外」的方向飛出，
+export const MAX_SHELLS = 8;
+// 前 3 發用固定、好看的位置；更多發時，其餘的爆炸中心以固定亂數散佈在空中（以模擬空間的比例表示，0～1）
+const PRESET_SHELLS: Vec3[] = [
+  { x: 0.3, y: 0.7, z: 0.45 },
+  { x: 0.56, y: 0.6, z: 0.58 },
+  { x: 0.74, y: 0.78, z: 0.4 },
+];
+export function shellFractions(shellCount: number): Vec3[] {
+  let seed = 99;
+  const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  return Array.from({ length: shellCount }, (_, i) => PRESET_SHELLS[i] ?? { x: 0.2 + random() * 0.6, y: 0.55 + random() * 0.27, z: 0.3 + random() * 0.4 });
+}
+// 粒子 id % 發數 決定屬於哪一發
+export const shellOf = (id: number, shellCount: number) => id % shellCount;
+export const shellCenter = (shell: number, bounds: Vec3, shellCount: number): Vec3 => {
+  const f = shellFractions(shellCount)[shell];
+  return { x: f.x * bounds.x, y: f.y * bounds.y, z: f.z * bounds.z };
+};
+// 核心半徑隨每發粒子數的立方根成長，粒子數變多時初始重疊才不會太嚴重
+export const shellCoreRadius = (count: number, shellCount: number) => Math.max(0.6, 0.12 * Math.cbrt(count / shellCount));
+
+// 煙火爆炸：數發煙火同時在空中不同位置炸開。每發的粒子一開始擠在小球內，沿「從該發中心往外」的方向飛出，
 // 一部分是快速火花、其餘較慢，並受向下的重力。同時展示密度異質（中心極密 → 逐漸散開）與速度異質。
-export function explosion({ count, bounds, radius, burstSpeed, gravity, sparkRatio = 0.25, seed = 2026 }: ExplosionOptions): ParticleData[] {
+export function explosion({ count, bounds, radius, burstSpeed, gravity, sparkRatio = 0.25, shellCount = 3, seed = 2026 }: ExplosionOptions): ParticleData[] {
   const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   const uniform = (min: number, max: number) => min + random() * (max - min);
-  const center = { x: bounds.x / 2, y: bounds.y / 2, z: bounds.z / 2 };
-  // 核心半徑隨粒子數的立方根成長，粒子數變多時初始重疊才不會太嚴重
-  const coreRadius = Math.max(0.8, 0.12 * Math.cbrt(count));
+  const coreRadius = shellCoreRadius(count, shellCount);
+  const centers = Array.from({ length: shellCount }, (_, shell) => shellCenter(shell, bounds, shellCount));
 
   return Array.from({ length: count }, (_, id) => {
+    const center = centers[shellOf(id, shellCount)];
     // 球面上的均勻方向（cosθ 均勻分布）
     const cosTheta = uniform(-1, 1);
     const sinTheta = Math.sqrt(1 - cosTheta * cosTheta);

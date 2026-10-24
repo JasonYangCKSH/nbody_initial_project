@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Billboard, OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { Billboard, OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
 import { Activity, Crosshair, Download, Languages, LocateFixed, Pause, Play, RotateCcw, SkipForward, Sparkles, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
@@ -7,7 +7,8 @@ import { BruteForceStructure } from './core/spatial/BruteForceStructure';
 import { OctreeStructure } from './core/spatial/OctreeStructure';
 import { UniformGridStructure } from './core/spatial/UniformGridStructure';
 import { Instrumentation } from './core/metrics/Instrumentation';
-import { DEFAULT_ACCELERATION, ParticleSystem, type Scene } from './core/ParticleSystem';
+import { DEFAULT_ACCELERATION, ParticleSystem, SHELL_COLORS, type Scene } from './core/ParticleSystem';
+import { MAX_SHELLS, shellFractions } from './core/scenario';
 import { VerletBufferController } from './core/VerletBufferController';
 import type { ParticleData, RebuildEvent, StepMetrics, Vec3 } from './core/types';
 import { loadLang, saveLang, strings, type Algorithm, type Lang, type Strings } from './i18n';
@@ -91,10 +92,12 @@ const SELECTED_COLOR = '#5DCAA5';
 const toScene = (p: Vec3) => new THREE.Vector3(p.x - bounds.x / 2, p.y - bounds.y / 2, p.z - bounds.z / 2);
 
 // visibleDepths 不為 null 時，只顯示葉節點在這些層的粒子（依 leafDepths）；選取與觸發粒子一律保留
-function SimulationView({ particles, highlighted, collisionIds, triggerId, selectedId, onSelect, visibleDepths, leafDepths }: { particles: ParticleData[]; highlighted: Set<number>; collisionIds: Set<number>; triggerId: number | null; selectedId: number | null; onSelect: (id: number) => void; visibleDepths: Set<number> | null; leafDepths: number[] }) {
+// baseColors：每顆粒子的顯示顏色（煙火場景）；glow：改用不受燈光影響的發光材質
+function SimulationView({ particles, highlighted, collisionIds, triggerId, selectedId, onSelect, visibleDepths, leafDepths, baseColors, glow }: { particles: ParticleData[]; highlighted: Set<number>; collisionIds: Set<number>; triggerId: number | null; selectedId: number | null; onSelect: (id: number) => void; visibleDepths: Set<number> | null; leafDepths: number[]; baseColors: string[] | null; glow: boolean }) {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useRef(new THREE.Object3D());
   const colors = useMemo(() => ({ normal: new THREE.Color('#EDEAE2'), collision: new THREE.Color(COLLISION_COLOR), trigger: new THREE.Color(TRIGGER_COLOR), selected: new THREE.Color(SELECTED_COLOR) }), []);
+  const perParticle = useMemo(() => baseColors?.map((hex) => new THREE.Color(hex)) ?? null, [baseColors]);
   const camera = useThree((state) => state.camera);
   const canvas = useThree((state) => state.gl.domElement);
   const onSelectRef = useRef(onSelect);
@@ -128,10 +131,10 @@ function SimulationView({ particles, highlighted, collisionIds, triggerId, selec
       dummy.current.position.set(particle.position.x - bounds.x / 2, particle.position.y - bounds.y / 2, particle.position.z - bounds.z / 2);
       const hidden = visibleDepths !== null && !isSelected && !isTrigger && !visibleDepths.has(leafDepths[index]);
       // 縮放成 0 即隱藏，射線也打不到，點不到被隱藏的粒子
-      dummy.current.scale.setScalar(hidden ? 0 : isSelected || isTrigger ? 2.4 : collisionIds.has(index) ? 1.7 : 1);
+      dummy.current.scale.setScalar(hidden ? 0 : isSelected || isTrigger ? 2.4 : collisionIds.has(index) ? 1.7 : glow ? 1.3 : 1);
       dummy.current.updateMatrix();
       mesh.current!.setMatrixAt(index, dummy.current.matrix);
-      mesh.current!.setColorAt(index, isSelected ? colors.selected : isTrigger ? colors.trigger : collisionIds.has(index) ? colors.collision : colors.normal);
+      mesh.current!.setColorAt(index, isSelected ? colors.selected : isTrigger ? colors.trigger : collisionIds.has(index) ? colors.collision : perParticle?.[index] ?? colors.normal);
     });
     mesh.current.instanceMatrix.needsUpdate = true;
     if (mesh.current.instanceColor) mesh.current.instanceColor.needsUpdate = true;
@@ -140,9 +143,95 @@ function SimulationView({ particles, highlighted, collisionIds, triggerId, selec
     <instancedMesh ref={mesh} args={[undefined, undefined, particles.length]}
       onPointerOver={() => { document.body.style.cursor = 'pointer'; }} onPointerOut={() => { document.body.style.cursor = ''; }}>
       <sphereGeometry args={[0.075, 8, 6]} />
-      <meshStandardMaterial roughness={0.72} />
+      {glow ? <meshBasicMaterial toneMapped={false} /> : <meshStandardMaterial roughness={0.72} />}
     </instancedMesh>
   </>;
+}
+
+// ---------- 煙火場景的夜景：漸層夜空、星星、草地、遠山，以及煙火炸開時照亮地面的閃光 ----------
+const SKY_VERTEX = `varying vec3 vWorld; void main() { vWorld = (modelMatrix * vec4(position, 1.0)).xyz; gl_Position = projectionMatrix * viewMatrix * vec4(vWorld, 1.0); }`;
+// 依高度從地平線的深藍紫漸層到頭頂的近黑色
+const SKY_FRAGMENT = `varying vec3 vWorld; uniform vec3 horizon; uniform vec3 zenith;
+void main() { float h = clamp(normalize(vWorld).y * 1.6 + 0.15, 0.0, 1.0); gl_FragColor = vec4(mix(horizon, zenith, pow(h, 0.7)), 1.0); }`;
+
+function NightScene({ step, shellCount }: { step: number; shellCount: number }) {
+  const groundY = -bounds.y / 2;
+  const skyUniforms = useMemo(() => ({ horizon: { value: new THREE.Color('#2a2350') }, zenith: { value: new THREE.Color('#03050d') } }), []);
+  // 草：數千根細長的三角錐，位置與深淺固定（以固定亂數產生，每次重新整理都一樣）
+  const grass = useRef<THREE.InstancedMesh>(null);
+  const GRASS_COUNT = 6000;
+  useEffect(() => {
+    if (!grass.current) return;
+    let seed = 7;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    const dummy = new THREE.Object3D();
+    const color = new THREE.Color();
+    for (let i = 0; i < GRASS_COUNT; i += 1) {
+      const height = 0.35 + random() * 0.6;
+      dummy.position.set((random() - 0.5) * 110, groundY + height / 2, (random() - 0.5) * 90 - 5);
+      dummy.rotation.set((random() - 0.5) * 0.35, random() * Math.PI, (random() - 0.5) * 0.35);
+      dummy.scale.set(1, height, 1);
+      dummy.updateMatrix();
+      grass.current.setMatrixAt(i, dummy.matrix);
+      grass.current.setColorAt(i, color.setHSL(0.27 + random() * 0.08, 0.45, 0.12 + random() * 0.1));
+    }
+    grass.current.instanceMatrix.needsUpdate = true;
+    if (grass.current.instanceColor) grass.current.instanceColor.needsUpdate = true;
+  }, [groundY]);
+  // 煙火閃光：每發一盞同色點光源，炸開瞬間最亮，約 1 秒內衰減
+  const flash = 160 * Math.exp(-step / 25);
+  return <>
+    <mesh renderOrder={-1}>
+      <sphereGeometry args={[300, 32, 16]} />
+      <shaderMaterial side={THREE.BackSide} depthWrite={false} uniforms={skyUniforms} vertexShader={SKY_VERTEX} fragmentShader={SKY_FRAGMENT} />
+    </mesh>
+    <Stars radius={180} depth={60} count={2500} factor={5} saturation={0} fade speed={0.6} />
+    <hemisphereLight args={['#3b4a8a', '#0b1a10', 0.35]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, groundY - 0.01, 0]}>
+      <planeGeometry args={[400, 400]} />
+      <meshStandardMaterial color="#0d2414" roughness={1} />
+    </mesh>
+    <instancedMesh ref={grass} args={[undefined, undefined, GRASS_COUNT]} raycast={() => null}>
+      <coneGeometry args={[0.05, 1, 3]} />
+      <meshStandardMaterial roughness={0.9} />
+    </instancedMesh>
+    {/* 遠方山丘剪影 */}
+    {[[-70, -90, 40, 12], [10, -110, 55, 16], [85, -95, 45, 11]].map(([x, z, w, h], i) => (
+      <mesh key={i} position={[x, groundY, z]} scale={[w, h, 18]}><sphereGeometry args={[1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2]} /><meshStandardMaterial color="#070c14" roughness={1} /></mesh>
+    ))}
+    {shellFractions(shellCount).map((f, i) => (
+      <pointLight key={i} position={[(f.x - 0.5) * bounds.x, (f.y - 0.5) * bounds.y, (f.z - 0.5) * bounds.z]} color={SHELL_COLORS[i % SHELL_COLORS.length]} intensity={flash} distance={60} decay={1.2} />
+    ))}
+    <fog attach="fog" args={['#120f2a', 60, 170]} />
+  </>;
+}
+
+// 煙火尾跡：每顆粒子往速度反方向拖一條線，頭端是粒子顏色、尾端淡成黑色；加法混色下黑色等於透明，看起來像逐漸消失的光痕
+const TRAIL_SECONDS = 0.18;
+function SparkTrails({ particles, baseColors }: { particles: ParticleData[]; baseColors: string[] }) {
+  const geometry = useMemo(() => {
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(particles.length * 6), 3));
+    const colors = new Float32Array(particles.length * 6);
+    const rgb = new THREE.Color();
+    baseColors.forEach((hex, index) => { rgb.set(hex); colors.set([rgb.r, rgb.g, rgb.b], index * 6); }); // 尾端保持 0（黑）
+    geom.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    return geom;
+  }, [particles, baseColors]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  useFrame(() => {
+    const position = geometry.getAttribute('position') as THREE.BufferAttribute;
+    const array = position.array as Float32Array;
+    particles.forEach((p, index) => {
+      const x = p.position.x - bounds.x / 2, y = p.position.y - bounds.y / 2, z = p.position.z - bounds.z / 2;
+      array.set([x, y, z, x - p.velocity.x * TRAIL_SECONDS, y - p.velocity.y * TRAIL_SECONDS, z - p.velocity.z * TRAIL_SECONDS], index * 6);
+    });
+    position.needsUpdate = true;
+    geometry.computeBoundingSphere();
+  });
+  return <lineSegments geometry={geometry}>
+    <lineBasicMaterial vertexColors transparent opacity={0.9} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+  </lineSegments>;
 }
 
 // 定位標記：一律面向鏡頭的圓環 + 往上延伸到模擬範圍頂端的光柱 + 半徑為 r + skin 的線框球
@@ -170,29 +259,17 @@ function ParticleMarker({ particle, color }: { particle: ParticleData; color: st
 // 鍵盤移動視角：W/S 前後、A/D 左右、Q/E 下上，按住 Shift 加速。
 // 鏡頭與 OrbitControls 的旋轉中心一起平移，滑鼠旋轉時才不會突然跳回原本的中心。
 const MOVE_KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyQ', 'KeyE', 'ShiftLeft', 'ShiftRight']);
-function KeyboardMove({ speed = 6 }: { speed?: number }) {
+// enabled 為 false 時（煙火場景改由觀眾小人使用 WASD）不移動鏡頭
+function KeyboardMove({ speed = 6, enabled = true }: { speed?: number; enabled?: boolean }) {
   const camera = useThree((state) => state.camera);
   const controls = useThree((state) => state.controls) as unknown as { target: THREE.Vector3; update: () => void } | null;
-  const pressed = useRef(new Set<string>());
-  useEffect(() => {
-    const isTyping = (event: KeyboardEvent) => {
-      const el = event.target as HTMLElement | null;
-      return !!el && (el.isContentEditable || el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && (el as HTMLInputElement).type !== 'range' && (el as HTMLInputElement).type !== 'checkbox'));
-    };
-    const down = (event: KeyboardEvent) => { if (MOVE_KEYS.has(event.code) && !isTyping(event) && !event.ctrlKey && !event.metaKey && !event.altKey) pressed.current.add(event.code); };
-    const up = (event: KeyboardEvent) => { pressed.current.delete(event.code); };
-    const clear = () => pressed.current.clear(); // 視窗失焦時放開所有按鍵，避免一直往同方向飄
-    window.addEventListener('keydown', down);
-    window.addEventListener('keyup', up);
-    window.addEventListener('blur', clear);
-    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); window.removeEventListener('blur', clear); };
-  }, []);
+  const pressed = usePressedKeys();
   const forward = useRef(new THREE.Vector3());
   const right = useRef(new THREE.Vector3());
   const move = useRef(new THREE.Vector3());
   useFrame((_, delta) => {
     const keys = pressed.current;
-    if (!keys.size) return;
+    if (!enabled || !keys.size) return;
     camera.getWorldDirection(forward.current);
     right.current.crossVectors(forward.current, camera.up).normalize();
     move.current.set(0, 0, 0);
@@ -211,8 +288,115 @@ function KeyboardMove({ speed = 6 }: { speed?: number }) {
   return null;
 }
 
+// ---------- 地上的觀眾：WASD 走路、Q/E 轉向；觀眾視角下按住滑鼠拖曳看四周 ----------
+type Spectator = { x: number; z: number; yaw: number; pitch: number };
+// 站在模擬空間前方的草地上，面向煙火、稍微抬頭
+const SPECTATOR_START: Spectator = { x: 0, z: 17, yaw: 0, pitch: 0.42 };
+const GROUND_Y = -bounds.y / 2;
+const EYE_HEIGHT = 1.7;
+
+function SpectatorModel({ spectator, visible }: { spectator: Spectator; visible: boolean }) {
+  const group = useRef<THREE.Group>(null);
+  useFrame(() => {
+    if (!group.current) return;
+    group.current.position.set(spectator.x, GROUND_Y, spectator.z);
+    group.current.rotation.y = spectator.yaw;
+  });
+  // 模型正面朝 -z（與鏡頭預設方向一致），右手舉起指向天空
+  return <group ref={group} visible={visible}>
+    <mesh position={[-0.11, 0.42, 0]}><cylinderGeometry args={[0.08, 0.08, 0.84, 8]} /><meshStandardMaterial color="#2b3a55" /></mesh>
+    <mesh position={[0.11, 0.42, 0]}><cylinderGeometry args={[0.08, 0.08, 0.84, 8]} /><meshStandardMaterial color="#2b3a55" /></mesh>
+    <mesh position={[0, 1.17, 0]}><cylinderGeometry args={[0.2, 0.24, 0.7, 12]} /><meshStandardMaterial color="#5DCAA5" /></mesh>
+    <mesh position={[-0.3, 1.12, 0]} rotation={[0, 0, -0.15]}><cylinderGeometry args={[0.06, 0.06, 0.62, 8]} /><meshStandardMaterial color="#5DCAA5" /></mesh>
+    <mesh position={[0.32, 1.62, -0.12]} rotation={[0.45, 0, -0.25]}><cylinderGeometry args={[0.06, 0.06, 0.62, 8]} /><meshStandardMaterial color="#5DCAA5" /></mesh>
+    <mesh position={[0, 1.68, 0]}><sphereGeometry args={[0.17, 16, 12]} /><meshStandardMaterial color="#f1c9a5" /></mesh>
+    {/* 腳下的定位圈與面向箭頭，從遠處也找得到小人 */}
+    <mesh position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[0.55, 0.68, 40]} /><meshBasicMaterial color="#5DCAA5" transparent opacity={0.75} toneMapped={false} /></mesh>
+    <mesh position={[0, 0.04, -0.95]} rotation={[-Math.PI / 2, 0, 0]}><coneGeometry args={[0.16, 0.36, 3]} /><meshBasicMaterial color="#5DCAA5" toneMapped={false} /></mesh>
+  </group>;
+}
+
+function SpectatorController({ spectator, active, firstPerson, speed = 4 }: { spectator: Spectator; active: boolean; firstPerson: boolean; speed?: number }) {
+  const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
+  const canvas = useThree((state) => state.gl.domElement);
+  const controls = useThree((state) => state.controls) as unknown as { enabled: boolean } | null;
+  const pressed = usePressedKeys();
+  // 觀眾視角：關掉 OrbitControls、視野放寬；回到自由視角時恢復
+  useEffect(() => {
+    if (controls) controls.enabled = !firstPerson;
+    camera.fov = firstPerson ? 62 : 42;
+    camera.updateProjectionMatrix();
+  }, [firstPerson, controls, camera]);
+  // 按住滑鼠拖曳看四周（移動超過幾像素才算拖曳，所以點一下仍能選取粒子）
+  useEffect(() => {
+    if (!firstPerson) return;
+    let dragging = false;
+    const down = (event: PointerEvent) => { dragging = event.button === 0; };
+    const move = (event: PointerEvent) => {
+      if (!dragging) return;
+      spectator.yaw -= event.movementX * 0.004;
+      spectator.pitch = Math.min(1.45, Math.max(-1.2, spectator.pitch - event.movementY * 0.004));
+    };
+    const up = () => { dragging = false; };
+    canvas.addEventListener('pointerdown', down);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    return () => { canvas.removeEventListener('pointerdown', down); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+  }, [firstPerson, canvas, spectator]);
+  useFrame((_, delta) => {
+    if (!active) return;
+    const keys = pressed.current;
+    const dt = Math.min(delta, 0.1);
+    const fast = keys.has('ShiftLeft') || keys.has('ShiftRight') ? 2.5 : 1;
+    if (keys.has('KeyQ')) spectator.yaw += 1.6 * dt;
+    if (keys.has('KeyE')) spectator.yaw -= 1.6 * dt;
+    // 依小人面向的方向前後左右走（面向 -z 時 yaw = 0）
+    const forwardX = -Math.sin(spectator.yaw), forwardZ = -Math.cos(spectator.yaw);
+    let dx = 0, dz = 0;
+    if (keys.has('KeyW')) { dx += forwardX; dz += forwardZ; }
+    if (keys.has('KeyS')) { dx -= forwardX; dz -= forwardZ; }
+    if (keys.has('KeyD')) { dx -= forwardZ; dz += forwardX; }
+    if (keys.has('KeyA')) { dx += forwardZ; dz -= forwardX; }
+    const length = Math.hypot(dx, dz);
+    if (length > 0) {
+      spectator.x = Math.min(50, Math.max(-50, spectator.x + (dx / length) * speed * fast * dt));
+      spectator.z = Math.min(45, Math.max(-50, spectator.z + (dz / length) * speed * fast * dt));
+    }
+    if (firstPerson) {
+      camera.position.set(spectator.x, GROUND_Y + EYE_HEIGHT, spectator.z);
+      camera.rotation.set(spectator.pitch, spectator.yaw, 0, 'YXZ');
+    }
+  });
+  return null;
+}
+
+// 追蹤目前按住的移動鍵（在輸入框打字時不算）；視窗失焦時全部放開，避免一直往同方向飄
+function usePressedKeys() {
+  const pressed = useRef(new Set<string>());
+  useEffect(() => {
+    const isTyping = (event: KeyboardEvent) => {
+      const el = event.target as HTMLElement | null;
+      return !!el && (el.isContentEditable || el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && (el as HTMLInputElement).type !== 'range' && (el as HTMLInputElement).type !== 'checkbox'));
+    };
+    const down = (event: KeyboardEvent) => { if (MOVE_KEYS.has(event.code) && !isTyping(event) && !event.ctrlKey && !event.metaKey && !event.altKey) pressed.current.add(event.code); };
+    const up = (event: KeyboardEvent) => { pressed.current.delete(event.code); };
+    const clear = () => pressed.current.clear();
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    window.addEventListener('blur', clear);
+    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); window.removeEventListener('blur', clear); };
+  }, []);
+  return pressed;
+}
+
 // focus / resetView 每次遞增就執行一次：把鏡頭拉到選取的粒子旁，或回到初始視角
-function CameraRig({ focusTarget, focusToken, resetToken }: { focusTarget: ParticleData | null; focusToken: number; resetToken: number }) {
+type CameraPose = { position: [number, number, number]; target: [number, number, number] };
+// 粒子雲：原本的斜上方視角；煙火：退到遠處、從低處往上看，像在地面看煙火
+const CLOUD_POSE: CameraPose = { position: [8, 6, 11], target: [0, 0, 0] };
+// 退到斜前方約 53 的距離：視角 42° 下可容納整個 25×25×25 的模擬空間，也看得到站在前方草地上的觀眾
+const FIREWORK_POSE: CameraPose = { position: [12, -2, 52], target: [0, -1, 0] };
+
+function CameraRig({ focusTarget, focusToken, resetToken, homePose }: { focusTarget: ParticleData | null; focusToken: number; resetToken: number; homePose: CameraPose }) {
   const camera = useThree((state) => state.camera);
   const controls = useThree((state) => state.controls) as unknown as { target: THREE.Vector3; update: () => void } | null;
   useEffect(() => {
@@ -225,8 +409,8 @@ function CameraRig({ focusTarget, focusToken, resetToken }: { focusTarget: Parti
   }, [focusToken]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!resetToken || !controls) return;
-    controls.target.set(0, 0, 0);
-    camera.position.set(8, 6, 11);
+    controls.target.set(...homePose.target);
+    camera.position.set(...homePose.position);
     controls.update();
   }, [resetToken]); // eslint-disable-line react-hooks/exhaustive-deps
   return null;
@@ -258,6 +442,14 @@ function App() {
   const [count, setCount] = useState(1200);
   const [clusterFactor, setClusterFactor] = useState(0);
   const [scene, setScene] = useState<Scene>('cloud');
+  // 粒子雲的群聚中心數與煙火發數分開記，切換場景時各自保留
+  const [hotspotCount, setHotspotCount] = useState(1);
+  const [shellCount, setShellCount] = useState(3);
+  const clusters = scene === 'explosion' ? shellCount : hotspotCount;
+  // 煙火場景的觀眾小人（位置與視線方向，每幀直接修改，不觸發重新渲染）與視角模式
+  const spectator = useRef<Spectator>({ ...SPECTATOR_START });
+  const [viewMode, setViewMode] = useState<'orbit' | 'person'>('orbit');
+  const switchView = (mode: 'orbit' | 'person') => { setViewMode(mode); if (mode === 'orbit') setResetViewToken((value) => value + 1); };
   const [acceleration, setAcceleration] = useState(DEFAULT_ACCELERATION);
   const [algorithm, setAlgorithm] = useState<Algorithm>('Brute Force');
   const [bufferEnabled, setBufferEnabled] = useState(false);
@@ -285,7 +477,7 @@ function App() {
   const [lang, setLang] = useState<Lang>(loadLang);
   const t = strings[lang];
   useEffect(() => { document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en'; saveLang(lang); }, [lang]);
-  const system = useRef(new ParticleSystem(count, bounds, clusterFactor, acceleration, 17, scene));
+  const system = useRef(new ParticleSystem(count, bounds, clusterFactor, acceleration, 17, scene, clusters));
   const instrumentation = useRef(new Instrumentation());
   const controller = useRef(new VerletBufferController(0.15, K, dt));
   const structure = useRef(algorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : algorithm === 'Octree' ? new OctreeStructure(bounds, OCTREE_MAX_DEPTH, OCTREE_LEAF_CAPACITY) : new BruteForceStructure());
@@ -293,8 +485,15 @@ function App() {
   const collisionIds = useRef(new Set<number>());
   const cachedPairs = useRef<[number, number][]>([]);
 
-  // nextScene 只在切換場景時傳入（state 尚未更新）；其餘情況沿用目前的場景
-  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm, nextScene: Scene = scene) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds, clusterFactor, acceleration, 17, nextScene); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, OCTREE_MAX_DEPTH, OCTREE_LEAF_CAPACITY) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; instrumentation.current = new Instrumentation(); metricsRef.current = initialMetrics(nextAlgorithm); setMetrics(metricsRef.current); setHistory([]); setEvents([]); setSelectedId(null); setDepthFilter(new Set()); triggerCounts.current = new Map(); setVersion((value) => value + 1); };
+  // overrides 只在剛改了場景或聚集數量時傳入（state 尚未更新）；其餘情況沿用目前的設定
+  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm, overrides: { scene?: Scene; clusters?: number } = {}) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; const nextScene = overrides.scene ?? scene; const nextClusters = overrides.clusters ?? (nextScene === 'explosion' ? shellCount : hotspotCount); system.current = new ParticleSystem(count, bounds, clusterFactor, acceleration, 17, nextScene, nextClusters); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, OCTREE_MAX_DEPTH, OCTREE_LEAF_CAPACITY) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; instrumentation.current = new Instrumentation(); metricsRef.current = initialMetrics(nextAlgorithm); setMetrics(metricsRef.current); setHistory([]); setEvents([]); setSelectedId(null); setDepthFilter(new Set()); triggerCounts.current = new Map(); setVersion((value) => value + 1); };
+  // 更新聚集數量（1～MAX_SHELLS），並以新的數量重新產生粒子
+  const applyClusters = (value: number) => {
+    if (!Number.isFinite(value)) return;
+    const next = Math.min(MAX_SHELLS, Math.max(1, Math.round(value)));
+    if (scene === 'explosion') setShellCount(next); else setHotspotCount(next);
+    reset(algorithm, { clusters: next });
+  };
   const step = () => {
     const started = performance.now();
     const prev = metricsRef.current;
@@ -383,30 +582,34 @@ function App() {
         <Canvas dpr={[1, 1.5]}>
           <PerspectiveCamera makeDefault position={[8, 6, 11]} fov={42} />
           <OrbitControls enableDamping dampingFactor={0.1} minDistance={3} maxDistance={60} makeDefault />
-          <color attach="background" args={['#0D1420']} />
+          {scene !== 'explosion' && <color attach="background" args={['#0D1420']} />}
+          {scene === 'explosion' && <NightScene step={metrics.step} shellCount={shellCount} />}
           <ambientLight intensity={1.5} />
           <pointLight position={[4, 8, 6]} intensity={30} color="#D9A441" />
-          <SimulationView particles={system.current.particles} highlighted={highlighted.current} collisionIds={collisionIds.current} triggerId={triggerId} selectedId={selectedId} onSelect={(id) => selectParticle(id)} visibleDepths={particleDepthFilter} leafDepths={leafDepths} />
+          <SimulationView particles={system.current.particles} highlighted={highlighted.current} collisionIds={collisionIds.current} triggerId={triggerId} selectedId={selectedId} onSelect={(id) => selectParticle(id)} visibleDepths={particleDepthFilter} leafDepths={leafDepths} baseColors={system.current.colors} glow={scene === 'explosion'} />
           {algorithm === 'Uniform Grid' && showGrid && <BoundingGridLines bounds={bounds} cellSize={CELL_SIZE} color="#8FD9FF" />}
           {algorithm === 'Octree' && showGrid && <OctreeLines boxes={visibleOctreeBoxes} bounds={bounds} />}
           {algorithm === 'Octree' && showGrid && visibleSplitBoxes.length > 0 && <OctreeLines boxes={visibleSplitBoxes} bounds={bounds} dashed />}
           {triggerId !== null && triggerId !== selectedId && system.current.particles[triggerId] && <ParticleMarker particle={system.current.particles[triggerId]} color={TRIGGER_COLOR} />}
           {selected && <ParticleMarker particle={selected} color={SELECTED_COLOR} />}
           {selectedLeaf && <OctreeLines boxes={[selectedLeaf]} bounds={bounds} color={SELECTED_COLOR} />}
-          <CameraRig focusTarget={selected} focusToken={focusToken} resetToken={resetViewToken} />
-          <KeyboardMove />
+          <CameraRig focusTarget={selected} focusToken={focusToken} resetToken={resetViewToken} homePose={scene === 'explosion' ? FIREWORK_POSE : CLOUD_POSE} />
+          {scene === 'explosion' && system.current.colors && <SparkTrails particles={system.current.particles} baseColors={system.current.colors} />}
+          <KeyboardMove enabled={scene !== 'explosion'} />
+          {scene === 'explosion' && <SpectatorModel spectator={spectator.current} visible={viewMode === 'orbit'} />}
+          <SpectatorController spectator={spectator.current} active={scene === 'explosion'} firstPerson={scene === 'explosion' && viewMode === 'person'} />
         </Canvas>
         <div className="viewport-label">
           <span className="live-dot" /> {t.liveSimulation}
           <span className="viewport-field">{t.labelStructure} <b>{t.algorithms[algorithm]}</b></span>
-          <span className="viewport-field">{t.labelDistribution} <b>{scene === 'explosion' ? t.sceneExplosion : clusterFactor > 0 ? t.spatialCluster(clusterFactor.toFixed(2)) : t.uniformCloud}</b></span>
+          <span className="viewport-field">{t.labelDistribution} <b>{scene === 'explosion' ? t.sceneExplosion(shellCount) : clusterFactor > 0 ? t.spatialCluster(clusterFactor.toFixed(2), hotspotCount) : t.uniformCloud}</b></span>
         </div>
         <div className="viewport-legend">
           <span><i style={{ background: COLLISION_COLOR }} />{t.legendCollision}</span>
           <span><i style={{ background: TRIGGER_COLOR }} />{t.legendTrigger}</span>
           <span><i style={{ background: SELECTED_COLOR }} />{t.legendSelected}</span>
           <span className="hint">{t.clickToSelect}</span>
-          <span className="hint keys">{t.keyboardHint}</span>
+          <span className="hint keys">{scene === 'explosion' ? (viewMode === 'person' ? t.keyboardHintPerson : t.keyboardHintSpectator) : t.keyboardHint}</span>
         </div>
       </section>
 
@@ -439,14 +642,32 @@ function App() {
           <label>{t.scene}</label>
           <div className="segmented">
             {(['cloud', 'explosion'] as Scene[]).map((item) => (
-              <button className={scene === item ? 'active' : ''} onClick={() => { setScene(item); reset(algorithm, item); }} key={item}>
+              <button className={scene === item ? 'active' : ''} onClick={() => { setScene(item); setViewMode('orbit'); reset(algorithm, { scene: item }); setResetViewToken((value) => value + 1); }} key={item}>
                 {t.scenes[item]}
               </button>
             ))}
           </div>
           {scene === 'explosion' && (
-            <button className="relaunch" onClick={() => reset()}><Sparkles size={14} /> {t.relaunch}</button>
+            <>
+              <button className="relaunch" onClick={() => reset()}><Sparkles size={14} /> {t.relaunch}</button>
+              <label>{t.viewMode}</label>
+              <div className="segmented">
+                {(['orbit', 'person'] as const).map((mode) => (
+                  <button key={mode} className={viewMode === mode ? 'active' : ''} onClick={() => switchView(mode)}>{mode === 'orbit' ? t.viewOrbit : t.viewPerson}</button>
+                ))}
+              </div>
+              <button className="spectator-reset" onClick={() => { Object.assign(spectator.current, SPECTATOR_START); }}>{t.spectatorReset}</button>
+            </>
           )}
+
+          <div className="count-row">
+            <span>{scene === 'explosion' ? t.shellCount : t.clusterCount}<small>{scene === 'explosion' ? t.shellCountHint : t.clusterCountHint}</small></span>
+            <div className="stepper">
+              <button onClick={() => applyClusters(clusters - 1)} disabled={clusters <= 1} aria-label="-1">−</button>
+              <input type="number" min={1} max={MAX_SHELLS} value={clusters} onChange={(event) => applyClusters(Number(event.target.value))} />
+              <button onClick={() => applyClusters(clusters + 1)} disabled={clusters >= MAX_SHELLS} aria-label="+1">+</button>
+            </div>
+          </div>
 
           <label className={scene === 'explosion' ? 'muted' : ''}>
             {t.clusterFactor} <strong>{clusterFactor.toFixed(2)}</strong>
