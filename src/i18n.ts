@@ -1,3 +1,4 @@
+import type { Scene } from './core/ParticleSystem';
 import type { RebuildEvent } from './core/types';
 
 export type Lang = 'en' | 'zh';
@@ -25,6 +26,11 @@ const en = {
   titleSub: 'diagnostics',
   controlDeck: 'CONTROL DECK',
   particleCount: 'PARTICLE COUNT',
+  scene: 'SCENARIO',
+  scenes: { cloud: 'Particle cloud', explosion: 'Firework burst' } as Record<Scene, string>,
+  sceneExplosion: 'firework burst',
+  relaunch: 'LAUNCH AGAIN',
+  gravity: 'GRAVITY',
   clusterFactor: 'CLUSTER FACTOR',
   acceleration: 'ACCELERATION',
   spatialStructure: 'SPATIAL STRUCTURE',
@@ -124,6 +130,11 @@ const zh: Strings = {
   titleSub: '診斷面板',
   controlDeck: '控制面板',
   particleCount: '粒子數量',
+  scene: '場景',
+  scenes: { cloud: '粒子雲', explosion: '煙火爆炸' },
+  sceneExplosion: '煙火爆炸',
+  relaunch: '再爆一次',
+  gravity: '重力',
   clusterFactor: '群聚係數',
   acceleration: '加速度',
   spatialStructure: '空間結構',

@@ -8,3 +8,4 @@
 .trigger-hint{margin:-6px 0 14px;font:9px/1.55 'IBM Plex Mono',monospace;color:#b98cff;opacity:.8}
 .depth-list i.dot{width:6px;height:6px;border-radius:50%;background:#edeae2}.split-toggle+.split-toggle{border-top:0;padding-top:0}
 .viewport-legend .keys{flex-basis:100%;color:#71858a}
+.relaunch{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:10px;background:#3a2a1a;border:1px solid #d9a441;color:#ffc857;padding:9px 12px;font:10px 'IBM Plex Mono',monospace;letter-spacing:1px;cursor:pointer}.relaunch:hover{background:#4a3420;color:#ffe0a0}input[type=range]:disabled{cursor:default}

@@ -1,13 +1,13 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Billboard, OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import { Activity, Crosshair, Download, Languages, LocateFixed, Pause, Play, RotateCcw, SkipForward, X } from 'lucide-react';
+import { Activity, Crosshair, Download, Languages, LocateFixed, Pause, Play, RotateCcw, SkipForward, Sparkles, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { BruteForceStructure } from './core/spatial/BruteForceStructure';
 import { OctreeStructure } from './core/spatial/OctreeStructure';
 import { UniformGridStructure } from './core/spatial/UniformGridStructure';
 import { Instrumentation } from './core/metrics/Instrumentation';
-import { DEFAULT_ACCELERATION, ParticleSystem } from './core/ParticleSystem';
+import { DEFAULT_ACCELERATION, ParticleSystem, type Scene } from './core/ParticleSystem';
 import { VerletBufferController } from './core/VerletBufferController';
 import type { ParticleData, RebuildEvent, StepMetrics, Vec3 } from './core/types';
 import { loadLang, saveLang, strings, type Algorithm, type Lang, type Strings } from './i18n';
@@ -257,6 +257,7 @@ const initialMetrics = (algorithm: string): StepMetrics => ({ step: 0, algorithm
 function App() {
   const [count, setCount] = useState(1200);
   const [clusterFactor, setClusterFactor] = useState(0);
+  const [scene, setScene] = useState<Scene>('cloud');
   const [acceleration, setAcceleration] = useState(DEFAULT_ACCELERATION);
   const [algorithm, setAlgorithm] = useState<Algorithm>('Brute Force');
   const [bufferEnabled, setBufferEnabled] = useState(false);
@@ -284,7 +285,7 @@ function App() {
   const [lang, setLang] = useState<Lang>(loadLang);
   const t = strings[lang];
   useEffect(() => { document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en'; saveLang(lang); }, [lang]);
-  const system = useRef(new ParticleSystem(count, bounds, clusterFactor, acceleration));
+  const system = useRef(new ParticleSystem(count, bounds, clusterFactor, acceleration, 17, scene));
   const instrumentation = useRef(new Instrumentation());
   const controller = useRef(new VerletBufferController(0.15, K, dt));
   const structure = useRef(algorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : algorithm === 'Octree' ? new OctreeStructure(bounds, OCTREE_MAX_DEPTH, OCTREE_LEAF_CAPACITY) : new BruteForceStructure());
@@ -292,7 +293,8 @@ function App() {
   const collisionIds = useRef(new Set<number>());
   const cachedPairs = useRef<[number, number][]>([]);
 
-  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds, clusterFactor, acceleration); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, OCTREE_MAX_DEPTH, OCTREE_LEAF_CAPACITY) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; instrumentation.current = new Instrumentation(); metricsRef.current = initialMetrics(nextAlgorithm); setMetrics(metricsRef.current); setHistory([]); setEvents([]); setSelectedId(null); setDepthFilter(new Set()); triggerCounts.current = new Map(); setVersion((value) => value + 1); };
+  // nextScene 只在切換場景時傳入（state 尚未更新）；其餘情況沿用目前的場景
+  const reset = (nextAlgorithmOrEvent: Algorithm | unknown = algorithm, nextScene: Scene = scene) => { const nextAlgorithm = typeof nextAlgorithmOrEvent === 'string' ? nextAlgorithmOrEvent : algorithm; system.current = new ParticleSystem(count, bounds, clusterFactor, acceleration, 17, nextScene); structure.current = nextAlgorithm === 'Uniform Grid' ? new UniformGridStructure(bounds, CELL_SIZE) : nextAlgorithm === 'Octree' ? new OctreeStructure(bounds, OCTREE_MAX_DEPTH, OCTREE_LEAF_CAPACITY) : new BruteForceStructure(); controller.current = new VerletBufferController(0.15, K, dt); cachedPairs.current = []; instrumentation.current = new Instrumentation(); metricsRef.current = initialMetrics(nextAlgorithm); setMetrics(metricsRef.current); setHistory([]); setEvents([]); setSelectedId(null); setDepthFilter(new Set()); triggerCounts.current = new Map(); setVersion((value) => value + 1); };
   const step = () => {
     const started = performance.now();
     const prev = metricsRef.current;
@@ -397,7 +399,7 @@ function App() {
         <div className="viewport-label">
           <span className="live-dot" /> {t.liveSimulation}
           <span className="viewport-field">{t.labelStructure} <b>{t.algorithms[algorithm]}</b></span>
-          <span className="viewport-field">{t.labelDistribution} <b>{clusterFactor > 0 ? t.spatialCluster(clusterFactor.toFixed(2)) : t.uniformCloud}</b></span>
+          <span className="viewport-field">{t.labelDistribution} <b>{scene === 'explosion' ? t.sceneExplosion : clusterFactor > 0 ? t.spatialCluster(clusterFactor.toFixed(2)) : t.uniformCloud}</b></span>
         </div>
         <div className="viewport-legend">
           <span><i style={{ background: COLLISION_COLOR }} />{t.legendCollision}</span>
@@ -434,14 +436,26 @@ function App() {
           <input type="range" min="1000" max="50000" step="100" value={count} onChange={(event) => { setCount(Number(event.target.value)); }} onMouseUp={reset} />
           <div className="range-endpoints"><span>1,000</span><span>50,000</span></div>
 
-          <label>
+          <label>{t.scene}</label>
+          <div className="segmented">
+            {(['cloud', 'explosion'] as Scene[]).map((item) => (
+              <button className={scene === item ? 'active' : ''} onClick={() => { setScene(item); reset(algorithm, item); }} key={item}>
+                {t.scenes[item]}
+              </button>
+            ))}
+          </div>
+          {scene === 'explosion' && (
+            <button className="relaunch" onClick={() => reset()}><Sparkles size={14} /> {t.relaunch}</button>
+          )}
+
+          <label className={scene === 'explosion' ? 'muted' : ''}>
             {t.clusterFactor} <strong>{clusterFactor.toFixed(2)}</strong>
           </label>
-          <input type="range" min="0" max="1" step="0.01" value={clusterFactor} onChange={(event) => { setClusterFactor(Number(event.target.value)); }} onMouseUp={reset} />
+          <input disabled={scene === 'explosion'} type="range" min="0" max="1" step="0.01" value={clusterFactor} onChange={(event) => { setClusterFactor(Number(event.target.value)); }} onMouseUp={reset} />
           <div className="range-endpoints"><span>0.00</span><span>1.00</span></div>
 
           <label>
-            {t.acceleration} <strong>±{acceleration.toFixed(2)}</strong>
+            {scene === 'explosion' ? t.gravity : t.acceleration} <strong>{scene === 'explosion' ? '' : '±'}{acceleration.toFixed(2)}</strong>
           </label>
           <input type="range" min="0" max="2" step="0.05" value={acceleration} onChange={(event) => { setAcceleration(Number(event.target.value)); }} onMouseUp={reset} />
           <div className="range-endpoints"><span>0.00</span><span>2.00</span></div>

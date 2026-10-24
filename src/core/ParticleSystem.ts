@@ -1,17 +1,24 @@
 import { add, scale, type ParticleData, type Vec3 } from './types';
-import { spatialCluster } from './scenario';
+import { explosion, spatialCluster } from './scenario';
 
 export const PARTICLE_RADIUS = 0.075;
 // 每軸加速度分量取自 [-acc, acc]，對應 C++ scenario::spatialCluster 的 acc 參數
 export const DEFAULT_ACCELERATION = 0.25;
+// 煙火爆炸場景中慢速粒子的基準速度
+export const EXPLOSION_BURST_SPEED = 2.5;
+
+// cloud：均勻／群聚粒子雲（clusterFactor 決定）；explosion：煙火爆炸（acc 當作向下的重力）
+export type Scene = 'cloud' | 'explosion';
 
 export class ParticleSystem {
   readonly particles: ParticleData[];
-  constructor(count: number, readonly bounds: Vec3, clusterFactor = 0, acc = DEFAULT_ACCELERATION, seed = 17) {
-    this.particles = spatialCluster({
-      count, bounds, radius: PARTICLE_RADIUS, speed: 0.75, acc, clusterFactor,
-      hotspotSpread: 0.03 * bounds.x, hotspotCount: 1, seed,
-    });
+  constructor(count: number, readonly bounds: Vec3, clusterFactor = 0, acc = DEFAULT_ACCELERATION, seed = 17, scene: Scene = 'cloud') {
+    this.particles = scene === 'explosion'
+      ? explosion({ count, bounds, radius: PARTICLE_RADIUS, burstSpeed: EXPLOSION_BURST_SPEED, gravity: acc, seed })
+      : spatialCluster({
+        count, bounds, radius: PARTICLE_RADIUS, speed: 0.75, acc, clusterFactor,
+        hotspotSpread: 0.03 * bounds.x, hotspotCount: 1, seed,
+      });
   }
   // 與 C++ Simulation::integrate 相同：先更新速度、再更新位置，最後做牆面反彈
   step(dt: number): void {

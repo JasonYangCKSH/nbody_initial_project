@@ -121,6 +121,24 @@ describe('collision core', () => {
     expect(tree.getLimits()).toEqual({ leafCapacity: 2, maxDepth: 2 });
     expect(new OctreeStructure({ x: 4, y: 4, z: 4 }).getLeafOf(0)).toBeNull();
   });
+  it('explosion scene starts packed at the centre and flies outward with mixed speeds under gravity', () => {
+    const bounds = { x: 25, y: 25, z: 25 };
+    const { particles } = new ParticleSystem(2000, bounds, 0, 0.4, 17, 'explosion');
+    const center = { x: 12.5, y: 12.5, z: 12.5 };
+    const coreRadius = Math.max(0.8, 0.12 * Math.cbrt(2000));
+    const speeds = particles.map(({ velocity: v }) => Math.hypot(v.x, v.y, v.z));
+    particles.forEach(({ position: p, velocity: v, acceleration: a }) => {
+      const offset = { x: p.x - center.x, y: p.y - center.y, z: p.z - center.z };
+      expect(Math.hypot(offset.x, offset.y, offset.z)).toBeLessThanOrEqual(coreRadius + 1e-9);
+      expect(offset.x * v.x + offset.y * v.y + offset.z * v.z).toBeGreaterThanOrEqual(0); // 往外飛
+      expect(a).toEqual({ x: 0, y: -0.4, z: 0 });
+    });
+    // 速度異質：最快的火花至少是最慢粒子的 5 倍，且快速火花約佔 25%
+    expect(Math.max(...speeds) / Math.min(...speeds)).toBeGreaterThan(5);
+    const sparks = speeds.filter((s) => s > 2.5 * 1.5).length / speeds.length;
+    expect(sparks).toBeGreaterThan(0.18);
+    expect(sparks).toBeLessThan(0.32);
+  });
   it('octree getLeafDepths matches getLeafOf for every particle', () => {
     const particles = [particle(0, 0.2), particle(1, 0.35), particle(2, 3), particle(3, 1.5), particle(4, 1.55)];
     const tree = new OctreeStructure({ x: 4, y: 4, z: 4 }, 2, 2); tree.build(particles);
