@@ -17,6 +17,9 @@ const bounds = { x:25, y: 25, z: 25 };
 const dt = 1 / 60;
 // 與 C++ bench 一致：cellSize = cellSizeRatio(2) × 2 × PARTICLE_RADIUS(0.075)
 const CELL_SIZE = 0.3;
+// 播放速度：1× 時每 140ms 跑一步。只改變「多久跑一步」，每一步的物理時間 dt 不變，所以結果與速度無關
+const BASE_STEP_MS = 140;
+const SPEEDS = [0.25, 0.5, 1, 2, 4];
 // 八元樹參數：最大深度與葉節點容量（粒子數超過容量就切成 8 格，到最大深度後不再切）
 const OCTREE_MAX_DEPTH = 6;
 const OCTREE_LEAF_CAPACITY = 8;
@@ -480,6 +483,9 @@ function App() {
   const [showSplits, setShowSplits] = useState(true);
   const [onlyLevelParticles, setOnlyLevelParticles] = useState(false);
   const [playing, setPlaying] = useState(true);
+  const [speed, setSpeed] = useState(1);
+  // 最近 2 秒內每一步的時間點，用來算實際每秒幾步（電腦跟不上時會低於目標）
+  const stepTimes = useRef<number[]>([]);
   const [version, setVersion] = useState(0);
   const [metrics, setMetrics] = useState<StepMetrics>(() => initialMetrics(algorithm));
   // step() 以 ref 為準累加，避免同一次 render 內多次呼叫（interval + STEP 按鈕）讀到舊的 metrics 而少算
@@ -514,6 +520,7 @@ function App() {
   };
   const step = () => {
     const started = performance.now();
+    stepTimes.current = [...stepTimes.current.filter((time) => started - time < 2000), started];
     const prev = metricsRef.current;
     const current = system.current;
     const particles = current.particles;
@@ -560,7 +567,7 @@ function App() {
     setHistory(instrumentation.current.getHistory()); 
     setVersion((value) => value + 1);
   };
-  useEffect(() => { if (!playing) return; const timer = window.setInterval(step, 140); return () => window.clearInterval(timer); });
+  useEffect(() => { if (!playing) return; const timer = window.setInterval(step, BASE_STEP_MS / speed); return () => window.clearInterval(timer); });
   useEffect(() => { controller.current.K = K; }, [K]);
   const octreeGeometry = useMemo(() => {
     if (algorithm !== 'Octree' || !showGrid) return { boxes: [], splits: [] };
@@ -785,6 +792,14 @@ function App() {
             <button onClick={reset} title={t.reset}>
               <RotateCcw size={16} />
             </button>
+          </div>
+          <div className="speed-row">
+            <span>{t.speed} <small>{t.speedHint(Math.round(1000 / (BASE_STEP_MS / speed)), playing ? stepTimes.current.filter((time) => performance.now() - time < 2000).length / 2 : 0)}</small></span>
+            <div className="speed-buttons">
+              {SPEEDS.map((value) => (
+                <button key={value} className={speed === value ? 'active' : ''} onClick={() => setSpeed(value)}>{value}×</button>
+              ))}
+            </div>
           </div>
         </div>
 
