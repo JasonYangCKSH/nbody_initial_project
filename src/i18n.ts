@@ -16,6 +16,8 @@ const fmtTrigger = (e: RebuildEvent): [string, string] => {
 const en = {
   langToggle: '中文',
   langToggleTitle: 'Switch to Chinese',
+  hideSidebar: 'Hide panel',
+  showSidebar: 'Show panel',
   liveSimulation: 'LIVE SIMULATION',
   labelStructure: 'STRUCTURE',
   labelDistribution: 'DISTRIBUTION',
@@ -43,7 +45,6 @@ const en = {
   clusterCountHint: 'number of cluster centres (needs cluster factor > 0)',
   shellCount: 'FIREWORK SHELLS',
   shellCountHint: 'how many shells burst at once',
-  relaunch: 'LAUNCH AGAIN',
   gravity: 'GRAVITY',
   clusterFactor: 'CLUSTER FACTOR',
   acceleration: 'ACCELERATION',
@@ -143,6 +144,8 @@ export type Strings = typeof en;
 const zh: Strings = {
   langToggle: 'EN',
   langToggleTitle: '切換為英文',
+  hideSidebar: '收起側邊欄',
+  showSidebar: '展開側邊欄',
   liveSimulation: '即時模擬',
   labelStructure: '空間結構',
   labelDistribution: '粒子分布',
@@ -170,7 +173,6 @@ const zh: Strings = {
   clusterCountHint: '群聚中心有幾處（群聚係數需大於 0）',
   shellCount: '煙火發數',
   shellCountHint: '同時炸開幾發煙火',
-  relaunch: '再爆一次',
   gravity: '重力',
   clusterFactor: '群聚係數',
   acceleration: '加速度',

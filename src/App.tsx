@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Billboard, OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
-import { Activity, ChevronDown, Crosshair, Download, Languages, LocateFixed, Pause, Play, RotateCcw, SkipForward, Sparkles, X } from 'lucide-react';
+import { Activity, ChevronDown, Crosshair, Download, Languages, LocateFixed, Pause, Play, PanelRightClose, PanelRightOpen, RotateCcw, SkipForward, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { BruteForceStructure } from './core/spatial/BruteForceStructure';
@@ -521,6 +521,8 @@ function App() {
   const [lang, setLang] = useState<Lang>(loadLang);
   // 側邊欄可收合區塊的開關；沒有紀錄時用各區塊的預設值
   const [panelOpen, setPanelOpen] = useState<Record<string, boolean>>(loadPanelOpen);
+  // 整個側邊欄收起來，讓 3D 畫面佔滿寬度
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isOpen = (id: string, fallback = true) => panelOpen[id] ?? fallback;
   const toggleSection = (id: string, fallback = true) => setPanelOpen((old) => {
     const next = { ...old, [id]: !(old[id] ?? fallback) };
@@ -643,8 +645,11 @@ function App() {
   const skippedRatio = metrics.step ? Math.round((metrics.skippedSteps / metrics.step) * 100) : 0;
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <section className="viewport">
+        <button className="sidebar-toggle" onClick={() => setSidebarCollapsed(!sidebarCollapsed)} title={sidebarCollapsed ? t.showSidebar : t.hideSidebar} aria-label={sidebarCollapsed ? t.showSidebar : t.hideSidebar}>
+          {sidebarCollapsed ? <PanelRightOpen size={16} /> : <PanelRightClose size={16} />}
+        </button>
         <Canvas dpr={[1, 1.5]}>
           <PerspectiveCamera makeDefault position={[8, 6, 11]} fov={42} />
           <OrbitControls enableDamping dampingFactor={0.1} minDistance={3} maxDistance={60} makeDefault />
@@ -734,7 +739,6 @@ function App() {
               </button>
             ))}
           </div>
-          {scene === 'explosion' && <button className="relaunch" onClick={() => reset()}><Sparkles size={14} /> {t.relaunch}</button>}
 
           <label>
             {t.particleCount} <strong>{count.toLocaleString()}</strong>
