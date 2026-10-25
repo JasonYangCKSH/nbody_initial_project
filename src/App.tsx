@@ -23,26 +23,33 @@ const SPEEDS = [0.25, 0.5, 1, 2, 4];
 const OCTREE_MAX_DEPTH = 6;
 const OCTREE_LEAF_CAPACITY = 8;
 
-// Wireframe lattice matching UniformGridStructure's cellOf() partition
-// (cell boundaries at multiples of cellSize, clipped to the bounding box),
-// not just a decorative floor plane.
-function BoundingGridLines({ bounds, cellSize, color }: { bounds: Vec3; cellSize: number; color: string }) {
+// 均勻網格的線框：只畫「裡面有粒子」的格子（和 UniformGridStructure 的 cellOf() 用同一種切法），
+// 再加上模擬空間的外框。整個空間每邊約 84 格，全部畫出來會變成一整片看不清楚的密網。
+// rebuildKey 變了（重建過）才重新計算，因為格子的分配只在重建時更新。
+function BoundingGridLines({ bounds, cellSize, color, particles, rebuildKey }: { bounds: Vec3; cellSize: number; color: string; particles: ParticleData[]; rebuildKey: number }) {
   const geometry = useMemo(() => {
-    const axisSteps = (extent: number) => { const count = Math.max(1, Math.ceil(extent / cellSize)); return Array.from({ length: count + 1 }, (_, i) => Math.min(i * cellSize, extent)); };
-    const xs = axisSteps(bounds.x);
-    const ys = axisSteps(bounds.y);
-    const zs = axisSteps(bounds.z);
     const points: number[] = [];
-    ys.forEach((y) => zs.forEach((z) => points.push(0, y, z, bounds.x, y, z)));
-    xs.forEach((x) => zs.forEach((z) => points.push(x, 0, z, x, bounds.y, z)));
-    xs.forEach((x) => ys.forEach((y) => points.push(x, y, 0, x, y, bounds.z)));
+    const box = (x0: number, y0: number, z0: number, x1: number, y1: number, z1: number) => points.push(
+      x0, y0, z0, x1, y0, z0, x0, y1, z0, x1, y1, z0, x0, y0, z1, x1, y0, z1, x0, y1, z1, x1, y1, z1,
+      x0, y0, z0, x0, y1, z0, x1, y0, z0, x1, y1, z0, x0, y0, z1, x0, y1, z1, x1, y0, z1, x1, y1, z1,
+      x0, y0, z0, x0, y0, z1, x1, y0, z0, x1, y0, z1, x0, y1, z0, x0, y1, z1, x1, y1, z0, x1, y1, z1);
+    box(0, 0, 0, bounds.x, bounds.y, bounds.z);
+    const occupied = new Set<string>();
+    particles.forEach(({ position: p }) => {
+      const cx = Math.floor(p.x / cellSize), cy = Math.floor(p.y / cellSize), cz = Math.floor(p.z / cellSize);
+      const key = `${cx}:${cy}:${cz}`;
+      if (occupied.has(key)) return;
+      occupied.add(key);
+      box(cx * cellSize, cy * cellSize, cz * cellSize, (cx + 1) * cellSize, (cy + 1) * cellSize, (cz + 1) * cellSize);
+    });
     const geom = new THREE.BufferGeometry();
     geom.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
     return geom;
-  }, [bounds.x, bounds.y, bounds.z, cellSize]);
+  }, [bounds.x, bounds.y, bounds.z, cellSize, particles, rebuildKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => geometry.dispose(), [geometry]);
   return <group position={[-bounds.x / 2, -bounds.y / 2, -bounds.z / 2]}>
     <lineSegments geometry={geometry}>
-      <lineBasicMaterial color={color} transparent opacity={0.35} />
+      <lineBasicMaterial color={color} transparent opacity={0.55} />
     </lineSegments>
   </group>;
 }
@@ -658,7 +665,7 @@ function App() {
           <ambientLight intensity={1.5} />
           <pointLight position={[4, 8, 6]} intensity={30} color="#D9A441" />
           <SimulationView particles={system.current.particles} highlighted={highlighted.current} collisionIds={collisionIds.current} triggerId={triggerId} selectedId={selectedId} onSelect={(id) => selectParticle(id)} visibleDepths={particleDepthFilter} leafDepths={leafDepths} baseColors={system.current.colors} glow={scene === 'explosion'} />
-          {algorithm === 'Uniform Grid' && showGrid && <BoundingGridLines bounds={bounds} cellSize={CELL_SIZE} color="#8FD9FF" />}
+          {algorithm === 'Uniform Grid' && showGrid && <BoundingGridLines bounds={bounds} cellSize={CELL_SIZE} color="#8FD9FF" particles={system.current.particles} rebuildKey={metrics.rebuildCount} />}
           {algorithm === 'Octree' && showGrid && <OctreeLines boxes={visibleOctreeBoxes} bounds={bounds} />}
           {algorithm === 'Octree' && showGrid && visibleSplitBoxes.length > 0 && <OctreeLines boxes={visibleSplitBoxes} bounds={bounds} dashed />}
           {triggerId !== null && triggerId !== selectedId && system.current.particles[triggerId] && <ParticleMarker particle={system.current.particles[triggerId]} color={TRIGGER_COLOR} />}
