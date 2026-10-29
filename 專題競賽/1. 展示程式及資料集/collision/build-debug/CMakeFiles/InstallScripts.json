@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/jason/nbody_initial_project/collision/build-debug/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
