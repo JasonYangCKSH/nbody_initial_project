@@ -1,38 +1,21 @@
-#include "../include/particle.h"
-#include "../include/scenarios.h"
-#include "../include/simulation.h"
-#include <chrono>
+#include "simulation.h"
+#include "scenario.h"
+#include "bench_runner.h"
 #include <iostream>
-#include <string>
+#include <fstream>
 #include <vector>
-
 int main() {
-    // 1.
-    float radius = 1.0f;
-    float cellSize = 8.0f;
-    float speed = 1.0f;
-    // 2.
-    scenario::Cloud particles = scenario::uniformCloud(10000, 50.0f, radius, speed);
-    scenario::Cloud refParticles = particles; // 給 brute force 用的獨立副本
-    // 3.
-    SimConfig config;
-    config.cellSize = cellSize;
-    config.K = 20;
-    config.skinMode = SimConfig::SkinMode::LocalVelocity;
+    std::cout << "start\n";
+    // 1. 設定 benchmark
+    benchrunner::BenchmarkConfig config;
+    // 2. 建立 CSV writer
+    benchrunner::BenchmarkCSVWriter writer("benchmark6.csv");
+    // 3. 建立 benchmark runner
+    benchrunner::BenchmarkRunner runner(config, writer);
+    // 4. 執行所有實驗
+    runner.run();
+    // 5. 完成
+    std::cout << "Benchmark finished.\n";
 
-    Simulation sim(config);
-
-
-    for (int i = 0; i < 200; i++) {
-        StepStats st = sim.step(particles);
-        std::cout << "step " << i + 1
-                << " | rebuilt: " << (st.broadPhaseExecuted ? "yes" : "no")
-                << " | pairs: " << st.broadPhasePairs
-                << " | collisions: " << st.collisionCount
-                << " | broadPhase: " << st.broadPhaseSeconds << "s"
-                << " | narrowPhase: " << st.narrowPhaseSeconds << "s"
-                << "\n";
-    }
-
-
+    return 0;
 }
