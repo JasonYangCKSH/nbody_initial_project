@@ -10,7 +10,7 @@
 
 4."粒子"碰撞配對清單改為碰撞配對清單。
 
-> 參考課題：\[加速度是否會造成CCD問題更嚴重？](https://chatgpt.com/s/t\_6aec1ebf5e2c81919609420b167780fe)
+> 參考課題：[加速度是否會造成CCD問題更嚴重？](https://chatgpt.com/s/t/6aec1ebf5e2c81919609420b167780fe)
 
 
 
@@ -24,5 +24,5 @@
 
 4."運動更新"和"數據紀錄"的差異？
 
-> \[參考建議](https://chatgpt.com/s/t\_6aec2c6c94148191b05d42e4f0cd2fc6)
+> [參考建議](https://chatgpt.com/s/t/6aec2c6c94148191b05d42e4f0cd2fc6)
 
